@@ -5,6 +5,14 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
     </PropertyGroup>
+    <ItemGroup>
+        <PackageReference Include="Azure.Storage.Blobs" Version="12.20.0-beta.1" />
+        <PackageReference Include="MailKit" Version="4.3.0" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="7.0.15" />
+        <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.2.0" />
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+    </ItemGroup>
 
     <ItemGroup>
       <Folder Include="Attributes\" />
@@ -15,6 +23,10 @@
       <Folder Include="Implementations\" />
       <Folder Include="Interfaces\" />
       <Folder Include="Models\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Vigig.Common\Vigig.Common.csproj" />
     </ItemGroup>
 
 </Project>
