@@ -32,4 +32,9 @@
       <ProjectReference Include="..\Vigig.Service\Vigig.Service.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Remove="Scripts\1.Initialize_Database.sql" />
+      <EmbeddedResource Include="Scripts\1.Initialize_Database.sql" />
+    </ItemGroup>
+
 </Project>

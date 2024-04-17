@@ -1,6 +1,6 @@
 ﻿namespace Vigig.Common.Interfaces;
 
-public class IAutoRegistrable
+public interface IAutoRegisterable
 {
     
 }

@@ -184,14 +184,6 @@ CREATE TABLE [Customer] (
     );
 END
 
-IF NOT EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'SchemaVersion')
-BEGIN
-CREATE TABLE [SchemaVersion](
-                                Id			INT				 NOT NULL,
-                                ScriptName	NVARCHAR(255)	 NOT NULL,
-    AppliedTime	DATETIME,
-    )
-END
 
 
 
@@ -243,9 +235,6 @@ ALTER TABLE [BookingFee]
 
 ALTER TABLE [Customer]
     ADD CONSTRAINT PK_Customer PRIMARY KEY (Id);
-
-ALTER TABLE [SchemaVersion]
-    ADD CONSTRAINT PK_SchemaVersion PRIMARY KEY (Id);
 
 -- add foreign key
 

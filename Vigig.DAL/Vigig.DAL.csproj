@@ -11,12 +11,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Data\" />
-      <Folder Include="Implementations\" />
-      <Folder Include="Interfaces\" />
-    </ItemGroup>
-
-    <ItemGroup>
       <ProjectReference Include="..\Vigig.Domain\Vigig.Domain.csproj" />
     </ItemGroup>
 
