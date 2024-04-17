@@ -61,11 +61,10 @@ public abstract class BaseApiController : ControllerBase
             StringInterpolationHelper.Append(result.Detail ?? "no detail.");
             logger.Info(StringInterpolationHelper.BuildAndClear());
             return result.IsSuccess ? BuildSuccessResult(result) : Problem(result.Detail);
-
         }
         catch (Exception e)
         {
-            var message = $"Result of {methodInfo}. IsSuccess = false. Details: {StringInterpolationHelper.BuildAndClear()}";
+            var message = $"Result of {methodInfo}. IsSuccess = false. Details: {e.Message} at Specified file: \n {e.StackTrace}";
             logger.Error(message);
             return BuildErrorResult(e);
         }
@@ -78,6 +77,4 @@ public abstract class BaseApiController : ControllerBase
             logger.Info(StringInterpolationHelper.BuildAndClear());
         }
     }
-
-   
 }

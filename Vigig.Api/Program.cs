@@ -3,7 +3,7 @@ using Vigig.Api.Extensions;
 using Vigig.Common.Helpers;
 
 LogManager.Setup()
-    .LoadConfigurationFromFile($"{Directory.GetCurrentDirectory()}/Configurations/nlog.config")
+    .LoadConfigurationFromFile($"{Directory.GetCurrentDirectory()}\\Configurations\\nlog.config")
     .GetCurrentClassLogger();   
 var builder = WebApplication.CreateBuilder(args);
 DataAccessHelper.InitConfiguration(builder.Configuration);
