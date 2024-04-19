@@ -7,7 +7,7 @@ services:
       dockerfile: "Vigig.Api/Dockerfile"
       context: .
     container_name: "vigig-server"
-    ports:
+    ports:  
       - 10000:80
     restart: on-failure
   database:
