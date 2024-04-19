@@ -1,0 +1,20 @@
+version: "3.9"
+services:
+  api:
+    depends_on: 
+      - database
+    build:
+      dockerfile: "Vigig.Api/Dockerfile"
+      context: .
+    container_name: "vigig-server"
+    ports:
+      - 10000:80
+    restart: on-failure
+  database:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+        #    volumes:
+#      - /sqldata:/var/opt/mssql/data
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=${DB_PASSWORD}
+      - MSSQL_PID=Express

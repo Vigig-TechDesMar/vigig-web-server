@@ -67,8 +67,8 @@ END
 IF NOT EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Booking')
 BEGIN
 CREATE TABLE [Booking] (
-                           Id               UNIQUEIDENTIFIER NOT NULL,
-                           Apartment        NVARCHAR(255)    NOT NULL,
+               Id               UNIQUEIDENTIFIER NOT NULL,
+               Apartment        NVARCHAR(255)    NOT NULL,
     StickerPrice     FLOAT            NOT NULL,
     FinalPrice       FLOAT            NOT NULL,
     Status           INT              NOT NULL,
@@ -352,7 +352,6 @@ ALTER TABLE [Transaction]
 
 ALTER TABLE [Wallet]
     ADD FOREIGN KEY (ProviderId) REFERENCES [Provider](Id)
-
 
 ALTER TABLE [BookingFee]
     ADD FOREIGN KEY (BookingId) REFERENCES [Booking](Id)
