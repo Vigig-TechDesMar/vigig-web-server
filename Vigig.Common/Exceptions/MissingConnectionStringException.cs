@@ -1,4 +1,5 @@
 ﻿using Vigig.Common.Constants;
+using Vigig.Common.Constants.Messages;
 
 namespace Vigig.Common.Exceptions;
 
