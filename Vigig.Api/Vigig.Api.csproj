@@ -35,6 +35,8 @@
     <ItemGroup>
       <None Remove="Scripts\1.Initialize_Database.sql" />
       <EmbeddedResource Include="Scripts\1.Initialize_Database.sql" />
+      <None Remove="Scripts\2.Update_Table_Customer.sql" />
+      <EmbeddedResource Include="Scripts\2.Update_Table_Customer.sql" />
     </ItemGroup>
 
 </Project>

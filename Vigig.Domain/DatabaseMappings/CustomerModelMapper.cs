@@ -21,6 +21,9 @@ public class CustomerModelMapper : IDatabaseModelMapper
             entity.Property(e => e.IsActive).HasDefaultValueSql("((1))");
             entity.Property(e => e.Phone).HasMaxLength(10);
             entity.Property(e => e.UserName).HasMaxLength(255);
+            entity.Property(e => e.NormalizedEmail).HasMaxLength(255);
+            entity.Property(e => e.NormalizedUserName).HasMaxLength(255);
+            entity.Property(e => e.EmailConfirmed).HasDefaultValueSql("((0))");
 
             entity.HasOne(d => d.Building).WithMany(p => p.Customers)
                 .HasForeignKey(d => d.BuildingId)
