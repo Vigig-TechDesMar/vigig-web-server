@@ -10,5 +10,5 @@ public partial class Customer : IdentityEntity
 
     public virtual ICollection<Booking> Bookings { get; set; } = new List<Booking>();
 
-    public virtual Building Building { get; set; } = null!;
+    public virtual Building Building { get; set; } 
 }

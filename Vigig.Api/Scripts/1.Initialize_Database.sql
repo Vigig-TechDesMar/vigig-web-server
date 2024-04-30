@@ -169,8 +169,8 @@ END
 IF NOT EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Customer')
 BEGIN
 CREATE TABLE [Customer] (
-                            Id           UNIQUEIDENTIFIER NOT NULL,
-                            UserName     NVARCHAR(255)    NOT NULL,
+    Id           UNIQUEIDENTIFIER NOT NULL,
+    UserName     NVARCHAR(255)    NOT NULL,
     Password     NVARCHAR(MAX)    NOT NULL,
     Gender       NVARCHAR(63),
     ProfileImage NVARCHAR(MAX),

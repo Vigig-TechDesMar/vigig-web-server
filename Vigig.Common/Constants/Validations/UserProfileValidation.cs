@@ -12,5 +12,6 @@ public static class UserProfileValidation
     {
         public const string PasswordPattern = @"^(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$";
         public const string NotMatchedPatternMessage = "Password must contain at least 8 characters, one uppercase letter, one number and one special character.";
+        public const string InvalidPasswordMessage = "Invalid password";
     }
 }

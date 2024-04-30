@@ -15,11 +15,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Exceptions\" />
-      <Folder Include="Implementations\" />
-    </ItemGroup>
-
-    <ItemGroup>
       <ProjectReference Include="..\Vigig.Common\Vigig.Common.csproj" />
       <ProjectReference Include="..\Vigig.DAL\Vigig.DAL.csproj" />
     </ItemGroup>

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ValueGeneration;
 using Vigig.Domain.Interfaces;
 using Vigig.Domain.Models;
 
@@ -12,7 +13,7 @@ public class CustomerModelMapper : IDatabaseModelMapper
         {
             entity.ToTable("Customer");
 
-            entity.Property(e => e.Id).ValueGeneratedNever();
+            entity.Property(e => e.Id).ValueGeneratedOnAdd();
             entity.Property(e => e.Address).HasMaxLength(450);
             entity.Property(e => e.CreatedDate).HasColumnType("datetime");
             entity.Property(e => e.Email).HasMaxLength(255);
@@ -24,10 +25,12 @@ public class CustomerModelMapper : IDatabaseModelMapper
             entity.Property(e => e.NormalizedEmail).HasMaxLength(255);
             entity.Property(e => e.NormalizedUserName).HasMaxLength(255);
             entity.Property(e => e.EmailConfirmed).HasDefaultValueSql("((0))");
+            entity.Property(e => e.ConcurrencyStamp).IsConcurrencyToken().HasValueGenerator<StringValueGenerator>();
 
             entity.HasOne(d => d.Building).WithMany(p => p.Customers)
                 .HasForeignKey(d => d.BuildingId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
+                .IsRequired(false)
                 .HasConstraintName("FK__Customer__Buildi__778AC167");
         });
     }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ValueGeneration;
 using Vigig.Domain.Interfaces;
 using Vigig.Domain.Models;
 
@@ -15,6 +16,7 @@ public class BuildingModelMapper : IDatabaseModelMapper
             entity.Property(e => e.Id).ValueGeneratedNever();
             entity.Property(e => e.BuildingName).HasMaxLength(255);
             entity.Property(e => e.IsActive).HasDefaultValueSql("((1))");
+            entity.Property(e => e.ConcurrencyStamp).IsConcurrencyToken().HasValueGenerator<StringValueGenerator>();
         });
     }
 }

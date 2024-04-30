@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using NLog;
 using Vigig.Api.Constants;
-using Vigig.Api.Exceptions;
+using Vigig.Common.Exceptions;
 using Vigig.Common.Helpers;
 using Vigig.Service.Models;
 using ILogger = NLog.ILogger;
@@ -50,7 +50,7 @@ public abstract class BaseApiController : ControllerBase
         var startTime = DateTime.Now;
         StringInterpolationHelper.AppendToStart(serviceActionFunc.Method.Name);
         var methodInfo = StringInterpolationHelper.BuildAndClear();
-        logger.Info($"[Start] [API-Method] - {methodInfo}");
+        logger.Info($"\n[Start] [API-Method] - {methodInfo}");
         try
         {
             var result = await serviceActionFunc();
