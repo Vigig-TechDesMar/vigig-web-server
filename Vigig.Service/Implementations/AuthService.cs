@@ -97,8 +97,18 @@ public class AuthService : IAuthService
                     RefreshToken = _jwtService.GenerateRefreshToken(retrivedUser.Id)
                 }
             };
-            return new ServiceActionResult()
+            return new ServiceActionResult(true)
+            {
+                Data = authResponse
+            };
         }
+
+        if (request.Role == UserRole.Provider)
+        {
+            throw new NotImplementedException();
+        }
+
+        throw new NotImplementedException();
     }
 
     public Task<ServiceActionResult> RefreshTokenAsync(RefreshTokenRequest token)
