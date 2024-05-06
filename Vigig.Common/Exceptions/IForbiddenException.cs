@@ -1,4 +1,5 @@
-﻿namespace Vigig.Api.Exceptions;
+﻿namespace Vigig.Common.Exceptions;
+
 
 public interface IForbiddenException
 {

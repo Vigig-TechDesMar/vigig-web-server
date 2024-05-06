@@ -1,4 +1,4 @@
-﻿namespace Vigig.Common.Constants;
+﻿namespace Vigig.Common.Constants.Messages;
 
 public class InformationMessage
 {

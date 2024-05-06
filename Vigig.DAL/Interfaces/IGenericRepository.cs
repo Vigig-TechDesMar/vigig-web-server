@@ -3,7 +3,7 @@ using Vigig.Common.Interfaces;
 
 namespace Vigig.DAL.Interfaces;
 
-public interface IGenericRepository<T> : IAutoRegisterable where T:class 
+public interface IGenericRepository<T>  where T:class 
 {
     void Add(T entity);
     Task AddAsync(T entity);

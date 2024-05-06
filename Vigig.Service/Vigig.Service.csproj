@@ -15,15 +15,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Attributes\" />
-      <Folder Include="AutoMappings\" />
-      <Folder Include="Constants\" />
-      <Folder Include="Exceptions\" />
-      <Folder Include="Implementations\" />
-      <Folder Include="Interfaces\" />
-    </ItemGroup>
-
-    <ItemGroup>
       <ProjectReference Include="..\Vigig.Common\Vigig.Common.csproj" />
       <ProjectReference Include="..\Vigig.DAL\Vigig.DAL.csproj" />
     </ItemGroup>

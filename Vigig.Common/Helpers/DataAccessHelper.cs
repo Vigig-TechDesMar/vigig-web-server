@@ -3,6 +3,7 @@ using DbUp;
 using Microsoft.Extensions.Configuration;
 using NLog;
 using Vigig.Common.Constants;
+using Vigig.Common.Constants.Messages;
 using Vigig.Common.Exceptions;
 
 namespace Vigig.Common.Helpers;

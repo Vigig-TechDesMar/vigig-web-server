@@ -4,7 +4,7 @@ using Vigig.DAL.Interfaces;
 
 namespace Vigig.DAL.Implementations;
 
-public class GenericRepository<T> : IGenericRepository<T> where T:class
+public abstract class GenericRepository<T> : IGenericRepository<T> where T:class
 {
     private readonly IAppDbContext _dbContext;
     private readonly DbSet<T> _dbSet;
