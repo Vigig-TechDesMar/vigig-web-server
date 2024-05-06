@@ -21,5 +21,19 @@ public class AuthController : BaseApiController
         ).ConfigureAwait(false);
     }
 
+    [HttpPost("login")]
+    public async Task<IActionResult> Login(LoginRequest request)
+    {
+        return await ExecuteServiceLogic(
+            async () => await _authService.LoginAsync(request).ConfigureAwait(false)
+        ).ConfigureAwait(false);
+    }
 
+    [HttpPost("refresh-token")]
+    public async Task<IActionResult> RefreshToken(RefreshTokenRequest request)
+    {
+        return await ExecuteServiceLogic(
+            async()=> await _authService.RefreshTokenAsync(request).ConfigureAwait(false)
+        ).ConfigureAwait(false);
+    }
 }
