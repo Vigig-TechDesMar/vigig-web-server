@@ -2,9 +2,9 @@
 using System.Security.Claims;
 using System.Text;
 using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
+   using Microsoft.IdentityModel.Tokens;
+using Vigig.Api.Settings;
 using Vigig.Common.Exceptions;
-using Vigig.Common.Settings;
 using Vigig.DAL.Interfaces;
 using Vigig.Domain.Models;
 using Vigig.Service.Enums;
@@ -21,9 +21,9 @@ public class JwtService : IJwtService
 
     public JwtService(JwtSetting jwtSetting, ICustomerRepository customerRepository, IUnitOfWork unitOfWork, IConfiguration configuration)
     {
-        _jwtSetting = configuration.GetSection(nameof(JwtSetting)).Get<JwtSetting>() ?? throw new MissingJwtSettingsException();
         _customerRepository = customerRepository;
         _unitOfWork = unitOfWork;
+        _jwtSetting = configuration.GetSection(nameof(JwtSetting)).Get<JwtSetting>() ?? throw new MissingJwtSettingsException();
     }
 
     public string GenerateAccessToken(Customer customer)

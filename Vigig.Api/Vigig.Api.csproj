@@ -39,6 +39,8 @@
       <EmbeddedResource Include="Scripts\1.Initialize_Database.sql" />
       <None Remove="Scripts\2.Update_Table_Customer.sql" />
       <EmbeddedResource Include="Scripts\2.Update_Table_Customer.sql" />
+      <None Remove="Scripts\3.Add_Table_CustomerToken.sql" />
+      <EmbeddedResource Include="Scripts\3.Add_Table_CustomerToken.sql" />
     </ItemGroup>
 
 </Project>

@@ -1,4 +1,4 @@
-﻿namespace Vigig.Common.Settings;
+﻿namespace Vigig.Api.Settings;
 
 public class JwtSetting
 {

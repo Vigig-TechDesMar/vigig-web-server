@@ -1,8 +1,9 @@
-﻿using Vigig.Domain.Models;
+﻿using Vigig.Common.Interfaces;
+using Vigig.Domain.Models;
 
 namespace Vigig.Service.Interfaces;
 
-public interface IJwtService
+public interface IJwtService : IAutoRegisterable
 {
     string GenerateAccessToken(Customer customer);
 
