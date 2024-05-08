@@ -1,7 +1,11 @@
 ﻿using System.Text.RegularExpressions;
 using AutoMapper;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Vigig.Common.Constants.Validations;
+using Vigig.Common.Exceptions;
 using Vigig.Common.Helpers;
+using Vigig.Common.Settings;
 using Vigig.DAL.Interfaces;
 using Vigig.Domain.Models;
 using Vigig.Service.Enums;
@@ -16,19 +20,23 @@ namespace Vigig.Service.Implementations;
 
 public class AuthService : IAuthService
 {
+    private readonly ICustomerTokenRepository _customerTokenRepository;
     private readonly ICustomerRepository _customerRepository;
     private readonly IBuildingRepository _buildingRepository;
     private readonly IJwtService _jwtService;
+    private readonly JwtSetting _jwtSetting;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
 
-    public AuthService(ICustomerRepository customerRepository, IMapper mapper, IUnitOfWork unitOfWork, IBuildingRepository buildingRepository, IJwtService jwtService)
+    public AuthService(ICustomerRepository customerRepository, IMapper mapper, IUnitOfWork unitOfWork, IBuildingRepository buildingRepository, IJwtService jwtService, IConfiguration configuration, ICustomerTokenRepository customerTokenRepository)
     {
         _customerRepository = customerRepository;
         _mapper = mapper;
         _unitOfWork = unitOfWork;
         _buildingRepository = buildingRepository;
         _jwtService = jwtService;
+        _customerTokenRepository = customerTokenRepository;
+        _jwtSetting = configuration.GetSection(nameof(JwtSetting)).Get<JwtSetting>() ?? throw new MissingJwtSettingsException();
     }
     public async Task<ServiceActionResult> RegisterAsync(RegisterRequest request)
     {
@@ -87,19 +95,16 @@ public class AuthService : IAuthService
             var isValidPassword = PasswordHashHelper.VerifyPassword(request.Password, retrivedUser.Password);
             if (!isValidPassword)
                 throw new InvalidPasswordException();
-            var authResponse = new AuthResponse()
-            {
-                Name = retrivedUser.UserName,
-                Role = request.Role.ToString(),
-                Token = new TokenResponse()
-                {
-                    AccessToken = _jwtService.GenerateAccessToken(retrivedUser),
-                    RefreshToken = _jwtService.GenerateRefreshToken(retrivedUser.Id)
-                }
-            };
+            var authResponse = await GenerateAuthResponseAsync(retrivedUser);
             return new ServiceActionResult(true)
             {
-                Data = authResponse
+                Data = new{
+                    UserInfo = new{
+                        Name = retrivedUser.UserName,
+                        Email = retrivedUser.Email
+                    },
+                    token = authResponse 
+                }
             };
         }
 
@@ -111,8 +116,34 @@ public class AuthService : IAuthService
         throw new NotImplementedException();
     }
 
-    public Task<ServiceActionResult> RefreshTokenAsync(RefreshTokenRequest token)
+    public async Task<ServiceActionResult> RefreshTokenAsync(RefreshTokenRequest token)
     {
-        throw new NotImplementedException();
+        var refreshToken = await _customerTokenRepository.GetAsync(t => t.Value == token.RefreshToken);
+        if (refreshToken is null)
+            throw new RefreshTokenNotFoundException(token.RefreshToken);
+        var customer = await _customerRepository.GetAsync(c => c.Id == refreshToken.CustomerId);
+        if (customer is null)
+            throw new CustomerNotFoundException(refreshToken.CustomerId.ToString());
+        var tokenResponse = GenerateAuthResponseAsync(customer);
+        return new ServiceActionResult()
+        {
+            Data = tokenResponse
+        };
+    }
+
+    public async Task<AuthResponse> GenerateAuthResponseAsync(Customer customer)
+    {
+        var reponse = new AuthResponse()
+        {
+            Name = customer.UserName ?? customer.Email ?? String.Empty,
+            Role = UserRole.Client.ToString(),
+            Token = new TokenResponse()
+            {
+                AccessToken = _jwtService.GenerateAccessToken(customer),
+                RefreshToken = await _jwtService.GenerateRefreshToken(customer.Id),
+                ExpiresAt = DateTimeOffset.Now.AddHours(_jwtSetting.RefreshTokenLifetimeInMinutes)
+            }
+        };
+        return reponse;
     }
 }

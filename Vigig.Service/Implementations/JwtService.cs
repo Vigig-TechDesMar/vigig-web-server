@@ -2,8 +2,9 @@
 using System.Security.Claims;
 using System.Text;
 using Microsoft.Extensions.Configuration;
-   using Microsoft.IdentityModel.Tokens;
-using Vigig.Api.Settings;
+using Microsoft.IdentityModel.Tokens;
+using Vigig.Common.Constants.Validations;
+using Vigig.Common.Settings;
 using Vigig.Common.Exceptions;
 using Vigig.DAL.Interfaces;
 using Vigig.Domain.Models;
@@ -17,12 +18,15 @@ public class JwtService : IJwtService
 {
     private readonly JwtSetting _jwtSetting;
     private readonly ICustomerRepository _customerRepository;
+    private readonly ICustomerTokenRepository _customerTokenRepository;
     private readonly IUnitOfWork _unitOfWork;
+    
 
-    public JwtService(JwtSetting jwtSetting, ICustomerRepository customerRepository, IUnitOfWork unitOfWork, IConfiguration configuration)
+    public JwtService( ICustomerRepository customerRepository, IUnitOfWork unitOfWork, IConfiguration configuration, ICustomerTokenRepository customerTokenRepository)
     {
         _customerRepository = customerRepository;
         _unitOfWork = unitOfWork;
+        _customerTokenRepository = customerTokenRepository;
         _jwtSetting = configuration.GetSection(nameof(JwtSetting)).Get<JwtSetting>() ?? throw new MissingJwtSettingsException();
     }
 
@@ -51,8 +55,30 @@ public class JwtService : IJwtService
         return tokenHandler.WriteToken(token);
     }
 
-    public string GenerateRefreshToken(Guid customerId)
+    public async Task<string> GenerateRefreshToken(Guid customerId)
     {
-        throw new NotImplementedException();
+        var existingRefreshToken = await _customerTokenRepository.GetAsync(token =>
+            token.Name == TokenTypeConstants.RefreshToken &&
+                token.LoginProvider == LoginProviderConstants.VigigApp &&
+                token.CustomerId == customerId);
+        if (existingRefreshToken is null)
+        {
+            existingRefreshToken = new CustomerToken()
+            {
+                Name = TokenTypeConstants.RefreshToken,
+                CustomerId = customerId,
+                LoginProvider = LoginProviderConstants.VigigApp,
+                Value = Guid.NewGuid().ToString()
+            };
+            await _customerTokenRepository.AddAsync(existingRefreshToken);
+        }
+        else
+        {
+            existingRefreshToken.Value = Guid.NewGuid().ToString();
+            await _customerTokenRepository.UpdateAsync(existingRefreshToken);
+        }
+
+        await _unitOfWork.CommitAsync();
+        return existingRefreshToken.Value;
     }
 }
