@@ -1,6 +1,10 @@
-﻿namespace Vigig.Service.Exceptions.NotFound;
+﻿using Vigig.Service.Models.Request.Authentication;
 
-public class RefreshTokenNotFoundException
+namespace Vigig.Service.Exceptions.NotFound;
+
+public class RefreshTokenNotFoundException : EntityNotFoundException<RefreshTokenRequest>
 {
-    
+    public RefreshTokenNotFoundException(string id) : base(id)
+    {
+    }
 }

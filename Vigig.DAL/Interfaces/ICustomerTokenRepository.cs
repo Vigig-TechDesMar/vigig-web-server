@@ -1,6 +1,9 @@
-﻿namespace Vigig.DAL.Interfaces;
+﻿using Vigig.Common.Interfaces;
+using Vigig.Domain.Models;
 
-public class ICustomerTokenRepository
+namespace Vigig.DAL.Interfaces;
+
+public interface ICustomerTokenRepository : IGenericRepository<CustomerToken>, IAutoRegisterable
 {
     
 }

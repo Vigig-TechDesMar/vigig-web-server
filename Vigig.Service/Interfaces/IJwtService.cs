@@ -7,5 +7,5 @@ public interface IJwtService : IAutoRegisterable
 {
     string GenerateAccessToken(Customer customer);
 
-    string GenerateRefreshToken(Guid customerId);
+    Task<string> GenerateRefreshToken(Guid customerId);
 }
