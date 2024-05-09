@@ -17,7 +17,7 @@ public abstract class BaseApiController : ControllerBase
         var successResult = new ApiResponse(true)
         {
             Data = result.Data,
-            StatusCode = StatusCodes.Status200OK
+            StatusCode = result.StatusCode != default ? result.StatusCode : StatusCodes.Status200OK
         };
 
         var detail = result.Detail ?? ApiMessageConstants.Success;

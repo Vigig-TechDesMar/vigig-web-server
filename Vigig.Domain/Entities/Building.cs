@@ -11,7 +11,7 @@ public partial class Building
 
     public string? Note { get; set; }
 
-    public bool? IsActive { get; set; }
+    public bool IsActive { get; set; }
 
     public string? ConcurrencyStamp { get; set; }
 

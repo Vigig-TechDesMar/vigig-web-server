@@ -9,6 +9,11 @@ public static class ExceptionMessage
     { 
         public static string UserAlreadyExistMessage(string userEmail) =>  $"User {userEmail} is already exist.";
     }
-    
+
+    public static class BuildingMessage
+    {
+        public static string BuildingAlreadyExistMessage(string buildingName) => $"Building {buildingName} is already exist.";
+    }
+
 
 }
