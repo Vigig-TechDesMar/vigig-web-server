@@ -1,4 +1,7 @@
-﻿namespace Vigig.Service.Models;
+﻿using Microsoft.AspNetCore.Http;
+using Vigig.Common.Constants;
+
+namespace Vigig.Service.Models;
 
 public class ServiceActionResult
 {
@@ -6,6 +9,8 @@ public class ServiceActionResult
     public bool IsSuccess { get; set; }
     
     public string? Detail { get; set; }
+    
+    public int StatusCode { get; set; }
 
     public ServiceActionResult(bool isSuccess)
     {
