@@ -3,12 +3,12 @@ using Vigig.Service.Attributes;
 
 namespace Vigig.Service.Models.Request.GigService;
 
-public class CreateGigServiceRequest
+public class GigServiceRequest
 {
     [Required]
     public string ServiceName { get; set; } = null!;
 
-    public string? Description { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
     
     [Required]
     [MinValue(0)]

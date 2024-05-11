@@ -17,7 +17,7 @@ public partial class GigService
 
     public double Fee { get; set; }
 
-    public bool? IsActive { get; set; }
+    public bool IsActive { get; set; }
 
     public string? ConcurrencyStamp { get; set; }
 
