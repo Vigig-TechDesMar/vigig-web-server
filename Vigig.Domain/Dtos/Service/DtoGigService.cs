@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿namespace Vigig.Domain.Dtos.Service;
 
-namespace Vigig.Domain.Models;
-
-public partial class GigService
+public class DtoGigService
 {
     public Guid Id { get; set; }
 
@@ -17,13 +14,9 @@ public partial class GigService
 
     public double Fee { get; set; }
 
-    public bool IsActive { get; set; }
+    public bool? IsActive { get; set; }
 
     public string? ConcurrencyStamp { get; set; }
-
+    
     public Guid ServiceCategoryId { get; set; }
-
-    public virtual ICollection<ProviderService> ProviderServices { get; set; } = new List<ProviderService>();
-
-    public virtual ServiceCategory ServiceCategory { get; set; } = null!;
 }

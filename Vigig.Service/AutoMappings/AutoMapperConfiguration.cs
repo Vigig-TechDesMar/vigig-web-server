@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Vigig.Domain.Dtos.Building;
+using Vigig.Domain.Dtos.Service;
 using Vigig.Domain.Models;
 using Vigig.Service.Models.Request.Authentication;
 using Vigig.Service.Models.Request.Building;
@@ -31,8 +32,10 @@ public static class AutoMapperConfiguration
 
     public static void CreateServiceMaps(IMapperConfigurationExpression mapper)
     {
-        mapper.CreateMap<CreateGigServiceRequest, GigService>();
-        mapper.CreateMap<ServiceCategoryRequest, ServiceCategory>();
+        mapper.CreateMap<GigServiceRequest, GigService>();
+        mapper.CreateMap<ServiceCategoryRequest, ServiceCategory>().ForMember(sc => sc.Description
+            , opt => opt.Condition( c => string.IsNullOrWhiteSpace(c.Description)));
+        mapper.CreateMap<GigService, DtoGigService>();
     }
 
 }

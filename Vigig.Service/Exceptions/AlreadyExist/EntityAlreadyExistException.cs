@@ -9,7 +9,7 @@ public abstract class EntityAlreadyExistException<T>: ArgumentException,IBusines
     
     public override string Message => _customeMessage ?? Message;
 
-    public EntityAlreadyExistException(string validateValue, string validateProperty)
+    public EntityAlreadyExistException(object validateValue, string validateProperty)
     {
         var propertyName = typeof(T).GetProperty((string)validateProperty) ??
                            throw new Exception($"Not found property name: {validateProperty}.");

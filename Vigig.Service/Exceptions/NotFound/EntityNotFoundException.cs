@@ -7,7 +7,7 @@ public abstract class EntityNotFoundException<T> : ArgumentException, IBusinessE
     public readonly string? _customeMessage;
     public override string Message => _customeMessage ?? Message;
 
-    public EntityNotFoundException(string id)
+    public EntityNotFoundException(object id)
     {
         _customeMessage = $"Entity of type '{typeof(T).Name}' with id '{id}' was not found.";
     }
