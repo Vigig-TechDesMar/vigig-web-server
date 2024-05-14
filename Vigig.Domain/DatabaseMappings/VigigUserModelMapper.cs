@@ -5,13 +5,13 @@ using Vigig.Domain.Models;
 
 namespace Vigig.Domain.DatabaseMappings;
 
-public class CustomerModelMapper : IDatabaseModelMapper
+public class VigigUserModelMapper : IDatabaseModelMapper
 {
     public void Map(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Customer>(entity =>
+        modelBuilder.Entity<VigigUser>(entity =>
         {
-            entity.ToTable("Customer");
+            entity.ToTable("VigigUser");
 
             entity.Property(e => e.Id).ValueGeneratedOnAdd();
             entity.Property(e => e.Address).HasMaxLength(450);
@@ -27,11 +27,16 @@ public class CustomerModelMapper : IDatabaseModelMapper
             entity.Property(e => e.EmailConfirmed).HasDefaultValueSql("((0))");
             entity.Property(e => e.ConcurrencyStamp).IsConcurrencyToken().HasValueGenerator<StringValueGenerator>();
 
-            entity.HasOne(d => d.Building).WithMany(p => p.Customers)
+            entity.HasOne(d => d.Building).WithMany(p => p.Users)
                 .HasForeignKey(d => d.BuildingId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .IsRequired(false)
-                .HasConstraintName("FK__Customer__Buildi__778AC167");
+                .IsRequired(false);
+            
+            entity.HasOne(d => d.Badge).WithMany(p => p.Providers)
+                .HasForeignKey(d => d.BadgeId)
+                .OnDelete(DeleteBehavior.ClientSetNull);
+
+            
         });
     }
 }

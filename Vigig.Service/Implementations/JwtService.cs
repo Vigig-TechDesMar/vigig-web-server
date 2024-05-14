@@ -17,27 +17,27 @@ namespace Vigig.Service.Implementations;
 public class JwtService : IJwtService
 {
     private readonly JwtSetting _jwtSetting;
-    private readonly ICustomerRepository _customerRepository;
-    private readonly ICustomerTokenRepository _customerTokenRepository;
+    private readonly IVigigUserRepository _vigigUserRepository;
+    private readonly IUserTokenRepository _userTokenRepository;
     private readonly IUnitOfWork _unitOfWork;
     
 
-    public JwtService( ICustomerRepository customerRepository, IUnitOfWork unitOfWork, IConfiguration configuration, ICustomerTokenRepository customerTokenRepository)
+    public JwtService( IVigigUserRepository vigigUserRepository, IUnitOfWork unitOfWork, IConfiguration configuration, IUserTokenRepository userTokenRepository)
     {
-        _customerRepository = customerRepository;
+        _vigigUserRepository = vigigUserRepository;
         _unitOfWork = unitOfWork;
-        _customerTokenRepository = customerTokenRepository;
+        _userTokenRepository = userTokenRepository;
         _jwtSetting = configuration.GetSection(nameof(JwtSetting)).Get<JwtSetting>() ?? throw new MissingJwtSettingsException();
     }
 
-    public string GenerateAccessToken(Customer customer)
+    public string GenerateAccessToken(VigigUser vigigUser)
     {
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSetting.SigningKey));
         var claims = new List<Claim>()
         {
-            new Claim(JwtRegisteredClaimNames.Email,customer.Email ?? ""),
-            new Claim(JwtRegisteredClaimNames.Sub,customer.Id.ToString() ?? ""),
-            new Claim(JwtRegisteredClaimNames.Name,customer.FullName ?? ""),
+            new Claim(JwtRegisteredClaimNames.Email,vigigUser.Email ?? ""),
+            new Claim(JwtRegisteredClaimNames.Sub,vigigUser.Id.ToString() ?? ""),
+            new Claim(JwtRegisteredClaimNames.Name,vigigUser.FullName ?? ""),
             new Claim(ClaimTypes.Role,UserRole.Client.ToString())
         };
         var tokenDescriptor = new SecurityTokenDescriptor()
@@ -57,25 +57,25 @@ public class JwtService : IJwtService
 
     public async Task<string> GenerateRefreshToken(Guid customerId)
     {
-        var existingRefreshToken = await _customerTokenRepository.GetAsync(token =>
+        var existingRefreshToken = await _userTokenRepository.GetAsync(token =>
             token.Name == TokenTypeConstants.RefreshToken &&
                 token.LoginProvider == LoginProviderConstants.VigigApp &&
-                token.CustomerId == customerId);
+                token.UserId == customerId);
         if (existingRefreshToken is null)
         {
-            existingRefreshToken = new CustomerToken()
+            existingRefreshToken = new UserToken()
             {
                 Name = TokenTypeConstants.RefreshToken,
-                CustomerId = customerId,
+                UserId = customerId,
                 LoginProvider = LoginProviderConstants.VigigApp,
                 Value = Guid.NewGuid().ToString()
             };
-            await _customerTokenRepository.AddAsync(existingRefreshToken);
+            await _userTokenRepository.AddAsync(existingRefreshToken);
         }
         else
         {
             existingRefreshToken.Value = Guid.NewGuid().ToString();
-            await _customerTokenRepository.UpdateAsync(existingRefreshToken);
+            await _userTokenRepository.UpdateAsync(existingRefreshToken);
         }
 
         await _unitOfWork.CommitAsync();

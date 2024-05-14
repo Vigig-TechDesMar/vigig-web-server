@@ -39,7 +39,7 @@ public partial class Booking
 
     public virtual Building Building { get; set; } = null!;
 
-    public virtual Customer Customer { get; set; } = null!;
+    public virtual VigigUser VigigUser { get; set; } = null!;
 
     public virtual ProviderService ProviderService { get; set; } = null!;
 }

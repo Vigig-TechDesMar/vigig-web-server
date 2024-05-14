@@ -4,20 +4,20 @@ using Vigig.Domain.Models;
 
 namespace Vigig.Domain.DatabaseMappings;
 
-public class CustomerTokenModalMapper : IDatabaseModelMapper
+public class UserTokenModalMapper : IDatabaseModelMapper
 {
     public void Map(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<CustomerToken>(entity =>
+        modelBuilder.Entity<UserToken>(entity =>
         {
-            entity.ToTable("CustomerToken");
-            entity.HasKey(e => new { e.CustomerId, e.Name, e.LoginProvider });
-            entity.Property(e => e.CustomerId).IsRequired().HasMaxLength(255);
+            entity.ToTable("UserToken");
+            entity.HasKey(e => new { e.UserId, e.Name, e.LoginProvider });
+            entity.Property(e => e.UserId).IsRequired().HasMaxLength(255);
             entity.Property(e => e.Name).IsRequired().HasMaxLength(255);
             entity.Property(e => e.LoginProvider).IsRequired().HasMaxLength(255);
             entity.Property(e => e.Value).IsRequired().HasMaxLength(Int32.MaxValue);
 
-            entity.HasOne<Customer>().WithMany().HasForeignKey(e => e.CustomerId)
+            entity.HasOne<VigigUser>().WithMany().HasForeignKey(e => e.UserId)
                 .OnDelete(DeleteBehavior.ClientSetNull);
         });
     }

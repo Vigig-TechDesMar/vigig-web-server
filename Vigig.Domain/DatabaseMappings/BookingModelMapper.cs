@@ -21,7 +21,7 @@ public class BookingModelMapper : IDatabaseModelMapper
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__Booking__Buildin__6C190EBB");
 
-            entity.HasOne(d => d.Customer).WithMany(p => p.Bookings)
+            entity.HasOne(d => d.VigigUser).WithMany(p => p.Bookings)
                 .HasForeignKey(d => d.CustomerId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__Booking__Custome__6A30C649");
