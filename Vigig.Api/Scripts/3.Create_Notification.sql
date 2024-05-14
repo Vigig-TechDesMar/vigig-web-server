@@ -1,0 +1,37 @@
+﻿IF NOT EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Notification')
+BEGIN
+    CREATE TABLE [Notification](
+        Id UNIQUEIDENTIFIER NOT NULL,
+        Content NVARCHAR(MAX) NOT NULL,
+        CreatedAt DATETIME NOT NULL,
+        IsActive BIT DEFAULT 1
+    )
+END
+
+IF NOT EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'NotificationType')
+BEGIN
+CREATE TABLE [NotificationType](
+    Id UNIQUEIDENTIFIER NOT NULL,
+    Name NVARCHAR(255) NOT NULL,
+    Icon NVARCHAR(MAX) NOT NULL,
+    IsActive BIT DEFAULT 1
+    )
+END
+
+ALTER TABLE [Notification]
+    ADD CONSTRAINT PK_Notification PRIMARY KEY (Id)
+
+ALTER TABLE [NotificationType]
+    ADD CONSTRAINT PK_NotificationType PRIMARY KEY (Id)
+
+ALTER TABLE [Notification]
+    ADD NotificationTypeId UNIQUEIDENTIFIER NOT NULL
+
+ALTER TABLE [Notification]
+    ADD UserId UNIQUEIDENTIFIER NOT NULL
+
+ALTER TABLE [Notification]
+    ADD FOREIGN KEY (UserId) REFERENCES [VigigUser](Id)
+
+ALTER TABLE [Notification]
+    ADD FOREIGN KEY (NotificationTypeId) REFERENCES [NotificationType](Id)

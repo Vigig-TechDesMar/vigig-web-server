@@ -41,6 +41,8 @@
       <None Remove="Scripts\3.Add_Table_CustomerToken.sql" />
       <None Remove="Scripts\2.Rename_VigigRole.sql" />
       <EmbeddedResource Include="Scripts\2.Rename_VigigRole.sql" />
+      <None Remove="Scripts\3.Create_Notification.sql" />
+      <EmbeddedResource Include="Scripts\3.Create_Notification.sql" />
     </ItemGroup>
 
 </Project>
