@@ -1,35 +1,17 @@
-﻿use Vigig
+﻿
+use Vigig
+
+
 -- create table
-IF NOT EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Provider')
-BEGIN
-CREATE TABLE [Provider] (
-    Id                   UNIQUEIDENTIFIER NOT NULL,
-    UserName             NVARCHAR(255)    NOT NULL,
-    NormalizedUserName   NVARCHAR(255)	  NOT NULL,
-    Password             NVARCHAR(MAX)    NOT NULL,
-    Gender               NVARCHAR(63),
-    ProfileImage         NVARCHAR(MAX),
-    Rating               FLOAT,
-    FullName             NVARCHAR(450),
-    Email                NVARCHAR(255)    NOT NULL,
-    NormalizedEmail		 NVARCHAR(255)	  NOT NULL,
-    EmailConfirmed		 BIT			  DEFAULT 0,
-    Phone                NVARCHAR(10),
-    Address              NVARCHAR(450),
-    CreatedDate          DATETIME         NOT NULL,
-    IsActive             BIT              DEFAULT 1,
-    ExpirationPlanDate   DATETIME,
-    ConcurrencyStamp			NVARCHAR(MAX)
-    );
-END
+
 IF NOT EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'ProviderService')
 BEGIN
 CREATE TABLE [ProviderService] (
-    Id              UNIQUEIDENTIFIER NOT NULL,
-    Rating          FLOAT,
-    TotalBooking    FLOAT,
-    StickerPrice    FLOAT,
-    Description     NVARCHAR(MAX),
+                                   Id              UNIQUEIDENTIFIER NOT NULL,
+                                   Rating          FLOAT,
+                                   TotalBooking    FLOAT,
+                                   StickerPrice    FLOAT,
+                                   Description     NVARCHAR(MAX),
     IsAvailable     BIT             DEFAULT 0,
     IsVisible       BIT             DEFAULT 0,
     IsActive        BIT             DEFAULT 1,
@@ -67,8 +49,8 @@ END
 IF NOT EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Booking')
 BEGIN
 CREATE TABLE [Booking] (
-               Id               UNIQUEIDENTIFIER NOT NULL,
-               Apartment        NVARCHAR(255)    NOT NULL,
+                           Id               UNIQUEIDENTIFIER NOT NULL,
+                           Apartment        NVARCHAR(255)    NOT NULL,
     StickerPrice     FLOAT            NOT NULL,
     FinalPrice       FLOAT            NOT NULL,
     Status           INT              NOT NULL,
@@ -83,8 +65,8 @@ END
 IF NOT EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'BookingMessage')
 BEGIN
 CREATE TABLE [BookingMessage] (
-  Id          UNIQUEIDENTIFIER NOT NULL,
-  SenderName  NVARCHAR(450)    NOT NULL,
+                                  Id          UNIQUEIDENTIFIER NOT NULL,
+                                  SenderName  NVARCHAR(450)    NOT NULL,
     Content     NVARCHAR(MAX)    NOT NULL,
     SentAt      DATETIME         NOT NULL
     );
@@ -166,30 +148,68 @@ CREATE TABLE [BookingFee] (
                               CreatedDate DATETIME         NOT NULL
 );
 END
-IF NOT EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Customer')
+
+
+IF NOT EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'VigigUser')
 BEGIN
-CREATE TABLE [Customer] (
-    Id           UNIQUEIDENTIFIER NOT NULL,
-    UserName     NVARCHAR(255)    NOT NULL,
-    Password     NVARCHAR(MAX)    NOT NULL,
-    Gender       NVARCHAR(63),
-    ProfileImage NVARCHAR(MAX),
-    FullName     NVARCHAR(450),
-    Email        NVARCHAR(255)    NOT NULL,
-    Phone        NVARCHAR(10),
-    Address      NVARCHAR(450),
-    CreatedDate  DATETIME         NOT NULL,
-    IsActive     BIT              DEFAULT 1,
-    ConcurrencyStamp			NVARCHAR(MAX),
+CREATE TABLE [VigigUser](
+    Id                   UNIQUEIDENTIFIER NOT NULL,
+    UserName             NVARCHAR(255)    NOT NULL,
+    NormalizedUserName   NVARCHAR(255)	  NOT NULL,
+    Password             NVARCHAR(MAX)    NOT NULL,
+    Gender               NVARCHAR(63),
+    ProfileImage         NVARCHAR(MAX),
+    Rating               FLOAT,
+    FullName             NVARCHAR(450),
+    Email                NVARCHAR(255)    NOT NULL,
+    NormalizedEmail		 NVARCHAR(255)	  NOT NULL,
+    EmailConfirmed		 BIT			  DEFAULT 0,
+    Phone                NVARCHAR(10),
+    Address              NVARCHAR(450),
+    CreatedDate          DATETIME         NOT NULL,
+    IsActive             BIT              DEFAULT 1,
+    ExpirationPlanDate   DATETIME,
+    ConcurrencyStamp			NVARCHAR(MAX)
     );
 END
 
+IF NOT EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'UserToken')
+BEGIN
+CREATE TABLE [UserToken] (
+                             UserId UNIQUEIDENTIFIER NOT NULL,
+                             LoginProvider NVARCHAR(255) NOT NULL,
+    Name NVARCHAR(255) NOT NULL,
+    Value NVARCHAR(MAX) NOT NULL
+    )
+END
 
+IF NOT EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'VigigRole')
+BEGIN
+CREATE TABLE [VigigRole] (
+                             Id UNIQUEIDENTIFIER NOT NULL,
+                             Name NVARCHAR(255) NOT NULL,
+    NormalizeName NVARCHAR(250) NOT NULL
+    )
+END
 
+IF NOT EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'UserRole')
+BEGIN
+CREATE TABLE [UserRole] (
+                            UserId UNIQUEIDENTIFIER NOT NULL,
+                            RoleId UNIQUEIDENTIFIER NOT NULL
+)
+END
 
 -- add primary key
-ALTER TABLE [Provider]
-    ADD CONSTRAINT PK_Provider PRIMARY KEY (Id);
+
+ALTER TABLE [VigigRole]
+    ADD CONSTRAINT PK_VigigRole PRIMARY KEY (Id);
+
+ALTER TABLE [UserRole]
+    ADD CONSTRAINT PK_UserRole PRIMARY KEY (UserId,RoleId);
+
+ALTER TABLE [VigigUser]
+    ADD CONSTRAINT PK_VigigUser PRIMARY KEY (Id);
 
 ALTER TABLE [ProviderService]
     ADD CONSTRAINT PK_ProviderService PRIMARY KEY (Id);
@@ -233,8 +253,9 @@ ALTER TABLE [Building]
 ALTER TABLE [BookingFee]
     ADD CONSTRAINT PK_BookingFee PRIMARY KEY (Id);
 
-ALTER TABLE [Customer]
-    ADD CONSTRAINT PK_Customer PRIMARY KEY (Id);
+ALTER TABLE [UserToken]
+    ADD CONSTRAINT PK_UserToken PRIMARY KEY (UserId, LoginProvider, Name);
+
 
 -- add foreign key
 
@@ -265,11 +286,11 @@ ALTER TABLE [SubscriptionFee]
 ALTER TABLE [SubscriptionFee]
     ADD SubscriptionPlanId UNIQUEIDENTIFIER NOT NULL;
 
-ALTER TABLE [Provider]
+ALTER TABLE [VigigUser]
     ADD BuildingId UNIQUEIDENTIFIER NOT NULL;
 
-ALTER TABLE [Provider]
-    ADD BadgeId UNIQUEIDENTIFIER NOT NULL;
+ALTER TABLE [VigigUser]
+    ADD BadgeId UNIQUEIDENTIFIER ;
 
 ALTER TABLE [Transaction]
     ADD WalletId UNIQUEIDENTIFIER NOT NULL;
@@ -294,8 +315,6 @@ ALTER TABLE [BookingFee]
 ALTER TABLE [Deposit]
     ADD ProviderId UNIQUEIDENTIFIER NOT NULL;
 
-ALTER TABLE [Customer]
-    ADD BuildingId UNIQUEIDENTIFIER NOT NULL;
 
 ALTER TABLE [BookingMessage]
     ADD BookingId UNIQUEIDENTIFIER NOT NULL;
@@ -306,7 +325,7 @@ ALTER TABLE [BookingMessage]
     ADD FOREIGN KEY (BookingId) REFERENCES [Booking](Id)
 
 ALTER TABLE [ProviderService]
-    ADD FOREIGN KEY  (ProviderId) REFERENCES [Provider](Id)
+    ADD FOREIGN KEY  (ProviderId) REFERENCES [VigigUser](Id)
 
 ALTER TABLE [ProviderService]
     ADD FOREIGN KEY  (ServiceId) REFERENCES [GigService](Id)
@@ -318,7 +337,7 @@ ALTER TABLE [GigService]
     ADD FOREIGN KEY (ServiceCategoryId) REFERENCES [ServiceCategory](Id)
 
 ALTER TABLE [Booking]
-    ADD FOREIGN KEY (CustomerId) REFERENCES [Customer](Id)
+    ADD FOREIGN KEY (CustomerId) REFERENCES [VigigUser](Id)
 
 ALTER TABLE [Booking]
     ADD FOREIGN KEY (ProviderServiceId) REFERENCES [ProviderService](Id)
@@ -327,15 +346,15 @@ ALTER TABLE [Booking]
     ADD FOREIGN KEY (BuildingId) REFERENCES [Building](Id)
 
 ALTER TABLE [SubscriptionFee]
-    ADD FOREIGN KEY (ProviderId) REFERENCES [Provider](Id)
+    ADD FOREIGN KEY (ProviderId) REFERENCES [VigigUser](Id)
 
 ALTER TABLE [SubscriptionFee]
     ADD FOREIGN KEY (SubscriptionPlanId) REFERENCES [SubscriptionPlan](Id)
 
-ALTER TABLE [Provider]
+ALTER TABLE [VigigUser]
     ADD FOREIGN KEY (BuildingId) REFERENCES [Building](Id)
 
-ALTER TABLE [Provider]
+ALTER TABLE [VigigUser]
     ADD FOREIGN KEY (BadgeId) REFERENCES [Badge](Id)
 
 ALTER TABLE [Transaction]
@@ -351,18 +370,23 @@ ALTER TABLE [Transaction]
     ADD FOREIGN KEY (SubscriptionFeeId) REFERENCES [SubscriptionFee](Id)
 
 ALTER TABLE [Wallet]
-    ADD FOREIGN KEY (ProviderId) REFERENCES [Provider](Id)
+    ADD FOREIGN KEY (ProviderId) REFERENCES [VigigUser](Id)
 
 ALTER TABLE [BookingFee]
     ADD FOREIGN KEY (BookingId) REFERENCES [Booking](Id)
 
 ALTER TABLE [Deposit]
-    ADD FOREIGN KEY (ProviderId) REFERENCES [Provider](Id)
-
-ALTER TABLE [Customer]
-    ADD FOREIGN KEY (BuildingId) REFERENCES [Building](Id)
+    ADD FOREIGN KEY (ProviderId) REFERENCES [VigigUser](Id)
 
 
+ALTER TABLE [UserToken]
+    ADD FOREIGN KEY (UserID) REFERENCES [VigigUser](Id)
+
+ALTER TABLE [UserRole]
+    ADD FOREIGN KEY (UserId) REFERENCES [VigigUser](Id)
+
+ALTER TABLE [UserRole]
+    ADD FOREIGN KEY (RoleId) REFERENCES [VigigRole](Id)
 
 
 

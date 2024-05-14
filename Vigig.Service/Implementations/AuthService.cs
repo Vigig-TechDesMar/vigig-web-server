@@ -20,27 +20,27 @@ namespace Vigig.Service.Implementations;
 
 public class AuthService : IAuthService
 {
-    private readonly ICustomerTokenRepository _customerTokenRepository;
-    private readonly ICustomerRepository _customerRepository;
+    private readonly IUserTokenRepository _userTokenRepository;
+    private readonly IVigigUserRepository _vigigUserRepository;
     private readonly IBuildingRepository _buildingRepository;
     private readonly IJwtService _jwtService;
     private readonly JwtSetting _jwtSetting;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
 
-    public AuthService(ICustomerRepository customerRepository, IMapper mapper, IUnitOfWork unitOfWork, IBuildingRepository buildingRepository, IJwtService jwtService, IConfiguration configuration, ICustomerTokenRepository customerTokenRepository)
+    public AuthService(IVigigUserRepository vigigUserRepository, IMapper mapper, IUnitOfWork unitOfWork, IBuildingRepository buildingRepository, IJwtService jwtService, IConfiguration configuration, IUserTokenRepository userTokenRepository)
     {
-        _customerRepository = customerRepository;
+        _vigigUserRepository = vigigUserRepository;
         _mapper = mapper;
         _unitOfWork = unitOfWork;
         _buildingRepository = buildingRepository;
         _jwtService = jwtService;
-        _customerTokenRepository = customerTokenRepository;
+        _userTokenRepository = userTokenRepository;
         _jwtSetting = configuration.GetSection(nameof(JwtSetting)).Get<JwtSetting>() ?? throw new MissingJwtSettingsException();
     }
     public async Task<ServiceActionResult> RegisterAsync(RegisterRequest request)
     {
-        var retrivedUser = await _customerRepository.GetAsync(user => user.Email!.ToLower() == request.Email.ToLower());
+        var retrivedUser = await _vigigUserRepository.GetAsync(user => user.Email!.ToLower() == request.Email.ToLower());
         // if (retrivedUser is { EmailConfirmed: true })
         // {
         //     throw new UserAlreadyExistException(request.Email);
@@ -59,16 +59,16 @@ public class AuthService : IAuthService
         {
             if (request.Role == UserRole.Client)
             {
-                retrivedUser = _mapper.Map<Customer>(request);
+                retrivedUser = _mapper.Map<VigigUser>(request);
                 var hashedPassword = PasswordHashHelper.HashPassword(request.Password);
                 retrivedUser.Password = hashedPassword;
                 retrivedUser.CreatedDate = DateTime.Now;
                 retrivedUser.NormalizedEmail = request.Email.ToUpper();
                 retrivedUser.UserName = request.Email.Split("@")[0];
                 retrivedUser.NormalizedUserName = retrivedUser.UserName.Split("@")[0].ToUpper();
-                retrivedUser.Building =  (await _buildingRepository.FindAsync(b => b.Id == new Guid("50b84998-328c-4d80-97a6-445399d18f63"))).FirstOrDefault() 
-                                         ?? throw new BuildingNotFoundException("50b84998-328c-4d80-97a6-445399d18f63");
-                await _customerRepository.AddAsync(retrivedUser);
+                retrivedUser.Building =  (await _buildingRepository.FindAsync(b => b.Id == new Guid("e9f94484-6bf6-43eb-4827-08dc73e1398f"))).FirstOrDefault() 
+                                         ?? throw new BuildingNotFoundException("e9f94484-6bf6-43eb-4827-08dc73e1398f");
+                await _vigigUserRepository.AddAsync(retrivedUser);
             }
 
             if (request.Role == UserRole.Provider)
@@ -89,9 +89,9 @@ public class AuthService : IAuthService
         if (request.Role == UserRole.Client)
         {
 
-            var retrivedUser = await _customerRepository.GetAsync(c => c.Email.Equals(request.Email));
+            var retrivedUser = await _vigigUserRepository.GetAsync(c => c.Email.Equals(request.Email));
             if (retrivedUser is null)
-                throw new CustomerNotFoundException(request.Email);
+                throw new UserNotFoundException(request.Email);
             var isValidPassword = PasswordHashHelper.VerifyPassword(request.Password, retrivedUser.Password);
             if (!isValidPassword)
                 throw new InvalidPasswordException();
@@ -118,12 +118,12 @@ public class AuthService : IAuthService
 
     public async Task<ServiceActionResult> RefreshTokenAsync(RefreshTokenRequest token)
     {
-        var refreshToken = await _customerTokenRepository.GetAsync(t => t.Value == token.RefreshToken);
+        var refreshToken = await _userTokenRepository.GetAsync(t => t.Value == token.RefreshToken);
         if (refreshToken is null)
             throw new RefreshTokenNotFoundException(token.RefreshToken);
-        var customer = await _customerRepository.GetAsync(c => c.Id == refreshToken.CustomerId);
+        var customer = await _vigigUserRepository.GetAsync(c => c.Id == refreshToken.UserId);
         if (customer is null)
-            throw new CustomerNotFoundException(refreshToken.CustomerId.ToString());
+            throw new UserNotFoundException(refreshToken.UserId.ToString());
         var tokenResponse = GenerateAuthResponseAsync(customer);
         return new ServiceActionResult()
         {
@@ -131,16 +131,16 @@ public class AuthService : IAuthService
         };
     }
 
-    public async Task<AuthResponse> GenerateAuthResponseAsync(Customer customer)
+    public async Task<AuthResponse> GenerateAuthResponseAsync(VigigUser vigigUser)
     {
         var reponse = new AuthResponse()
         {
-            Name = customer.UserName ?? customer.Email ?? String.Empty,
+            Name = vigigUser.UserName ?? vigigUser.Email ?? String.Empty,
             Role = UserRole.Client.ToString(),
             Token = new TokenResponse()
             {
-                AccessToken = _jwtService.GenerateAccessToken(customer),
-                RefreshToken = await _jwtService.GenerateRefreshToken(customer.Id),
+                AccessToken = _jwtService.GenerateAccessToken(vigigUser),
+                RefreshToken = await _jwtService.GenerateRefreshToken(vigigUser.Id),
                 ExpiresAt = DateTimeOffset.Now.AddHours(_jwtSetting.RefreshTokenLifetimeInMinutes)
             }
         };

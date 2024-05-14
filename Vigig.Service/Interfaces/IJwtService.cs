@@ -5,7 +5,7 @@ namespace Vigig.Service.Interfaces;
 
 public interface IJwtService : IAutoRegisterable
 {
-    string GenerateAccessToken(Customer customer);
+    string GenerateAccessToken(VigigUser vigigUser);
 
     Task<string> GenerateRefreshToken(Guid customerId);
 }

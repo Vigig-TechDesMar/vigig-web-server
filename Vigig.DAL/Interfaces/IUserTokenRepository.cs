@@ -3,7 +3,7 @@ using Vigig.Domain.Models;
 
 namespace Vigig.DAL.Interfaces;
 
-public interface ICustomerRepository : IGenericRepository<Customer>,IAutoRegisterable
+public interface IUserTokenRepository : IGenericRepository<UserToken>, IAutoRegisterable
 {
     
 }

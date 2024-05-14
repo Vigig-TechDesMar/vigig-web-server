@@ -17,5 +17,5 @@ public partial class Badge
 
     public string? ConcurrencyStamp { get; set; }
 
-    public virtual ICollection<Provider> Providers { get; set; } = new List<Provider>();
+    public virtual ICollection<VigigUser> Providers { get; set; } = new List<VigigUser>();
 }

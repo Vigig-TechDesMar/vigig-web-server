@@ -17,8 +17,8 @@ public static class AutoMapperConfiguration
 
     public static void CreateUserMaps(IMapperConfigurationExpression mapper)
     {
-        mapper.CreateMap<RegisterRequest, Customer>();
-        mapper.CreateMap<Customer,RegisterResponse>();
+        mapper.CreateMap<RegisterRequest, VigigUser>();
+        mapper.CreateMap<VigigUser,RegisterResponse>();
     }
 
     public static void CreateBuildingMaps(IMapperConfigurationExpression mapper)

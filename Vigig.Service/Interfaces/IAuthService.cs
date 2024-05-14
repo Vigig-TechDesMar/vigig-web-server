@@ -12,5 +12,5 @@ public interface IAuthService : IAutoRegisterable
     Task<ServiceActionResult> LoginAsync(LoginRequest request);
     Task<ServiceActionResult> RefreshTokenAsync(RefreshTokenRequest token);
 
-    Task<AuthResponse> GenerateAuthResponseAsync(Customer customer)  ;
+    Task<AuthResponse> GenerateAuthResponseAsync(VigigUser vigigUser)  ;
 }
