@@ -2,7 +2,7 @@
 
 namespace Vigig.Service.Exceptions.NotFound;
 
-public abstract class EntityNotFoundException<T> : ArgumentException,IBusinessException
+public abstract class EntityNotFoundException<T> : ArgumentException,INotFoundException
 {
     public readonly string? _customeMessage;
     public override string Message => _customeMessage ?? Message;

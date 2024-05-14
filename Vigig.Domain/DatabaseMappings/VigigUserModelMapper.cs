@@ -35,7 +35,6 @@ public class VigigUserModelMapper : IDatabaseModelMapper
             entity.HasOne(d => d.Badge).WithMany(p => p.Providers)
                 .HasForeignKey(d => d.BadgeId)
                 .OnDelete(DeleteBehavior.ClientSetNull);
-
             
         });
     }

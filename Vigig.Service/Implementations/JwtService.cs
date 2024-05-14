@@ -30,7 +30,7 @@ public class JwtService : IJwtService
         _jwtSetting = configuration.GetSection(nameof(JwtSetting)).Get<JwtSetting>() ?? throw new MissingJwtSettingsException();
     }
 
-    public string GenerateAccessToken(VigigUser vigigUser)
+    public string GenerateAccessToken(VigigUser vigigUser, ICollection<VigigRole> roles)
     {
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSetting.SigningKey));
         var claims = new List<Claim>()
@@ -38,8 +38,9 @@ public class JwtService : IJwtService
             new Claim(JwtRegisteredClaimNames.Email,vigigUser.Email ?? ""),
             new Claim(JwtRegisteredClaimNames.Sub,vigigUser.Id.ToString() ?? ""),
             new Claim(JwtRegisteredClaimNames.Name,vigigUser.FullName ?? ""),
-            new Claim(ClaimTypes.Role,UserRole.Client.ToString())
         };
+        claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role.ToString())));
+
         var tokenDescriptor = new SecurityTokenDescriptor()
         {
             Issuer = _jwtSetting.Issuer,
