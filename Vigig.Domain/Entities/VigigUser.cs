@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Vigig.Domain.Entities;
 using Vigig.Domain.Models.BaseEntities;
 
 namespace Vigig.Domain.Models;
@@ -16,5 +15,7 @@ public partial class VigigUser : IdentityEntity
 
     public virtual Badge? Badge { get; set; } 
 
-    public virtual ICollection<VigigRole> Roles { get; set; } = new List<VigigRole>();
+    public virtual ICollection<VigigRole> Roles { get; set; } = Array.Empty<VigigRole>();
+
+    public virtual ICollection<ClaimedVoucher> ClaimedVouchers { get; set; } = Array.Empty<ClaimedVoucher>();
 }

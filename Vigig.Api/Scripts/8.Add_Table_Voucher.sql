@@ -1,0 +1,17 @@
+IF NOT EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Voucher')
+BEGIN
+    CREATE TABLE [Voucher](
+        Id UNIQUEIDENTIFIER PRIMARY KEY NOT NULL,
+        Content NVARCHAR(MAX) NOT NULL,
+        Percentage FLOAT NOT NULL,
+        Limit INT NOT NULL,
+        Quantity INT NOT NULL,
+        StartDate DATETIME NOT NULL,
+        EndDate DATETIME NOT NULL,
+        IsActive BIT DEFAULT 1,
+        CustomerId UNIQUEIDENTIFIER NOT NULL,
+    )
+END
+
+ALTER TABLE [Voucher]
+ADD FOREIGN KEY (CustomerId) REFERENCES [VigigUser](Id)
