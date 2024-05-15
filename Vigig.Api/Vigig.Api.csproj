@@ -51,6 +51,14 @@
       <EmbeddedResource Include="Scripts\6.Add_Voucher.sql" />
       <None Remove="Scripts\7.Update_ConcurrencyStamp.sql" />
       <EmbeddedResource Include="Scripts\7.Update_ConcurrencyStamp.sql" />
+      <None Remove="Scripts\8.Add_Table_Voucher.sql" />
+      <EmbeddedResource Include="Scripts\8.Add_Table_Voucher.sql" />
+      <None Remove="Scripts\9.Add_Claimed_Voucher_Table.sql" />
+      <EmbeddedResource Include="Scripts\9.Add_Claimed_Voucher_Table.sql" />
+      <None Remove="Scripts\10.Add_Banner_Table.sql" />
+      <EmbeddedResource Include="Scripts\10.Add_Banner_Table.sql" />
+      <None Remove="Scripts\11.Add_Popup_Table.sql" />
+      <EmbeddedResource Include="Scripts\11.Add_Popup_Table.sql" />
     </ItemGroup>
 
 </Project>
