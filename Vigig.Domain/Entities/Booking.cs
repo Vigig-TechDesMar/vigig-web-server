@@ -42,4 +42,6 @@ public partial class Booking
     public virtual VigigUser VigigUser { get; set; } = null!;
 
     public virtual ProviderService ProviderService { get; set; } = null!;
+
+    public virtual ICollection<Complaint> Complaints { get; set; } = new List<Complaint>();
 }
