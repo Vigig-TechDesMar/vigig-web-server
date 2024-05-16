@@ -8,7 +8,7 @@ public partial class ServiceCategory
 
     public string? Description { get; set; }
 
-    public bool? IsActive { get; set; }
+    public bool IsActive { get; set; }
 
     public virtual ICollection<GigService> GigServices { get; set; } = new List<GigService>();
 }
