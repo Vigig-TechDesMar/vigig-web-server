@@ -1,17 +1,9 @@
 ﻿using Vigig.Common.Interfaces;
-<<<<<<< HEAD
 using Vigig.Domain.Entities;
-
 namespace Vigig.DAL.Interfaces;
 
 public interface IGigServiceRepository  : IGenericRepository<GigService>, IAutoRegisterable
-=======
-using Vigig.Domain.Models;
 
-namespace Vigig.DAL.Interfaces;
-
-public interface IGigServiceRepository : IGenericRepository<GigService>, IAutoRegisterable
->>>>>>> a13f8b9 ([ServiceCategory][Hai] add service category mangament service)
 {
     
 }

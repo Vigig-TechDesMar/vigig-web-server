@@ -1,11 +1,7 @@
 ﻿using AutoMapper;
 using Vigig.Domain.Dtos.Building;
-<<<<<<< HEAD
-using Vigig.Domain.Entities;
-=======
 using Vigig.Domain.Dtos.Service;
-using Vigig.Domain.Models;
->>>>>>> 691f884 ([GigService][Hai] add gig service management service)
+using Vigig.Domain.Entities;
 using Vigig.Service.Models.Request.Authentication;
 using Vigig.Service.Models.Request.Building;
 using Vigig.Service.Models.Request.GigService;

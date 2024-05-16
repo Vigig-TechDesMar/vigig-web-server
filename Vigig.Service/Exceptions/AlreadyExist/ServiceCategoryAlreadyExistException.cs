@@ -1,4 +1,4 @@
-﻿using Vigig.Domain.Models;
+﻿using Vigig.Domain.Entities;
 
 namespace Vigig.Service.Exceptions.AlreadyExist;
 
