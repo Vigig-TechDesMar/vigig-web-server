@@ -1,4 +1,6 @@
-﻿using AutoMapper;
+﻿using System.Reflection;
+using AutoMapper;
+using Vigig.Common.Attribute;
 using Vigig.Common.Interfaces;
 using Vigig.DAL.Data;
 using Vigig.DAL.Implementations;
@@ -13,18 +15,43 @@ public static class ServiceCollectionExtension
     {
         // services.AddScoped<>()
         services.AddScoped<IAppDbContext,VigigContext>();
-        var registerableTypes = AppDomain.CurrentDomain.GetAssemblies()
+
+        var registeredServiceAttribute = AppDomain.CurrentDomain.GetAssemblies()
             .SelectMany(assembly => assembly.GetTypes())
-            .Where(type => typeof(IAutoRegisterable).IsAssignableFrom(type) && type.IsInterface)
+            .Where(type => type.IsInterface && type.GetCustomAttributes<ServiceRegisterAttribute>().Any())
             .ToList();
-        foreach (var type in registerableTypes)
+
+        foreach (var type in registeredServiceAttribute)
         {
-            var implementationType = AppDomain.CurrentDomain.GetAssemblies()
-                .SelectMany(assembly => assembly.GetTypes())
-                .FirstOrDefault(t => type.IsAssignableFrom(t) && !t.IsInterface && !t.IsAbstract);
-            if (implementationType != null)
-                services.AddScoped(type, implementationType);
+            var attribute = type.GetCustomAttributes<ServiceRegisterAttribute>().FirstOrDefault()
+                ?? throw new Exception("Not found ServiceRegisterAttribute");
+            
+            var lifeTimeProperty =  attribute.GetType().GetProperty("LifeTime", BindingFlags.NonPublic | BindingFlags.Instance)
+                ?? throw new Exception("Not found life time") ;
+            
+            var lifeTime = lifeTimeProperty.GetValue(attribute);
+            if (lifeTime is ServiceLifetime l)
+            {
+                var implementType = AppDomain.CurrentDomain.GetAssemblies()
+                    .SelectMany(assembly => assembly.GetTypes())
+                    .FirstOrDefault(t => type.IsAssignableFrom(t) && !t.IsInterface && !t.IsAbstract);
+                
+                if (implementType is not null)
+                    services.Add(new ServiceDescriptor(type,implementType,l ));
+            }
         }
+        // var registerableTypes = AppDomain.CurrentDomain.GetAssemblies()
+        //     .SelectMany(assembly => assembly.GetTypes())
+        //     .Where(type => typeof(IAutoRegisterable).IsAssignableFrom(type) && type.IsInterface)
+        //     .ToList();
+        // foreach (var type in registerableTypes)
+        // {
+        //     var implementationType = AppDomain.CurrentDomain.GetAssemblies()
+        //         .SelectMany(assembly => assembly.GetTypes())
+        //         .FirstOrDefault(t => type.IsAssignableFrom(t) && !t.IsInterface && !t.IsAbstract);
+        //     if (implementationType != null)
+        //         services.AddScoped(type, implementationType);
+        // }
 
         var config = new MapperConfiguration(AutoMapperConfiguration.RegisterMaps);
         var mapper = config.CreateMapper();

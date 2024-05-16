@@ -1,12 +1,13 @@
-﻿using Vigig.Common.Interfaces;
+﻿using Vigig.Common.Attribute;
+using Vigig.Common.Interfaces;
 using Vigig.Domain.Entities;
 using Vigig.Service.Models;
 using Vigig.Service.Models.Request.Authentication;
 using Vigig.Service.Models.Response.Authentication;
 
 namespace Vigig.Service.Interfaces;
-
-public interface IAuthService : IAutoRegisterable
+[ServiceRegister]
+public interface IAuthService 
 {
     Task<ServiceActionResult> RegisterAsync(RegisterRequest request);
     Task<ServiceActionResult> LoginAsync(LoginRequest request);

@@ -1,9 +1,10 @@
-﻿using Vigig.Common.Interfaces;
+﻿using Vigig.Common.Attribute;
+using Vigig.Common.Interfaces;
 using Vigig.Domain.Entities;
 
 namespace Vigig.Service.Interfaces;
-
-public interface IJwtService : IAutoRegisterable
+[ServiceRegister]
+public interface IJwtService 
 {
     string GenerateAccessToken(VigigUser vigigUser, ICollection<VigigRole> roles);
 

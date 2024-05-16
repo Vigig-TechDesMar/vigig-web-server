@@ -1,11 +1,12 @@
-﻿using Vigig.Common.Interfaces;
+﻿using Vigig.Common.Attribute;
+using Vigig.Common.Interfaces;
 using Vigig.Domain.Models;
 using Vigig.Service.Models;
 using Vigig.Service.Models.Request.Building;
 
 namespace Vigig.Service.Interfaces;
-
-public interface IBuildingService : IAutoRegisterable
+[ServiceRegister]
+public interface IBuildingService 
 {
     Task<ServiceActionResult> AddAsync(CreateBuildingRequest request);
     Task<ServiceActionResult> GetAllAsync();

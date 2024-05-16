@@ -5,6 +5,7 @@ using Vigig.Domain.Entities;
 using Vigig.Service.Models.Request.Authentication;
 using Vigig.Service.Models.Request.Building;
 using Vigig.Service.Models.Request.GigService;
+using Vigig.Service.Models.Request.Service;
 using Vigig.Service.Models.Response.Authentication;
 
 namespace Vigig.Service.AutoMappings;

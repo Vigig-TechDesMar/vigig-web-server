@@ -1,9 +1,10 @@
-﻿using Vigig.Common.Interfaces;
+﻿using Vigig.Common.Attribute;
+using Vigig.Common.Interfaces;
 using Vigig.Domain.Entities;
 
 namespace Vigig.DAL.Interfaces;
-
-public interface IBuildingRepository : IGenericRepository<Building>, IAutoRegisterable
+[ServiceRegister]
+public interface IBuildingRepository : IGenericRepository<Building>
 {
     
 }

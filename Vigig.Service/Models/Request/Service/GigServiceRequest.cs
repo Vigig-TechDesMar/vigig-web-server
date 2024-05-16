@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Vigig.Service.Attributes;
 
-namespace Vigig.Service.Models.Request.GigService;
+namespace Vigig.Service.Models.Request.Service;
 
 public class GigServiceRequest
 {

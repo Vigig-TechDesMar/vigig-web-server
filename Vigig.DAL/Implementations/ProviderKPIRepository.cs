@@ -3,7 +3,7 @@ using Vigig.Domain.Entities;
 
 namespace Vigig.DAL.Implementations;
 
-public class ProviderKPIRepository : GenericRepository<ProviderKPI>
+public class ProviderKPIRepository : GenericRepository<ProviderKPI>, IProviderKPIRepository
 {
     public ProviderKPIRepository(IAppDbContext dbContext) : base(dbContext)
     {

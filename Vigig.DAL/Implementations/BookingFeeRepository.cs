@@ -3,7 +3,7 @@ using Vigig.Domain.Entities;
 
 namespace Vigig.DAL.Implementations;
 
-public class BookingFeeRepository : GenericRepository<BookingFee>
+public class BookingFeeRepository : GenericRepository<BookingFee>,IBookingFeeRepository
 {
     public BookingFeeRepository(IAppDbContext dbContext) : base(dbContext)
     {

@@ -3,7 +3,7 @@ using Vigig.Domain.Entities;
 
 namespace Vigig.DAL.Implementations;
 
-public class LeaderBoardRepository : GenericRepository<LeaderBoard>
+public class LeaderBoardRepository : GenericRepository<LeaderBoard>, ILeaderBoardRepository
 {
     public LeaderBoardRepository(IAppDbContext dbContext) : base(dbContext)
     {
