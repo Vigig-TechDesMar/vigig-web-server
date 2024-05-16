@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Vigig.Domain.Models;
+namespace Vigig.Domain.Entities;
 
 public partial class Building
 {
     public Guid Id { get; set; }
 
-    public string BuildingName { get; set; } = null!;
+    public required string BuildingName { get; set; } 
 
     public string? Note { get; set; }
 
@@ -17,7 +17,6 @@ public partial class Building
 
     public virtual ICollection<Booking> Bookings { get; set; } = new List<Booking>();
 
-    public virtual ICollection<Customer> Customers { get; set; } = new List<Customer>();
+    public virtual ICollection<VigigUser> Users { get; set; } = new List<VigigUser>();
 
-    public virtual ICollection<Provider> Providers { get; set; } = new List<Provider>();
 }

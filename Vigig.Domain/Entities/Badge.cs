@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using Vigig.Domain.Models;
 
-namespace Vigig.Domain.Models;
+namespace Vigig.Domain.Entities;
 
 public partial class Badge
 {
@@ -17,5 +18,5 @@ public partial class Badge
 
     public string? ConcurrencyStamp { get; set; }
 
-    public virtual ICollection<Provider> Providers { get; set; } = new List<Provider>();
+    public virtual ICollection<VigigUser> Providers { get; set; } = new List<VigigUser>();
 }

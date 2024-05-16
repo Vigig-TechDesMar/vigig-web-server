@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Vigig.Domain.Models;
+namespace Vigig.Domain.Entities;
 
 public partial class GigService
 {
     public Guid Id { get; set; }
 
-    public string ServiceName { get; set; } = null!;
+    public required string ServiceName { get; set; } 
 
     public string? Description { get; set; }
 

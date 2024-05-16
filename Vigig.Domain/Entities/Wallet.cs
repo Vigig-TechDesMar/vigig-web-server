@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Vigig.Domain.Models;
+namespace Vigig.Domain.Entities;
 
 public partial class Wallet
 {
@@ -15,7 +15,7 @@ public partial class Wallet
 
     public Guid ProviderId { get; set; }
 
-    public virtual Provider Provider { get; set; } = null!;
+    public virtual VigigUser Provider { get; set; } = null!;
 
     public virtual ICollection<Transaction> Transactions { get; set; } = new List<Transaction>();
 }

@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using Vigig.Domain.Dtos.Building;
-using Vigig.Domain.Dtos.Service;
-using Vigig.Domain.Models;
+using Vigig.Domain.Entities;
 using Vigig.Service.Models.Request.Authentication;
 using Vigig.Service.Models.Request.Building;
 using Vigig.Service.Models.Request.GigService;
@@ -20,8 +19,8 @@ public static class AutoMapperConfiguration
 
     public static void CreateUserMaps(IMapperConfigurationExpression mapper)
     {
-        mapper.CreateMap<RegisterRequest, Customer>();
-        mapper.CreateMap<Customer,RegisterResponse>();
+        mapper.CreateMap<RegisterRequest, VigigUser>();
+        mapper.CreateMap<VigigUser,RegisterResponse>();
     }
 
     public static void CreateBuildingMaps(IMapperConfigurationExpression mapper)

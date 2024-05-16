@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Vigig.Domain.Models;
+namespace Vigig.Domain.Entities;
 
 public partial class Deposit
 {
@@ -11,11 +11,11 @@ public partial class Deposit
 
     public DateTime MadeDate { get; set; }
 
-    public string PaymentMethod { get; set; } = null!;
+    public required string PaymentMethod { get; set; } 
 
     public Guid ProviderId { get; set; }
 
-    public virtual Provider Provider { get; set; } = null!;
+    public virtual required VigigUser Provider { get; set; } 
 
     public virtual ICollection<Transaction> Transactions { get; set; } = new List<Transaction>();
 }

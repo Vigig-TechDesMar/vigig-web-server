@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Vigig.Domain.Entities;
 using Vigig.Domain.Interfaces;
-using Vigig.Domain.Models;
 
 namespace Vigig.Domain.DatabaseMappings;
 
@@ -12,7 +12,7 @@ public class TransactionModelMapper : IDatabaseModelMapper
         {
             entity.ToTable("Transaction");
 
-            entity.Property(e => e.Id).ValueGeneratedNever();
+            entity.Property(e => e.Id).ValueGeneratedOnAdd();
             entity.Property(e => e.Amount).HasDefaultValueSql("((0))");
             entity.Property(e => e.CreatedDate).HasColumnType("datetime");
 

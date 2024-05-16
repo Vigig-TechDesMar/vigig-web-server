@@ -1,8 +1,10 @@
-﻿namespace Vigig.Service.Models.Response.Authentication;
+﻿using Vigig.Domain.Entities;
+
+namespace Vigig.Service.Models.Response.Authentication;
 
 public class AuthResponse
 {
-    public string Name { get; set; }
-    public string Role { get; set; }
-    public TokenResponse Token { get; set; }
+    public string Name { get; set; } = null!;
+    public ICollection<VigigRole> Role { get; set; } = Array.Empty<VigigRole>();
+    public TokenResponse Token { get; set; } = null!;
 }

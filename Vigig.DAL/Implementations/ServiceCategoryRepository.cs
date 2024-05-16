@@ -1,9 +1,9 @@
 ﻿using Vigig.DAL.Interfaces;
-using Vigig.Domain.Models;
+using Vigig.Domain.Entities;
 
 namespace Vigig.DAL.Implementations;
 
-public class ServiceCategoryRepository : GenericRepository<ServiceCategory>, IServiceCategoryRepository
+public class ServiceCategoryRepository : GenericRepository<ServiceCategory>
 {
     public ServiceCategoryRepository(IAppDbContext dbContext) : base(dbContext)
     {

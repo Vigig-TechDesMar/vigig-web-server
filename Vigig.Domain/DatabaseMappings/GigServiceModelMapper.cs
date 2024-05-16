@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Vigig.Domain.Entities;
 using Vigig.Domain.Interfaces;
 using Vigig.Domain.Models;
 
@@ -12,14 +13,13 @@ public class GigServiceModelMapper : IDatabaseModelMapper
         {
             entity.ToTable("GigService");
 
-            entity.Property(e => e.Id).ValueGeneratedNever();
+            entity.Property(e => e.Id).ValueGeneratedOnAdd();
             entity.Property(e => e.IsActive).HasDefaultValueSql("((1))");
             entity.Property(e => e.ServiceName).HasMaxLength(450);
 
             entity.HasOne(d => d.ServiceCategory).WithMany(p => p.GigServices)
                 .HasForeignKey(d => d.ServiceCategoryId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__GigServic__Servi__693CA210");
+                .OnDelete(DeleteBehavior.ClientSetNull);
         });
     }
 }
