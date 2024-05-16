@@ -1,6 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using Vigig.Domain.Models.BaseEntities;
+﻿using Vigig.Domain.Models.BaseEntities;
+using Vigig.Domain.Entities;
 
 namespace Vigig.Domain.Models;
 
@@ -25,4 +24,6 @@ public partial class Provider : IdentityEntity
     public virtual ICollection<SubscriptionFee> SubscriptionFees { get; set; } = new List<SubscriptionFee>();
 
     public virtual ICollection<Wallet> Wallets { get; set; } = new List<Wallet>();
+
+    public virtual ICollection<ProviderKPI> KPIs { get; set; } = Array.Empty<ProviderKPI>();
 }
