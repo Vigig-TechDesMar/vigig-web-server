@@ -1,8 +1,9 @@
-﻿using Vigig.Common.Interfaces;
+﻿using Vigig.Common.Attribute;
+using Vigig.Common.Interfaces;
 
 namespace Vigig.DAL.Interfaces;
-
-public interface IUnitOfWork: IAutoRegisterable
+[ServiceRegister]
+public interface IUnitOfWork
 {
     void Commit();
     Task CommitAsync();

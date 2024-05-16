@@ -1,8 +1,10 @@
-﻿using Vigig.Service.Models;
-using Vigig.Service.Models.Request.GigService;
+﻿using Vigig.Common.Attribute;
+using Vigig.Service.Models;
+using Vigig.Service.Models.Request.Service;
 
 namespace Vigig.Service.Interfaces;
 
+[ServiceRegister]
 public interface IGigServiceService
 {
     Task<ServiceActionResult> GetAllAsync();

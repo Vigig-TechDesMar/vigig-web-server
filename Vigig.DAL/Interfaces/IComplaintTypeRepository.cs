@@ -1,9 +1,10 @@
-﻿using Vigig.Common.Interfaces;
+﻿using Vigig.Common.Attribute;
+using Vigig.Common.Interfaces;
 using Vigig.Domain.Entities;
 
 namespace Vigig.DAL.Interfaces;
-
-public interface IComplaintTypeRepository : IGenericRepository<ComplaintType>, IAutoRegisterable
+[ServiceRegister]
+public interface IComplaintTypeRepository : IGenericRepository<ComplaintType>
 {
     
 }

@@ -1,9 +1,9 @@
-﻿using Vigig.Common.Interfaces;
+﻿using Vigig.Common.Attribute;
 using Vigig.Domain.Entities;
 
 namespace Vigig.DAL.Interfaces;
-
-public interface ILeaderBoardRepository  : IGenericRepository<LeaderBoard>, IAutoRegisterable
+[ServiceRegister]
+public interface ILeaderBoardRepository  : IGenericRepository<LeaderBoard>
 {
     
 }

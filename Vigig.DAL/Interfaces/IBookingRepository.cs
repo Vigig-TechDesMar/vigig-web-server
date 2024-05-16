@@ -1,9 +1,10 @@
-﻿using Vigig.Common.Interfaces;
+﻿using Vigig.Common.Attribute;
+using Vigig.Common.Interfaces;
 using Vigig.Domain.Entities;
 
 namespace Vigig.DAL.Interfaces;
-
-public interface IBookingRepository : IGenericRepository<Booking>, IAutoRegisterable
+[ServiceRegister]
+public interface IBookingRepository : IGenericRepository<Booking>
 {
     
 }

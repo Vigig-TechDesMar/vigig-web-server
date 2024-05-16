@@ -1,9 +1,9 @@
-﻿using Vigig.Common.Interfaces;
+﻿using Vigig.Common.Attribute;
 using Vigig.Domain.Entities;
 
 namespace Vigig.DAL.Interfaces;
-
-public interface ITransactionRepository : IGenericRepository<Transaction>,IAutoRegisterable
+[ServiceRegister]
+public interface ITransactionRepository : IGenericRepository<Transaction>
 {
     
 }

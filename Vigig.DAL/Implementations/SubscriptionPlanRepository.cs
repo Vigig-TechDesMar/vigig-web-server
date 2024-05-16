@@ -3,7 +3,7 @@ using Vigig.Domain.Entities;
 
 namespace Vigig.DAL.Implementations;
 
-public class SubscriptionPlanRepository : GenericRepository<SubscriptionPlan>
+public class SubscriptionPlanRepository : GenericRepository<SubscriptionPlan>, ISubscriptionPlanRepository
 {
     public SubscriptionPlanRepository(IAppDbContext dbContext) : base(dbContext)
     {

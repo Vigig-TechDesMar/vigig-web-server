@@ -1,9 +1,8 @@
-﻿using Vigig.Common.Interfaces;
+﻿using Vigig.Common.Attribute;
 using Vigig.Domain.Entities;
-
 namespace Vigig.DAL.Interfaces;
-
-public interface ISubscriptionPlanRepository : IGenericRepository<SubscriptionPlan>, IAutoRegisterable
+[ServiceRegister]
+public interface ISubscriptionPlanRepository : IGenericRepository<SubscriptionPlan>
 {
     
 }

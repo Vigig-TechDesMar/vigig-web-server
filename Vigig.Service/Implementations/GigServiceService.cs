@@ -7,7 +7,7 @@ using Vigig.Service.Exceptions.AlreadyExist;
 using Vigig.Service.Exceptions.NotFound;
 using Vigig.Service.Interfaces;
 using Vigig.Service.Models;
-using Vigig.Service.Models.Request.GigService;
+using Vigig.Service.Models.Request.Service;
 
 namespace Vigig.Service.Implementations;
 

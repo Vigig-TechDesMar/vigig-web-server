@@ -1,9 +1,9 @@
-﻿using Vigig.Common.Interfaces;
+﻿using Vigig.Common.Attribute;
 using Vigig.Domain.Entities;
 
 namespace Vigig.DAL.Interfaces;
-
-public interface IVoucherRepository : IGenericRepository<Voucher>, IAutoRegisterable
+[ServiceRegister]
+public interface IVoucherRepository : IGenericRepository<Voucher>
 {
     
 }
