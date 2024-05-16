@@ -10,5 +10,5 @@ public partial class ServiceCategory
 
     public bool? IsActive { get; set; }
 
-    public virtual ICollection<GigService> GigServices { get; set; } = Array.Empty<GigService>();
+    public virtual ICollection<GigService> GigServices { get; set; } = new List<GigService>();
 }

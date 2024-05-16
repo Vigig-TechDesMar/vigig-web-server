@@ -16,5 +16,5 @@ public partial class SubscriptionFee
 
     public virtual required SubscriptionPlan SubscriptionPlan { get; set; } 
 
-    public virtual ICollection<Transaction> Transactions { get; set; } = Array.Empty<Transaction>();
+    public virtual ICollection<Transaction> Transactions { get; set; } = new List<Transaction>();
 }

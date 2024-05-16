@@ -12,7 +12,7 @@ public class NotificationModelMapper : IDatabaseModelMapper
         {
             entity.ToTable("Notification");
             entity.Property(e => e.Id).ValueGeneratedOnAdd();
-            entity.Property(e => e.Content).HasField("Content");
+            entity.Property(e => e.Content);
             entity.Property(e => e.CreatedAt).HasColumnType("datetime");
             entity.Property(e => e.IsActive).HasDefaultValueSql("((1))");
 

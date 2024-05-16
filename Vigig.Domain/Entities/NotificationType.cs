@@ -8,5 +8,5 @@ public class NotificationType : BaseEntity<Guid>
     public string Icon { get; set; } = null!;
     public bool IsActive { get; set; } = true;
 
-    public virtual ICollection<Notification> Notifications { get; set; } = Array.Empty<Notification>();
+    public virtual ICollection<Notification> Notifications { get; set; } = new List<Notification>();
 }

@@ -15,5 +15,5 @@ public partial class BookingFee
 
     public virtual required Booking Booking { get; set; }
 
-    public virtual ICollection<Transaction> Transactions { get; set; } = Array.Empty<Transaction>();
+    public virtual ICollection<Transaction> Transactions { get; set; } = new List<Transaction>();
 }

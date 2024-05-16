@@ -17,5 +17,5 @@ public partial class SubscriptionPlan
 
     public string? ConcurrencyStamp { get; set; }
 
-    public virtual ICollection<SubscriptionFee> SubscriptionFees { get; set; } = Array.Empty<SubscriptionFee>();
+    public virtual ICollection<SubscriptionFee> SubscriptionFees { get; set; } = new List<SubscriptionFee>();
 }

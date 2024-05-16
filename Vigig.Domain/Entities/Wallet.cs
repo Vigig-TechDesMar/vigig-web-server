@@ -17,5 +17,5 @@ public partial class Wallet
 
     public virtual VigigUser Provider { get; set; } = null!;
 
-    public virtual ICollection<Transaction> Transactions { get; set; } = Array.Empty<Transaction>();
+    public virtual ICollection<Transaction> Transactions { get; set; } = new List<Transaction>();
 }

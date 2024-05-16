@@ -4,7 +4,7 @@ public partial class ServiceImage
 {
     public Guid Id { get; set; }
 
-    public string ImageUrl { get; set; } = null!;
+    public required string ImageUrl { get; set; } 
 
     public Guid ProviderServiceId { get; set; }
 

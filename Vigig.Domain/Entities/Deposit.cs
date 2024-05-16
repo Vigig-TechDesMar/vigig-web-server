@@ -17,5 +17,5 @@ public partial class Deposit
 
     public virtual required VigigUser Provider { get; set; } 
 
-    public virtual ICollection<Transaction> Transactions { get; set; } = Array.Empty<Transaction>();
+    public virtual ICollection<Transaction> Transactions { get; set; } = new List<Transaction>();
 }

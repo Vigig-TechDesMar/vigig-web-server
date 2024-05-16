@@ -13,5 +13,5 @@ public class Voucher : BaseEntity<Guid>
     public bool IsActive { get; set; }
     public Guid EventId { get; set; }
     public required Event Event { get; set; }
-    public virtual ICollection<ClaimedVoucher> ClaimedVouchers { get; set; } = Array.Empty<ClaimedVoucher>();
+    public virtual ICollection<ClaimedVoucher> ClaimedVouchers { get; set; } = new List<ClaimedVoucher>();
 }

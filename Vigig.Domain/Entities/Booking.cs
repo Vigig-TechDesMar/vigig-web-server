@@ -33,9 +33,9 @@ public partial class Booking
 
     public Guid BuildingId { get; set; }
 
-    public virtual ICollection<BookingFee> BookingFees { get; set; } =  Array.Empty<BookingFee>();
+    public virtual ICollection<BookingFee> BookingFees { get; set; } =  new List<BookingFee>();
 
-    public virtual ICollection<BookingMessage> BookingMessages { get; set; } = Array.Empty<BookingMessage>();
+    public virtual ICollection<BookingMessage> BookingMessages { get; set; } = new List<BookingMessage>();
 
     public virtual Building Building { get; set; } = null!;
 
@@ -43,5 +43,5 @@ public partial class Booking
 
     public virtual ProviderService ProviderService { get; set; } = null!;
 
-    public virtual ICollection<Complaint> Complaints { get; set; } = Array.Empty<Complaint>();
+    public virtual ICollection<Complaint> Complaints { get; set; } = new List<Complaint>();
 }

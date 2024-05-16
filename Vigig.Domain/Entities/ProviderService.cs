@@ -25,11 +25,11 @@ public partial class ProviderService
 
     public Guid ServiceId { get; set; }
 
-    public virtual ICollection<Booking> Bookings { get; set; } = Array.Empty<Booking>();
+    public virtual ICollection<Booking> Bookings { get; set; } = new List<Booking>();
 
     public virtual VigigUser Provider { get; set; } = null!;
 
     public virtual GigService Service { get; set; } = null!;
 
-    public virtual ICollection<ServiceImage> ServiceImages { get; set; } = Array.Empty<ServiceImage>();
+    public virtual ICollection<ServiceImage> ServiceImages { get; set; } = new List<ServiceImage>();
 }
