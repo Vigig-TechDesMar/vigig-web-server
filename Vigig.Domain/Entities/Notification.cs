@@ -10,5 +10,5 @@ public class Notification : BaseEntity<Guid>
     
     public Guid NotificationTypeId { get; set; }
 
-    public NotificationType NotificationType { get; set; } = null!;
+    public required NotificationType NotificationType { get; set; } 
 }

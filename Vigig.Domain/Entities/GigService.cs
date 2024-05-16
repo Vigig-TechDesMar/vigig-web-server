@@ -7,7 +7,7 @@ public partial class GigService
 {
     public Guid Id { get; set; }
 
-    public string ServiceName { get; set; } = null!;
+    public required string ServiceName { get; set; } 
 
     public string? Description { get; set; }
 
@@ -23,7 +23,7 @@ public partial class GigService
 
     public Guid ServiceCategoryId { get; set; }
 
-    public virtual ICollection<ProviderService> ProviderServices { get; set; } = new List<ProviderService>();
+    public virtual ICollection<ProviderService> ProviderServices { get; set; } = Array.Empty<ProviderService>();
 
     public virtual ServiceCategory ServiceCategory { get; set; } = null!;
 }

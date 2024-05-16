@@ -7,7 +7,7 @@ public partial class Building
 {
     public Guid Id { get; set; }
 
-    public string BuildingName { get; set; } = null!;
+    public required string BuildingName { get; set; } 
 
     public string? Note { get; set; }
 
@@ -15,8 +15,8 @@ public partial class Building
 
     public string? ConcurrencyStamp { get; set; }
 
-    public virtual ICollection<Booking> Bookings { get; set; } = new List<Booking>();
+    public virtual ICollection<Booking> Bookings { get; set; } = Array.Empty<Booking>();
 
-    public virtual ICollection<VigigUser> Users { get; set; } = new List<VigigUser>();
+    public virtual ICollection<VigigUser> Users { get; set; } = Array.Empty<VigigUser>();
 
 }

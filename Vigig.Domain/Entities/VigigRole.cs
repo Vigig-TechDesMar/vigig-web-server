@@ -4,7 +4,7 @@ namespace Vigig.Domain.Entities;
 
 public class VigigRole : BaseEntity<Guid>
 {
-    public string Name { get; set; } = null!;
-    public string NormalizedName { get; set; } = null!;
-    public virtual ICollection<VigigUser> VigigUsers { get; set; } = new List<VigigUser>();
+    public required string Name { get; set; } 
+    public required string NormalizedName { get; set; } 
+    public virtual ICollection<VigigUser> VigigUsers { get; set; } = Array.Empty<VigigUser>();
 }

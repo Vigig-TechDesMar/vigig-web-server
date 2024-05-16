@@ -25,11 +25,8 @@ public partial class Transaction
 
     public Guid SubscriptionFeeId { get; set; }
 
-    public virtual BookingFee BookingFee { get; set; } = null!;
-
-    public virtual Deposit Deposit { get; set; } = null!;
-
-    public virtual SubscriptionFee SubscriptionFee { get; set; } = null!;
-
-    public virtual Wallet Wallet { get; set; } = null!;
+    public virtual required BookingFee BookingFee { get; set; } 
+    public virtual required Deposit Deposit { get; set; } 
+    public virtual required SubscriptionFee SubscriptionFee { get; set; } 
+    public virtual required Wallet Wallet { get; set; } 
 }

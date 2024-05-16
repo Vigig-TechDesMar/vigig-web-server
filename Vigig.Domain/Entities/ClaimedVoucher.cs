@@ -11,6 +11,6 @@ public class ClaimedVoucher : BaseEntity<Guid>
     public required string Field { get; set; }
     public Guid VoucherId { get; set; }
     public Guid CustomerId { get; set; }
-    public required virtual Voucher Voucher { get; set; }
-    public required virtual VigigUser Customer { get; set; }
+    public virtual required Voucher Voucher { get; set; }
+    public virtual required VigigUser Customer { get; set; }
 }

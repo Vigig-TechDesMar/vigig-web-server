@@ -13,7 +13,7 @@ public partial class BookingFee
 
     public Guid BookingId { get; set; }
 
-    public virtual Booking Booking { get; set; } = null!;
+    public virtual required Booking Booking { get; set; }
 
-    public virtual ICollection<Transaction> Transactions { get; set; } = new List<Transaction>();
+    public virtual ICollection<Transaction> Transactions { get; set; } = Array.Empty<Transaction>();
 }

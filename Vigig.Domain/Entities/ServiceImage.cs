@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Vigig.Domain.Entities;
+﻿namespace Vigig.Domain.Entities;
 
 public partial class ServiceImage
 {
@@ -11,5 +8,5 @@ public partial class ServiceImage
 
     public Guid ProviderServiceId { get; set; }
 
-    public virtual ProviderService ProviderService { get; set; } = null!;
+    public virtual required ProviderService ProviderService { get; set; }
 }
