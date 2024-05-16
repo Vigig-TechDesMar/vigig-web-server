@@ -12,6 +12,8 @@ DataAccessHelper.InitConfiguration(builder.Configuration);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddCustomSwagger(builder.Configuration);
+builder.Services.AddJwtAuthentication(builder.Configuration);
 builder.Services.RegisterService();
 
 var app = builder.Build();

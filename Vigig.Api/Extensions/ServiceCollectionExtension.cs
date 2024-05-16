@@ -1,7 +1,15 @@
-﻿using System.Reflection;
+﻿using System.Drawing.Imaging;
+using System.Reflection;
+using System.Text;
 using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.SwaggerGen;
 using Vigig.Common.Attribute;
+using Vigig.Common.Exceptions;
 using Vigig.Common.Interfaces;
+using Vigig.Common.Settings;
 using Vigig.DAL.Data;
 using Vigig.DAL.Implementations;
 using Vigig.DAL.Interfaces;
@@ -40,22 +48,57 @@ public static class ServiceCollectionExtension
                     services.Add(new ServiceDescriptor(type,implementType,l ));
             }
         }
-        // var registerableTypes = AppDomain.CurrentDomain.GetAssemblies()
-        //     .SelectMany(assembly => assembly.GetTypes())
-        //     .Where(type => typeof(IAutoRegisterable).IsAssignableFrom(type) && type.IsInterface)
-        //     .ToList();
-        // foreach (var type in registerableTypes)
-        // {
-        //     var implementationType = AppDomain.CurrentDomain.GetAssemblies()
-        //         .SelectMany(assembly => assembly.GetTypes())
-        //         .FirstOrDefault(t => type.IsAssignableFrom(t) && !t.IsInterface && !t.IsAbstract);
-        //     if (implementationType != null)
-        //         services.AddScoped(type, implementationType);
-        // }
-
         var config = new MapperConfiguration(AutoMapperConfiguration.RegisterMaps);
         var mapper = config.CreateMapper();
         services.AddSingleton(mapper);
+        return services;
+    }
+    public static IServiceCollection AddCustomSwagger(this IServiceCollection services, IConfiguration configuration, SwaggerSetting swaggerSetting = default)
+    {
+        swaggerSetting ??= configuration.GetSection(nameof(SwaggerSetting)).Get<SwaggerSetting>() ?? throw new MissingSwaggerSettingException();
+        
+        services.AddSwaggerGen(
+            options => 
+            { 
+                options.SwaggerDoc(swaggerSetting.Version, new OpenApiInfo
+                {
+                    Version = swaggerSetting.Version,
+                    Title = swaggerSetting.Title,
+                    Description = swaggerSetting.Description,
+                    TermsOfService = swaggerSetting.GetTermsOfService(),
+                    Contact = swaggerSetting.GetContact(),
+                    License = swaggerSetting.GetLicense()
+                });
+                options.SwaggerGeneratorOptions = new SwaggerGeneratorOptions()
+                {
+                    Servers = swaggerSetting.GetServers()
+                };
+                options.AddSecurityDefinition(swaggerSetting.Options.SecurityScheme.Name, swaggerSetting.GetSecurityScheme());
+                options.AddSecurityRequirement(swaggerSetting.GetSecurityRequirement());
+            }
+        );
+        
+        return services;
+    }
+
+    public static IServiceCollection AddJwtAuthentication(this IServiceCollection services,
+        IConfiguration configuration)
+    {
+        var jwtSetting = configuration.GetSection(nameof(JwtSetting)).Get<JwtSetting>() 
+            ?? throw new MissingJwtSettingsException();
+        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(opt =>
+        {
+            opt.TokenValidationParameters = new TokenValidationParameters()
+            {
+                ValidIssuer = jwtSetting.Issuer,
+                ValidateIssuer = jwtSetting.ValidateIssuer,
+                ValidAudience = jwtSetting.Audience,
+                ValidateAudience = jwtSetting.ValidateAudience,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSetting.SigningKey)),
+                ValidateIssuerSigningKey = jwtSetting.ValidateIssuerSigningKey,
+                ClockSkew = TimeSpan.Zero
+            };
+        });
         return services;
     }
 }
