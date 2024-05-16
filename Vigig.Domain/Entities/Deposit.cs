@@ -15,7 +15,7 @@ public partial class Deposit
 
     public Guid ProviderId { get; set; }
 
-    public virtual required Provider Provider { get; set; } 
+    public virtual required VigigUser Provider { get; set; } 
 
     public virtual ICollection<Transaction> Transactions { get; set; } = Array.Empty<Transaction>();
 }

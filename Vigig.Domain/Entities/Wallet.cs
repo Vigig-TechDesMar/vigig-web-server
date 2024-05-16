@@ -15,7 +15,7 @@ public partial class Wallet
 
     public Guid ProviderId { get; set; }
 
-    public virtual Provider Provider { get; set; } = null!;
+    public virtual VigigUser Provider { get; set; } = null!;
 
     public virtual ICollection<Transaction> Transactions { get; set; } = Array.Empty<Transaction>();
 }

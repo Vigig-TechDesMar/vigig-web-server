@@ -12,7 +12,7 @@ public partial class SubscriptionFee
 
     public Guid SubscriptionPlanId { get; set; }
 
-    public virtual required Provider Provider { get; set; } 
+    public virtual required VigigUser Provider { get; set; } 
 
     public virtual required SubscriptionPlan SubscriptionPlan { get; set; } 
 

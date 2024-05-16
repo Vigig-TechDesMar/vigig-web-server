@@ -27,7 +27,7 @@ public partial class ProviderService
 
     public virtual ICollection<Booking> Bookings { get; set; } = Array.Empty<Booking>();
 
-    public virtual Provider Provider { get; set; } = null!;
+    public virtual VigigUser Provider { get; set; } = null!;
 
     public virtual GigService Service { get; set; } = null!;
 
