@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Vigig.Domain.Entities;
 using Vigig.Domain.Interfaces;
-using Vigig.Domain.Models;
 
 namespace Vigig.Domain.DatabaseMappings;
 
@@ -12,7 +12,7 @@ public class ProviderServiceModelMapper : IDatabaseModelMapper
         {
             entity.ToTable("ProviderService");
 
-            entity.Property(e => e.Id).ValueGeneratedNever();
+            entity.Property(e => e.Id).ValueGeneratedOnAdd();
             entity.Property(e => e.IsActive).HasDefaultValueSql("((1))");
             entity.Property(e => e.IsAvailable).HasDefaultValueSql("((0))");
             entity.Property(e => e.IsVisible).HasDefaultValueSql("((0))");

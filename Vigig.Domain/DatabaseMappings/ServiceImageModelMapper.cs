@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Vigig.Domain.Entities;
 using Vigig.Domain.Interfaces;
 using Vigig.Domain.Models;
 
@@ -12,7 +13,7 @@ public class ServiceImageModelMapper : IDatabaseModelMapper
         {
             entity.ToTable("ServiceImage");
 
-            entity.Property(e => e.Id).ValueGeneratedNever();
+            entity.Property(e => e.Id).ValueGeneratedOnAdd();
 
             entity.HasOne(d => d.ProviderService).WithMany(p => p.ServiceImages)
                 .HasForeignKey(d => d.ProviderServiceId)

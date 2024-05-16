@@ -1,7 +1,9 @@
-﻿using Vigig.Domain.Entities;
+﻿using System.Collections;
+using Microsoft.AspNetCore.Routing.Constraints;
+using Vigig.Domain.Entities;
 using Vigig.Domain.Models.BaseEntities;
 
-namespace Vigig.Domain.Models;
+namespace Vigig.Domain.Entities;
 
 public partial class VigigUser : IdentityEntity
 {
@@ -11,11 +13,21 @@ public partial class VigigUser : IdentityEntity
 
     public virtual ICollection<Booking> Bookings { get; set; } = new List<Booking>();
 
-    public virtual Building Building { get; set; } = null!;
+    public virtual required Building Building { get; set; } 
 
     public virtual Badge? Badge { get; set; } 
 
-    public virtual ICollection<VigigRole> Roles { get; set; } = Array.Empty<VigigRole>();
+    public virtual ICollection<VigigRole> Roles { get; set; } = new List<VigigRole>();
 
-    public virtual ICollection<ClaimedVoucher> ClaimedVouchers { get; set; } = Array.Empty<ClaimedVoucher>();
+    public virtual ICollection<ClaimedVoucher> ClaimedVouchers { get; set; } = new List<ClaimedVoucher>();
+
+    public virtual ICollection<Wallet> Wallets { get; set; } = new List<Wallet>();
+
+    public virtual ICollection<SubscriptionFee> SubscriptionFees { get; set; } = new List<SubscriptionFee>();
+
+    public virtual ICollection<ProviderService> ProviderServices { get; set; } = new List<ProviderService>();
+
+    public virtual ICollection<ProviderKPI> KPIs { get; set; } = new List<ProviderKPI>();
+
+    public virtual ICollection<Deposit> Deposits { get; set; } = new List<Deposit>();
 }

@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Vigig.Domain.Models;
+﻿namespace Vigig.Domain.Entities;
 
 public partial class ServiceCategory
 {
     public Guid Id { get; set; }
 
-    public string CategoryName { get; set; } = null!;
+    public required string CategoryName { get; set; } 
 
     public string? Description { get; set; }
 

@@ -1,11 +1,11 @@
 ﻿using Vigig.Domain.Models.BaseEntities;
 
-namespace Vigig.Domain.Models;
+namespace Vigig.Domain.Entities;
 
 public class UserToken 
 {
     public Guid UserId { get; set; }
-    public virtual string LoginProvider { get; set; } = null!;
-    public virtual string Name { get; set; } = null!;
-    public virtual string Value { get; set; } = null!;
+    public virtual required string LoginProvider { get; set; } 
+    public virtual required string Name { get; set; } 
+    public virtual required string Value { get; set; } 
 }

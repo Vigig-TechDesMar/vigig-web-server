@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Vigig.Domain.Dtos.Building;
-using Vigig.Domain.Models;
+using Vigig.Domain.Entities;
 using Vigig.Service.Models.Request.Authentication;
 using Vigig.Service.Models.Request.Building;
 using Vigig.Service.Models.Response.Authentication;

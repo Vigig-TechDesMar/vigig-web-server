@@ -9,5 +9,5 @@ public class EventImage : BaseEntity<Guid>
     public required string ImageUrl { get; set; }
     public required string Field { get; set; }
     public Guid EventId { get; set; }
-    public required virtual Event Event { get; set; }
+    public virtual required  Event Event { get; set; }
 }

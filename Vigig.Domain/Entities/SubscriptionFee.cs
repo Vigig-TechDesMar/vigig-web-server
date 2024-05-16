@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Vigig.Domain.Models;
+﻿namespace Vigig.Domain.Entities;
 
 public partial class SubscriptionFee
 {
@@ -15,9 +12,9 @@ public partial class SubscriptionFee
 
     public Guid SubscriptionPlanId { get; set; }
 
-    public virtual Provider Provider { get; set; } = null!;
+    public virtual required VigigUser Provider { get; set; } 
 
-    public virtual SubscriptionPlan SubscriptionPlan { get; set; } = null!;
+    public virtual required SubscriptionPlan SubscriptionPlan { get; set; } 
 
     public virtual ICollection<Transaction> Transactions { get; set; } = new List<Transaction>();
 }

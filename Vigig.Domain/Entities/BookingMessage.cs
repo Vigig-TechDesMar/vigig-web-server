@@ -1,19 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Vigig.Domain.Models;
+namespace Vigig.Domain.Entities;
 
 public partial class BookingMessage
 {
     public Guid Id { get; set; }
 
-    public string SenderName { get; set; } = null!;
+    public required string SenderName { get; set; }
 
-    public string Content { get; set; } = null!;
+    public required string Content { get; set; } 
 
     public DateTime SentAt { get; set; }
 
     public Guid BookingId { get; set; }
 
-    public virtual Booking Booking { get; set; } = null!;
+    public virtual required Booking Booking { get; set; } 
 }

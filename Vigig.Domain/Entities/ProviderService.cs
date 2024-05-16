@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Vigig.Domain.Models;
+namespace Vigig.Domain.Entities;
 
 public partial class ProviderService
 {
@@ -27,7 +27,7 @@ public partial class ProviderService
 
     public virtual ICollection<Booking> Bookings { get; set; } = new List<Booking>();
 
-    public virtual Provider Provider { get; set; } = null!;
+    public virtual VigigUser Provider { get; set; } = null!;
 
     public virtual GigService Service { get; set; } = null!;
 

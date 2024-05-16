@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Vigig.Domain.Models;
+namespace Vigig.Domain.Entities;
 
 public partial class Booking
 {
     public Guid Id { get; set; }
 
-    public string Apartment { get; set; } = null!;
+    public required string Apartment { get; set; } 
 
     public double StickerPrice { get; set; }
 
@@ -33,7 +33,7 @@ public partial class Booking
 
     public Guid BuildingId { get; set; }
 
-    public virtual ICollection<BookingFee> BookingFees { get; set; } = new List<BookingFee>();
+    public virtual ICollection<BookingFee> BookingFees { get; set; } =  new List<BookingFee>();
 
     public virtual ICollection<BookingMessage> BookingMessages { get; set; } = new List<BookingMessage>();
 

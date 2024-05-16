@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Vigig.DAL.Interfaces;
 using Vigig.Domain.Dtos.Building;
-using Vigig.Domain.Models;
+using Vigig.Domain.Entities;
 using Vigig.Service.Exceptions;
 using Vigig.Service.Exceptions.NotFound;
 using Vigig.Service.Interfaces;

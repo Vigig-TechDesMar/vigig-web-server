@@ -14,7 +14,7 @@ public class EventImageModelMapper : IDatabaseModelMapper
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Id)
                 .ValueGeneratedOnAdd();
-            entity.Property(e => e.Event);
+            entity.Property(e => e.EventId);
             entity.Property(e => e.ImageUrl)
                 .IsRequired();
             entity.Property(e => e.Field)
