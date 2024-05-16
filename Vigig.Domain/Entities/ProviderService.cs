@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Vigig.Domain.Models;
+namespace Vigig.Domain.Entities;
 
 public partial class ProviderService
 {

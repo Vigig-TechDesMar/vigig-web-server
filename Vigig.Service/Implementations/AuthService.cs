@@ -1,14 +1,12 @@
 ﻿using System.Text.RegularExpressions;
 using AutoMapper;
 using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Vigig.Common.Constants.Validations;
 using Vigig.Common.Exceptions;
 using Vigig.Common.Helpers;
 using Vigig.Common.Settings;
 using Vigig.DAL.Interfaces;
-using Vigig.Domain.Models;
-using Vigig.Service.Enums;
+using Vigig.Domain.Entities;
 using Vigig.Service.Exceptions;
 using Vigig.Service.Exceptions.NotFound;
 using Vigig.Service.Interfaces;

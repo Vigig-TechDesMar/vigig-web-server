@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using Vigig.Domain.Models;
 
-namespace Vigig.Domain.Models;
+namespace Vigig.Domain.Entities;
 
 public partial class Badge
 {

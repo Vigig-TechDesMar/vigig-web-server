@@ -1,7 +1,7 @@
 ﻿using Vigig.Domain.Entities;
 using Vigig.Domain.Models.BaseEntities;
 
-namespace Vigig.Domain.Models;
+namespace Vigig.Domain.Entities;
 
 public partial class VigigUser : IdentityEntity
 {

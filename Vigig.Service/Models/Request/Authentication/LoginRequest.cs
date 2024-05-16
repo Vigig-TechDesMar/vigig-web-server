@@ -6,9 +6,9 @@ namespace Vigig.Service.Models.Request.Authentication;
 public class LoginRequest
 {
     [Required]
-    public string Email { get; set; } = null!;
+    public required string Email { get; set; }
     
     [Required]
-    public string Password { get; set; } = null!;
+    public required string Password { get; set; } 
 
 }

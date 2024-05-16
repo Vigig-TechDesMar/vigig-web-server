@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Vigig.Domain.Entities;
 using Vigig.Domain.Interfaces;
-using Vigig.Domain.Models;
 
 namespace Vigig.Domain.DatabaseMappings;
 

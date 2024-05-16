@@ -7,8 +7,7 @@ using Vigig.Common.Constants.Validations;
 using Vigig.Common.Settings;
 using Vigig.Common.Exceptions;
 using Vigig.DAL.Interfaces;
-using Vigig.Domain.Models;
-using Vigig.Service.Enums;
+using Vigig.Domain.Entities;
 using Vigig.Service.Interfaces;
 using JwtRegisteredClaimNames = Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames;
 

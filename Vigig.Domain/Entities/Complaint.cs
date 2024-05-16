@@ -1,6 +1,6 @@
 ﻿using Vigig.Domain.Models.BaseEntities;
 
-namespace Vigig.Domain.Models;
+namespace Vigig.Domain.Entities;
 
 public class Complaint : BaseEntity<Guid>
 {
