@@ -66,6 +66,6 @@ public class ServiceCategoriesController : BaseApiController
         return await ExecuteServiceLogic(async ()
             => await _gigCategoryServiceService.DeactivateAsync(id).ConfigureAwait(false)).ConfigureAwait(false);
     }
-
-
+    
+   
 }

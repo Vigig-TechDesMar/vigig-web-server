@@ -44,7 +44,7 @@ public abstract class BaseApiController : ControllerBase
     }
     protected async Task<IActionResult> ExecuteServiceLogic(Func<Task<ServiceActionResult>> serviceActionFunc)
     {
-        if (ModelState.IsValid)
+        if (!ModelState.IsValid)
             return BadRequest(ModelState);
         return await ExecuteServiceLogic(serviceActionFunc, null);
     }

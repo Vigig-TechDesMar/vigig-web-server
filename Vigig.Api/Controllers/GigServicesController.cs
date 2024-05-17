@@ -65,5 +65,20 @@ public class GigServicesController : BaseApiController
         return await ExecuteServiceLogic(async ()
             => await _gigService.DeactivateAsync(id).ConfigureAwait(false)).ConfigureAwait(false);
     }
+    
+    [HttpGet("/ac-services")]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetACServices(BasePaginatedRequest request)
+    {
+        return await ExecuteServiceLogic(async ()
+            => await _gigService.GetACServicesByCategory(request).ConfigureAwait(false)).ConfigureAwait(false);
+    }
+    [HttpGet("/ac-services/{id:guid}")]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetACServices([FromBody]Guid id)
+    {
+        return await ExecuteServiceLogic(async ()
+            => await _gigService.GetById(id).ConfigureAwait(false)).ConfigureAwait(false);
+    }
 
 }
