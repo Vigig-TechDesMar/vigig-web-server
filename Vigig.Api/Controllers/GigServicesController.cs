@@ -1,11 +1,15 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Vigig.Api.Controllers.Base;
+using Vigig.Service.Constants;
 using Vigig.Service.Interfaces;
 using Vigig.Service.Models.Common;
 using Vigig.Service.Models.Request.Service;
 
 namespace Vigig.Api.Controllers;
 [Route("/api/[controller]")]
+[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 public class GigServicesController : BaseApiController
 {
     private readonly IGigServiceService _gigService;
@@ -16,6 +20,7 @@ public class GigServicesController : BaseApiController
     }
 
     [HttpGet("all")]
+    [AllowAnonymous]
     public async Task<IActionResult> GetAllServices()
     {
         return await ExecuteServiceLogic(async () 
@@ -23,6 +28,7 @@ public class GigServicesController : BaseApiController
     }
     
     [HttpGet]
+    [AllowAnonymous]
     public async Task<IActionResult> GetServices([FromQuery]BasePaginatedRequest request)
     {
         return await ExecuteServiceLogic(async () 
@@ -30,6 +36,7 @@ public class GigServicesController : BaseApiController
     }
     
     [HttpGet("{id:guid}")]
+    [AllowAnonymous]
     public async Task<IActionResult> GetServiceById(Guid id)
     {
         return await ExecuteServiceLogic(async () 
@@ -37,15 +44,26 @@ public class GigServicesController : BaseApiController
     }
     
     [HttpPost]
+    [Authorize(Roles = UserRoleConstant.InternalUser)]
     public async Task<IActionResult> AddService(GigServiceRequest request)
     {
         return await ExecuteServiceLogic(async () 
             => await _gigService.AddAsync(request).ConfigureAwait(false)).ConfigureAwait(false);
     }
-    [HttpPut]
+    [HttpPut]   
+    [Authorize(Roles = UserRoleConstant.InternalUser)]
     public async Task<IActionResult> UpdateService([FromBody] UpdateGigServiceRequest request)
     {
         return await ExecuteServiceLogic(async ()
             => await _gigService.UpdateAsync(request).ConfigureAwait(false)).ConfigureAwait(false);
     }
+    
+    [HttpDelete("{id:guid}")]
+    [Authorize(Roles = UserRoleConstant.InternalUser)]
+    public async Task<IActionResult> DeleteService(Guid id)
+    {
+        return await ExecuteServiceLogic(async ()
+            => await _gigService.DeactivateAsync(id).ConfigureAwait(false)).ConfigureAwait(false);
+    }
+
 }
