@@ -1,6 +1,6 @@
 ﻿using Vigig.Service.Enums;
 
-namespace Vigig.Service.Models;
+namespace Vigig.Service.Models.Common;
 
 public class ApiResponse<T> 
 {

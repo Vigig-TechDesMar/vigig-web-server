@@ -1,12 +1,15 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Azure;
+using Vigig.Common.Helpers;
 using Vigig.DAL.Interfaces;
 using Vigig.Domain.Dtos.Service;
 using Vigig.Domain.Entities;
 using Vigig.Service.Exceptions.AlreadyExist;
 using Vigig.Service.Exceptions.NotFound;
 using Vigig.Service.Interfaces;
-using Vigig.Service.Models;
+using Vigig.Service.Models.Common;
 using Vigig.Service.Models.Request.Service;
 
 namespace Vigig.Service.Implementations;
@@ -77,6 +80,14 @@ public class GigServiceService : IGigServiceService
     {
         throw new NotImplementedException();
     }
-    
-    
+
+    public async Task<ServiceActionResult> GetPaginatedResultAsync(BasePaginatedRequest request)
+    {
+        var services = _mapper.ProjectTo<DtoGigService>(await _gigServiceRepository.GetAllAsync());
+        var paginatedResult = PaginationHelper.BuildPaginatedResult(services, request.PageSize, request.PageIndex);
+        return new ServiceActionResult(true)
+        {
+            Data = paginatedResult
+        };
+    }
 }

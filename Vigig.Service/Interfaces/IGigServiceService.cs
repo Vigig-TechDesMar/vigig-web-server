@@ -1,5 +1,5 @@
 ﻿using Vigig.Common.Attribute;
-using Vigig.Service.Models;
+using Vigig.Service.Models.Common;
 using Vigig.Service.Models.Request.Service;
 
 namespace Vigig.Service.Interfaces;
@@ -12,5 +12,6 @@ public interface IGigServiceService
     Task<ServiceActionResult> AddAsync(GigServiceRequest request);
     Task<ServiceActionResult> UpdateAsync(GigServiceRequest request);
     Task<ServiceActionResult> DeactivateAsync(Guid gigId);
+    Task<ServiceActionResult> GetPaginatedResultAsync(BasePaginatedRequest request);
 
 }

@@ -8,7 +8,4 @@ public class UpdateBuildingRequest
     [Required] 
     public string BuildingName { get; set; } = null!;
     public string Note { get; set; } = String.Empty;
-    
-
-
 }

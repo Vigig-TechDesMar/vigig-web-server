@@ -3,7 +3,7 @@ using NLog;
 using Vigig.Api.Constants;
 using Vigig.Common.Exceptions;
 using Vigig.Common.Helpers;
-using Vigig.Service.Models;
+using Vigig.Service.Models.Common;
 using ILogger = NLog.ILogger;
 
 namespace Vigig.Api.Controllers.Base;
