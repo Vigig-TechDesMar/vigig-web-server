@@ -1,11 +1,16 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Vigig.Api.Controllers.Base;
 using Vigig.Domain.Models;
+using Vigig.Service.Constants;
+using Vigig.Service.Enums;
 using Vigig.Service.Interfaces;
 using Vigig.Service.Models.Request.Building;
 
 namespace Vigig.Api.Controllers;
 [Route("/api/[controller]")]
+[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 public class BuildingController : BaseApiController
 {
     private readonly IBuildingService _buildingService;
@@ -16,6 +21,7 @@ public class BuildingController : BaseApiController
     }
 
     [HttpPost]
+    
     public async Task<IActionResult> AddBuilding(CreateBuildingRequest request)
     {
         return await ExecuteServiceLogic(async () 
@@ -23,6 +29,7 @@ public class BuildingController : BaseApiController
     }
 
     [HttpGet]
+    [Authorize(Roles = UserRoleConstant.Client)]
     public async Task<IActionResult> GetAllBuilding()
     {
         return await ExecuteServiceLogic(async ()

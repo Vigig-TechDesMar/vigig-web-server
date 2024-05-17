@@ -29,7 +29,7 @@ public class JwtService : IJwtService
         _jwtSetting = configuration.GetSection(nameof(JwtSetting)).Get<JwtSetting>() ?? throw new MissingJwtSettingsException();
     }
 
-    public string GenerateAccessToken(VigigUser vigigUser, ICollection<VigigRole> roles)
+    public string GenerateAccessToken(VigigUser vigigUser, ICollection<string> roles)
     {
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSetting.SigningKey));
         var claims = new List<Claim>()
