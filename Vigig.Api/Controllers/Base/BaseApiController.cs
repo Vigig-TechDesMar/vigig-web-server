@@ -3,7 +3,7 @@ using NLog;
 using Vigig.Api.Constants;
 using Vigig.Common.Exceptions;
 using Vigig.Common.Helpers;
-using Vigig.Service.Models;
+using Vigig.Service.Models.Common;
 using ILogger = NLog.ILogger;
 
 namespace Vigig.Api.Controllers.Base;
@@ -44,6 +44,8 @@ public abstract class BaseApiController : ControllerBase
     }
     protected async Task<IActionResult> ExecuteServiceLogic(Func<Task<ServiceActionResult>> serviceActionFunc)
     {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
         return await ExecuteServiceLogic(serviceActionFunc, null);
     }
     protected async Task<IActionResult> ExecuteServiceLogic(Func<Task<ServiceActionResult>> serviceActionFunc,

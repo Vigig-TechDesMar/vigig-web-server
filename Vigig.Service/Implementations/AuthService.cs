@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -12,7 +11,7 @@ using Vigig.Domain.Entities;
 using Vigig.Service.Exceptions;
 using Vigig.Service.Exceptions.NotFound;
 using Vigig.Service.Interfaces;
-using Vigig.Service.Models;
+using Vigig.Service.Models.Common;
 using Vigig.Service.Models.Request.Authentication;
 using Vigig.Service.Models.Response.Authentication;
 

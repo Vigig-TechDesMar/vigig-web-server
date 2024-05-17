@@ -1,12 +1,13 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Http;
+using Vigig.Common.Helpers;
 using Vigig.DAL.Interfaces;
 using Vigig.Domain.Dtos.Building;
 using Vigig.Domain.Entities;
 using Vigig.Service.Exceptions;
 using Vigig.Service.Exceptions.NotFound;
 using Vigig.Service.Interfaces;
-using Vigig.Service.Models;
+using Vigig.Service.Models.Common;
 using Vigig.Service.Models.Request.Building;
 
 namespace Vigig.Service.Implementations;
@@ -63,8 +64,8 @@ public class BuildingService : IBuildingService
     {
         var existedBuilding = (await _buildingRepository.FindAsync(b => b.Id == building.Id && b.IsActive)).FirstOrDefault()
             ?? throw new BuildingNotFoundException(building.Id.ToString());
-        existedBuilding.BuildingName = building.BuildingName ?? existedBuilding.BuildingName;
-        existedBuilding.Note = building.Note ?? existedBuilding.Note;
+        existedBuilding.BuildingName = (string.IsNullOrEmpty(building.BuildingName)) ? existedBuilding.BuildingName : building.BuildingName;
+        existedBuilding.Note = (string.IsNullOrEmpty(building.Note)) ? existedBuilding.Note : building.Note;
         
         await _buildingRepository.UpdateAsync(existedBuilding);
         await _unitOfWork.CommitAsync();
@@ -82,6 +83,16 @@ public class BuildingService : IBuildingService
         return new ServiceActionResult(true)
         {
             StatusCode = StatusCodes.Status204NoContent
+        };
+    }
+
+    public async Task<ServiceActionResult> GetPaginatedResultAsync(BasePaginatedRequest request)
+    {
+        var building = _mapper.ProjectTo<DtoBuilding>(await _buildingRepository.GetAllAsync());
+        var paginatedResult = PaginationHelper.BuildPaginatedResult(building, request.PageSize, request.PageIndex);
+        return new ServiceActionResult(true)
+        {
+            Data = paginatedResult
         };
     }
 }

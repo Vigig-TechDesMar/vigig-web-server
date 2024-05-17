@@ -3,5 +3,7 @@
 public enum UserRole
 {
     Client,
-    Provider
+    Provider,
+    Staff,
+    Admin
 }

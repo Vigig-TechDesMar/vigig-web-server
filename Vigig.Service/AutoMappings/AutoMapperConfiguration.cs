@@ -34,9 +34,17 @@ public static class AutoMapperConfiguration
     public static void CreateServiceMaps(IMapperConfigurationExpression mapper)
     {
         mapper.CreateMap<GigServiceRequest, GigService>();
-        mapper.CreateMap<ServiceCategoryRequest, ServiceCategory>().ForMember(sc => sc.Description
-            , opt => opt.Condition( c => string.IsNullOrWhiteSpace(c.Description)));
+        mapper.CreateMap<ServiceCategoryRequest, ServiceCategory>();
+       
         mapper.CreateMap<GigService, DtoGigService>();
+        mapper.CreateMap<ServiceCategory,DtoServiceCategory>();
+        mapper.CreateMap<UpdateServiceCategoryRequest, ServiceCategory>()
+            .ForMember(sc => sc.Description, opt => opt.Condition( c => !string.IsNullOrWhiteSpace(c.Description)))
+            .ForMember(sc => sc.CategoryName, opt => opt.Condition(c => !string.IsNullOrWhiteSpace(c.CategoryName)));
+
+        mapper.CreateMap<UpdateGigServiceRequest, GigService>()
+            .ForMember(s => s.Description ,opt => opt.Condition(r => !string.IsNullOrWhiteSpace(r.Description)))
+            .ForMember(s => s.ServiceName ,opt => opt.Condition(r => !string.IsNullOrWhiteSpace(r.ServiceName)));
     }
 
 }

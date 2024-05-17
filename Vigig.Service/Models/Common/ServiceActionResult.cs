@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Vigig.Common.Constants;
 
-namespace Vigig.Service.Models;
+namespace Vigig.Service.Models.Common;
 
 public class ServiceActionResult
 {
