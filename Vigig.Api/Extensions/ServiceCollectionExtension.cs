@@ -97,7 +97,7 @@ public static class ServiceCollectionExtension
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSetting.SigningKey)),
                 ValidateIssuerSigningKey = jwtSetting.ValidateIssuerSigningKey,
                 ClockSkew = TimeSpan.Zero
-            };
+            };  
         });
         return services;
     }

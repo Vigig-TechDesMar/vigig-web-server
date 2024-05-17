@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using NLog;
 using Vigig.Api.Extensions;
 using Vigig.Common.Helpers;
@@ -9,7 +10,9 @@ LogManager.Setup()
 var builder = WebApplication.CreateBuilder(args);
 DataAccessHelper.InitConfiguration(builder.Configuration);
 
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(
+    options => options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles
+);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddCustomSwagger(builder.Configuration);
@@ -23,6 +26,10 @@ app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 app.MapControllers();
+
+app.UseAuthentication();
+app.UseAuthorization();
+
 DataAccessHelper.EnsureMigrations(AppDomain.CurrentDomain.FriendlyName);
 
 app.Run();

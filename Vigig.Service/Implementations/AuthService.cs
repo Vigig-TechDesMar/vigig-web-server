@@ -1,5 +1,7 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Collections;
+using System.Text.RegularExpressions;
 using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Vigig.Common.Constants.Validations;
 using Vigig.Common.Exceptions;
@@ -76,7 +78,9 @@ public class AuthService : IAuthService
 
     public async Task<ServiceActionResult> LoginAsync(LoginRequest request)
     {
-        var retrivedUser = await _vigigUserRepository.GetAsync(c => c.Email.Equals(request.Email));
+        var retrivedUser = (await _vigigUserRepository.FindAsync(c => c.Email.Equals(request.Email)))
+            .Include(x => x.Roles)  
+            .FirstOrDefault();
 
         if (retrivedUser is null)
             throw new UserNotFoundException(request.Email);
@@ -113,13 +117,15 @@ public class AuthService : IAuthService
 
     public async Task<AuthResponse> GenerateAuthResponseAsync(VigigUser vigigUser)
     {
+        var roles = vigigUser.Roles.Select(role => role.Name).ToList();
+
         var reponse = new AuthResponse()
         {
             Name = vigigUser.UserName ?? vigigUser.Email ?? String.Empty,
-            Role = vigigUser.Roles,
+            Roles = roles,
             Token = new TokenResponse()
             {
-                AccessToken = _jwtService.GenerateAccessToken(vigigUser,vigigUser.Roles),
+                AccessToken = _jwtService.GenerateAccessToken(vigigUser,roles),
                 RefreshToken = await _jwtService.GenerateRefreshToken(vigigUser.Id),
                 ExpiresAt = DateTimeOffset.Now.AddHours(_jwtSetting.RefreshTokenLifetimeInMinutes)
             }

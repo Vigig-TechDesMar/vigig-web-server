@@ -6,7 +6,7 @@ namespace Vigig.Service.Interfaces;
 [ServiceRegister]
 public interface IJwtService 
 {
-    string GenerateAccessToken(VigigUser vigigUser, ICollection<VigigRole> roles);
+    string GenerateAccessToken(VigigUser vigigUser, ICollection<string> roles);
 
     Task<string> GenerateRefreshToken(Guid customerId);
 }
