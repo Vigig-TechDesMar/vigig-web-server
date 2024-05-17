@@ -3,10 +3,12 @@ using Vigig.Service.Attributes;
 
 namespace Vigig.Service.Models.Request.Service;
 
-public class GigServiceRequest
+public class UpdateGigServiceRequest
 {
+    public Guid Id { get; set; }
+
     [Required]
-    public string ServiceName { get; set; } = null!;
+    public required string ServiceName { get; set; } 
 
     public string Description { get; set; } = string.Empty;
     

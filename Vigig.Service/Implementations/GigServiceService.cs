@@ -41,7 +41,9 @@ public class GigServiceService : IGigServiceService
     public async Task<ServiceActionResult> GetById(Guid gigId)
     {
         var existedService = (await _gigServiceRepository.FindAsync(s => s.Id == gigId && s.IsActive))
-            .FirstOrDefault() ?? throw new GigServiceAlreadyExistException(gigId.ToString(), nameof(GigService.Id) );
+            .FirstOrDefault() ;
+        if (existedService is null)
+            throw new GigServiceNotFoundException(gigId);
         var service = _mapper.Map<DtoGigService>(existedService);
         return new ServiceActionResult(true)
         {
@@ -58,15 +60,15 @@ public class GigServiceService : IGigServiceService
         await _unitOfWork.CommitAsync();
         return new ServiceActionResult(true)
         {
-            Data = service,
+            Data = _mapper.Map<DtoGigService>(service),
             StatusCode = StatusCodes.Status201Created
         };
     }
 
-    public async Task<ServiceActionResult> UpdateAsync(GigServiceRequest request)
+    public async Task<ServiceActionResult> UpdateAsync(UpdateGigServiceRequest request)
     {
         if (!await _serviceCategoryRepository.ExistsAsync(c => c.Id == request.ServiceCategoryId && c.IsActive))
-            throw new ServiceCategoryNotFoundException(request.ServiceCategoryId);
+            throw new GigServiceNotFoundException(request.ServiceCategoryId);
         var service = _mapper.Map<GigService>(request);
         await _gigServiceRepository.UpdateAsync(service);
         await _unitOfWork.CommitAsync();
