@@ -36,21 +36,19 @@
     </ItemGroup>
 
     <ItemGroup>
-      <None Remove="Scripts\1.Initialize_Database.sql" />
-      <None Remove="Scripts\2.Update_Table_Customer.sql" />
-      <None Remove="Scripts\3.Add_Table_CustomerToken.sql" />
-      <None Remove="Scripts\2.Rename_VigigRole.sql" />
-      <None Remove="Scripts\3.Create_Notification.sql" />
-      <None Remove="Scripts\4.Create_Complaint.sql" />
-      <None Remove="Scripts\5.Update_Complain.sql.sql" />
-      <None Remove="Scripts\6.Add_Voucher.sql" />
-      <None Remove="Scripts\7.Update_ConcurrencyStamp.sql" />
-      <None Remove="Scripts\8.Add_Table_Voucher.sql" />
-      <None Remove="Scripts\9.Add_Claimed_Voucher_Table.sql" />
-      <None Remove="Scripts\10.Add_Banner_Table.sql" />
-      <EmbeddedResource Include="Scripts\10.Add_Banner_Table.sql" />
-      <None Remove="Scripts\11.Add_Popup_Table.sql" />
-      <EmbeddedResource Include="Scripts\11.Add_Popup_Table.sql" />
+        <EmbeddedResource Include="Scripts\01.Initialize_Database.sql">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </EmbeddedResource>
+        <EmbeddedResource Include="Scripts\02.Rename_VigigRole.sql" />
+        <EmbeddedResource Include="Scripts\03.Create_Notification.sql" />
+        <EmbeddedResource Include="Scripts\04.Create_Complaint.sql" />
+        <EmbeddedResource Include="Scripts\05.Update_Complain.sql" />
+        <EmbeddedResource Include="Scripts\06.Add_Voucher.sql" />
+        <EmbeddedResource Include="Scripts\07.Update_ConcurrencyStamp.sql" />
+        <EmbeddedResource Include="Scripts\08.Add_Table_Voucher.sql" />
+        <EmbeddedResource Include="Scripts\09.Add_Claimed_Voucher_Table.sql" />
+        <EmbeddedResource Include="Scripts\10.Add_Banner_Table.sql" />
+        <EmbeddedResource Include="Scripts\11.Add_Popup_Table.sql" />
     </ItemGroup>
 
 </Project>
