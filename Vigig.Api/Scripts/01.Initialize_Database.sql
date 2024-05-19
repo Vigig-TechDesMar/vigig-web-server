@@ -1,17 +1,15 @@
 ﻿
-use Vigig
-
 
 -- create table
 
 IF NOT EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'ProviderService')
 BEGIN
 CREATE TABLE [ProviderService] (
-                                   Id              UNIQUEIDENTIFIER NOT NULL,
-                                   Rating          FLOAT,
-                                   TotalBooking    FLOAT,
-                                   StickerPrice    FLOAT,
-                                   Description     NVARCHAR(MAX),
+   Id              UNIQUEIDENTIFIER NOT NULL,
+   Rating          FLOAT,
+   TotalBooking    FLOAT,
+   StickerPrice    FLOAT,
+   Description     NVARCHAR(MAX),
     IsAvailable     BIT             DEFAULT 0,
     IsVisible       BIT             DEFAULT 0,
     IsActive        BIT             DEFAULT 1,
