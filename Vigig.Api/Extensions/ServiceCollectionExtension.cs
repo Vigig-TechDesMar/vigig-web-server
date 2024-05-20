@@ -107,7 +107,7 @@ public static class ServiceCollectionExtension
 
     public static IServiceCollection AddCorsPolicy(this IServiceCollection services, IConfiguration configuration)
     {
-        var corsSetting = configuration.GetSection(nameof(CorSetting)).Get<CorSetting>()
+        var corsSetting = configuration.GetSection(nameof(CorsSetting)).Get<CorsSetting>()
             ?? throw new  MissingCorsSettingsException();
         services.AddCors(opt =>
         {

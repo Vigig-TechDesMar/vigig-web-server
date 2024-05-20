@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Vigig.Api.Controllers.Base;
 using Vigig.Service.Interfaces;
+using Vigig.Service.Models.Request.Service;
 
 namespace Vigig.Api.Controllers;
 [Route("/api/[controller]")]
@@ -26,5 +27,10 @@ public class UsersController : BaseApiController
         return await ExecuteServiceLogic(async () =>
             await _userService.GetProfileInformation(GetJwtToken()).ConfigureAwait(false)).ConfigureAwait(false);
     }
-    
+
+    [HttpPost("/register-gigservice")]
+    public async Task<IActionResult> UploadService(CreateProviderServiceRequest request)
+    {
+        throw new InsufficientMemoryException();
+    }
 }

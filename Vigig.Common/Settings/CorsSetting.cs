@@ -2,7 +2,7 @@
 
 namespace Vigig.Common.Settings;
 
-public class CorSetting
+public class CorsSetting
 {
     public string AllowedOrigins { get; init; }
     public string AllowedMethods { get; init; }
