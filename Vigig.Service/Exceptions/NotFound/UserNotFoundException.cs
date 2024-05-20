@@ -7,4 +7,5 @@ public class UserNotFoundException : EntityNotFoundException<VigigUser>
     public UserNotFoundException(object id) : base(id)
     {
     }
+
 }

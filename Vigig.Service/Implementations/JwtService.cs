@@ -8,6 +8,7 @@ using Vigig.Common.Settings;
 using Vigig.Common.Exceptions;
 using Vigig.DAL.Interfaces;
 using Vigig.Domain.Entities;
+using Vigig.Service.Exceptions;
 using Vigig.Service.Interfaces;
 using JwtRegisteredClaimNames = Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames;
 
@@ -80,5 +81,58 @@ public class JwtService : IJwtService
 
         await _unitOfWork.CommitAsync();
         return existingRefreshToken.Value;
+    }
+
+    public bool IsValidToken(string token)
+    {
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var tokenValidationParameters = new TokenValidationParameters()
+        {
+            ValidIssuer = _jwtSetting.Issuer,
+            ValidateIssuer = _jwtSetting.ValidateIssuer,
+            ValidAudience = _jwtSetting.Audience,
+            ValidateAudience = _jwtSetting.ValidateAudience,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSetting.SigningKey)),
+            ValidateIssuerSigningKey = _jwtSetting.ValidateIssuerSigningKey,
+            ValidateLifetime = _jwtSetting.ValidateLifetime,
+            ClockSkew = TimeSpan.Zero
+        };
+        try
+        {
+            tokenHandler.ValidateToken(token, tokenValidationParameters, out var validatedToken);
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    public object? GetTokenClaim(string token, string claimName)
+    {
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var tokenValidationParameters = new TokenValidationParameters
+        {
+            ValidIssuer = _jwtSetting.Issuer,
+            ValidateIssuer = _jwtSetting.ValidateIssuer,
+            ValidAudience = _jwtSetting.Audience,
+            ValidateAudience = _jwtSetting.ValidateAudience,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSetting.SigningKey)),
+            ValidateIssuerSigningKey = _jwtSetting.ValidateIssuerSigningKey,
+            ValidateLifetime = _jwtSetting.ValidateLifetime,
+            ClockSkew = TimeSpan.Zero
+        };
+        
+        try
+        {
+            tokenHandler.ValidateToken(token, tokenValidationParameters, out var validatedToken);
+            var jwtSecurityToken = (JwtSecurityToken)validatedToken;
+            var propInfo = typeof(JwtSecurityToken).GetProperties().FirstOrDefault(p => p.Name == claimName);
+            return propInfo?.GetValue(jwtSecurityToken);
+        }
+        catch
+        {
+            throw new InvalidTokenException();
+        }
     }
 }

@@ -3,6 +3,7 @@ using Vigig.Domain.Dtos;
 using Vigig.Domain.Dtos.Badge;
 using Vigig.Domain.Dtos.Building;
 using Vigig.Domain.Dtos.Service;
+using Vigig.Domain.Dtos.VigigUser;
 using Vigig.Domain.Entities;
 using Vigig.Service.Models.Request.Authentication;
 using Vigig.Service.Models.Request.Badge;
@@ -21,6 +22,7 @@ public static class AutoMapperConfiguration
         CreateBuildingMaps(mapper);
         CreateServiceMaps(mapper);
         CreateBadgeMaps(mapper);
+        CreateVigigUserMaps(mapper);
     }
 
     public static void CreateUserMaps(IMapperConfigurationExpression mapper)
@@ -61,6 +63,11 @@ public static class AutoMapperConfiguration
         mapper.CreateMap<Badge, DtoBadge>();
         mapper.CreateMap<Badge, DtoBadgeWithStatus>();
 
+    }
+
+    public static void CreateVigigUserMaps(IMapperConfigurationExpression mapper)
+    {
+        mapper.CreateMap<VigigUser, DtoUserProfile>();
     }
 
 }
