@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ValueGeneration;
 using Vigig.Domain.Entities;
 using Vigig.Domain.Interfaces;
 
@@ -15,6 +16,8 @@ public class BookingModelMapper : IDatabaseModelMapper
             entity.Property(e => e.Id).ValueGeneratedOnAdd();
             entity.Property(e => e.Apartment).HasMaxLength(255);
             entity.Property(e => e.CreatedDate).HasColumnType("datetime");
+            entity.Property(e => e.ConcurrencyStamp).IsConcurrencyToken().HasValueGenerator<StringValueGenerator>();
+
 
             entity.HasOne(d => d.Building).WithMany(p => p.Bookings)
                 .HasForeignKey(d => d.BuildingId)

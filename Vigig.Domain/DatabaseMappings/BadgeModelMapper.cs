@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ValueGeneration;
 using Vigig.Domain.Entities;
 using Vigig.Domain.Interfaces;
 
@@ -15,6 +16,8 @@ public class BadgeModelMapper : IDatabaseModelMapper
             entity.Property(e => e.BadgeName).HasMaxLength(450);
             entity.Property(e => e.Benefit).HasMaxLength(450);
             entity.Property(e => e.IsActive).HasDefaultValueSql("((1))");
+            entity.Property(e => e.ConcurrencyStamp).IsConcurrencyToken().HasValueGenerator<StringValueGenerator>();
+
         });
     }
 }
