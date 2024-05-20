@@ -8,5 +8,5 @@ namespace Vigig.Service.Interfaces;
 public interface IUserService
 {
     Task<ServiceActionResult> GetProfileInformation(string token);
-    Task<ServiceActionResult> UploadService(CreateProviderServiceRequest request);
+    Task<ServiceActionResult> UploadService(string token,CreateProviderServiceRequest request);
 }

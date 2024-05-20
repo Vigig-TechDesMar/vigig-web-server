@@ -1,6 +1,7 @@
 using System.Text.Json.Serialization;
 using NLog;
 using Vigig.Api.Extensions;
+using Vigig.Common.Constants;
 using Vigig.Common.Helpers;
 
 
@@ -23,6 +24,8 @@ var app = builder.Build();
 
 app.UseSwagger();
 app.UseSwaggerUI();
+
+app.UseCors(CorsConstant.APP_CORS_POLICY);
 
 app.UseHttpsRedirection();
 app.MapControllers();
