@@ -51,6 +51,10 @@ public static class AutoMapperConfiguration
         mapper.CreateMap<UpdateGigServiceRequest, GigService>()
             .ForMember(s => s.Description ,opt => opt.Condition(r => !string.IsNullOrWhiteSpace(r.Description)))
             .ForMember(s => s.ServiceName ,opt => opt.Condition(r => !string.IsNullOrWhiteSpace(r.ServiceName)));
+        mapper.CreateMap<ProviderService, DtoProviderService>()
+            .ForMember(dto => dto.ServiceName, opt => opt.MapFrom(x => x.Service.ServiceName))
+            .ForMember(dto => dto.ProviderName, opt => opt.MapFrom(x => x.Provider.UserName));
+        mapper.CreateMap<ServiceImage, DtoServiceImage>();
     }
 
     public static void CreateBadgeMaps(IMapperConfigurationExpression mapper)

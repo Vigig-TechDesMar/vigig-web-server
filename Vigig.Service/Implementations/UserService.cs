@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Vigig.DAL.Interfaces;
+using Vigig.Domain.Dtos.Service;
 using Vigig.Domain.Dtos.VigigUser;
 using Vigig.Domain.Entities;
 using Vigig.Service.Constants;
@@ -46,6 +47,7 @@ public class UserService : IUserService
     public async Task<ServiceActionResult> UploadService(string token, CreateProviderServiceRequest request)
     {
         var userId = GetIdClaimFromToken(token);
+        
         var provider = (await _vigigUserRepository.FindAsync(x => x.IsActive && x.Id.ToString() == userId))
             .FirstOrDefault() ?? throw new UserNotFoundException(userId);
         
@@ -57,14 +59,18 @@ public class UserService : IUserService
             Provider = provider,
             Service = gigService,
             Description = request.Description,
-            StickerPrice = request.StickerPrice
+            StickerPrice = 
+                (request.StickerPrice >= gigService.MinPrice && request.StickerPrice <= gigService.MaxPrice) 
+                    ? request.StickerPrice : throw new PriceNotInRangeException(gigService.ServiceName),
+            TotalBooking = 0,
+            Rating = 0,
         };
 
         await _providerServiceRepository.AddAsync(providerService);
         await _unitOfWork.CommitAsync();
         return new ServiceActionResult(true)
         {
-            Data = providerService,
+            Data = _mapper.Map<DtoProviderService>(providerService),
             StatusCode = StatusCodes.Status201Created
         };
     }

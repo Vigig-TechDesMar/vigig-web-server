@@ -31,6 +31,7 @@ public class UsersController : BaseApiController
     [HttpPost("/register-gigservice")]
     public async Task<IActionResult> UploadService(CreateProviderServiceRequest request)
     {
-        throw new InsufficientMemoryException();
+        return await ExecuteServiceLogic(async () =>
+            await _userService.UploadService(GetJwtToken(),request).ConfigureAwait(false)).ConfigureAwait(false);
     }
 }

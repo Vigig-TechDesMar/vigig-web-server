@@ -15,11 +15,11 @@ public partial class ProviderService
 
     public string? Description { get; set; }
 
-    public bool? IsAvailable { get; set; }
+    public bool IsAvailable { get; set; }
 
     public bool? IsVisible { get; set; }
 
-    public bool? IsActive { get; set; }
+    public bool IsActive { get; set; }
 
     public Guid ProviderId { get; set; }
 
