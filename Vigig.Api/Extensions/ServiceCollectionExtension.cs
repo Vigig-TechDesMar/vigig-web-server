@@ -7,6 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using Vigig.Common.Attribute;
+using Vigig.Common.Constants;
 using Vigig.Common.Exceptions;
 using Vigig.Common.Interfaces;
 using Vigig.Common.Settings;
@@ -14,6 +15,8 @@ using Vigig.DAL.Data;
 using Vigig.DAL.Implementations;
 using Vigig.DAL.Interfaces;
 using Vigig.Service.AutoMappings;
+
+
 
 namespace Vigig.Api.Extensions;
 
@@ -98,6 +101,27 @@ public static class ServiceCollectionExtension
                 ValidateIssuerSigningKey = jwtSetting.ValidateIssuerSigningKey,
                 ClockSkew = TimeSpan.Zero
             };  
+        });
+        return services;
+    }
+
+    public static IServiceCollection AddCorsPolicy(this IServiceCollection services, IConfiguration configuration)
+    {
+        var corsSetting = configuration.GetSection(nameof(CorSetting)).Get<CorSetting>()
+            ?? throw new  MissingCorsSettingsException();
+        services.AddCors(opt =>
+        {
+            opt.AddPolicy(CorsConstant.APP_CORS_POLICY, builder =>
+            {
+                builder.WithOrigins(corsSetting.GetAllowedOriginsArray())
+                    .WithHeaders(corsSetting.GetAllowedHeadersArray())
+                    .WithMethods(corsSetting.GetAllowedMethodsArray());
+                if (corsSetting.AllowCredentials)
+                {
+                    builder.AllowCredentials();
+                }
+                builder.Build();
+            });
         });
         return services;
     }
