@@ -16,7 +16,7 @@ public class AuthController : BaseApiController
     }
     
     [HttpPost("register")]
-    public async Task<IActionResult> Register(RegisterRequest request)
+    public async Task<IActionResult> Register([FromForm] RegisterRequest request)
     {
         return await ExecuteServiceLogic(
             async () => await _authService.RegisterAsync(request).ConfigureAwait(false)
@@ -24,7 +24,7 @@ public class AuthController : BaseApiController
     }
 
     [HttpPost("login")]
-    public async Task<IActionResult> Login(LoginRequest request)
+    public async Task<IActionResult> Login([FromForm] LoginRequest request)
     {
         return await ExecuteServiceLogic(
             async () => await _authService.LoginAsync(request).ConfigureAwait(false)
@@ -32,7 +32,7 @@ public class AuthController : BaseApiController
     }
 
     [HttpPost("refresh-token")]
-    public async Task<IActionResult> RefreshToken(RefreshTokenRequest request)
+    public async Task<IActionResult> RefreshToken([FromForm] RefreshTokenRequest request)
     {
         return await ExecuteServiceLogic(
             async()=> await _authService.RefreshTokenAsync(request).ConfigureAwait(false)

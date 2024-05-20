@@ -30,7 +30,7 @@ public class ServiceCategoriesController : BaseApiController
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetServiceCategories(BasePaginatedRequest request)
+    public async Task<IActionResult> GetServiceCategories([FromQuery]BasePaginatedRequest request)
     {
         return await ExecuteServiceLogic(async () => 
             await _gigCategoryServiceService.GetPaginatedResultAsync(request).ConfigureAwait(false)).ConfigureAwait(false);
@@ -45,7 +45,7 @@ public class ServiceCategoriesController : BaseApiController
     
     [HttpPost]
     [Authorize(Roles = UserRoleConstant.InternalUser)]
-    public async Task<IActionResult> AddServiceCategory(ServiceCategoryRequest  request)
+    public async Task<IActionResult> AddServiceCategory([FromForm]ServiceCategoryRequest  request)
     {
         return await ExecuteServiceLogic(async () 
             => await _gigCategoryServiceService.AddAsync(request)).ConfigureAwait(false);
@@ -53,7 +53,7 @@ public class ServiceCategoriesController : BaseApiController
 
     [HttpPut]
     [Authorize(Roles = UserRoleConstant.InternalUser)]
-    public async Task<IActionResult> UpdateServiceCategory([FromBody] UpdateServiceCategoryRequest request)
+    public async Task<IActionResult> UpdateServiceCategory([FromForm] UpdateServiceCategoryRequest request)
     {
         return await ExecuteServiceLogic(async ()
             => await _gigCategoryServiceService.UpdateAsync(request).ConfigureAwait(false)).ConfigureAwait(false);
