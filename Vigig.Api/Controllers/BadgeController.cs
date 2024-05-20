@@ -1,11 +1,15 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Vigig.Api.Controllers.Base;
+using Vigig.Service.Constants;
 using Vigig.Service.Interfaces;
 using Vigig.Service.Models.Common;
 using Vigig.Service.Models.Request.Badge;
 
 namespace Vigig.Api.Controllers;
 [Route("/api/[controller]")]
+[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 public class BadgeController : BaseApiController
 {
     private readonly IBadgeService _badgeService;
@@ -16,12 +20,14 @@ public class BadgeController : BaseApiController
     }
 
     [HttpGet("/all")]
+    [Authorize(Roles = UserRoleConstant.InternalUser)]
     public async Task<IActionResult> GetAllBadges()
     {
         return await ExecuteServiceLogic(async () => 
             await _badgeService.GetAllAsync().ConfigureAwait(false)).ConfigureAwait(false);
     }
     [HttpGet]
+    [AllowAnonymous]
     public async Task<IActionResult> GetBadges([FromQuery]BasePaginatedRequest request)
     {
         return await ExecuteServiceLogic(async () 
@@ -29,6 +35,7 @@ public class BadgeController : BaseApiController
     }
     
     [HttpGet("{id:guid}")]
+    [AllowAnonymous]
     public async Task<IActionResult> GetBadgeById(Guid id)
     {
         return await ExecuteServiceLogic(async () => 
@@ -36,6 +43,7 @@ public class BadgeController : BaseApiController
     }
     
     [HttpPost]
+    [Authorize(Roles = UserRoleConstant.InternalUser)]
     public async Task<IActionResult> AddBadge(CreateBadgeRequest  request)
     {
         return await ExecuteServiceLogic(async () 
@@ -43,6 +51,7 @@ public class BadgeController : BaseApiController
     }
 
     [HttpPut]
+    [Authorize(Roles = UserRoleConstant.InternalUser)]
     public async Task<IActionResult> UpdateServiceCategory([FromBody] UpdateBadgeRequest request)
     {
         return await ExecuteServiceLogic(async ()
@@ -50,6 +59,7 @@ public class BadgeController : BaseApiController
     }
 
     [HttpDelete]
+    [Authorize(Roles = UserRoleConstant.InternalUser)]
     public async Task<IActionResult> DeleteServiceCategory(Guid id)
     {
         return await ExecuteServiceLogic(async ()

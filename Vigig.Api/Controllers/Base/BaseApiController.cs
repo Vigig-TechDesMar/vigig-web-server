@@ -40,7 +40,7 @@ public abstract class BaseApiController : ControllerBase
         else if (e.GetType().IsAssignableFrom(typeof(IBadRequestException)))
             statusCode = StatusCodes.Status400BadRequest;
         errorResult.StatusCode = statusCode;
-        return base.Ok(errorResult);
+        return base.StatusCode(errorResult.StatusCode,errorResult.Messages);
     }
     protected async Task<IActionResult> ExecuteServiceLogic(Func<Task<ServiceActionResult>> serviceActionFunc)
     {

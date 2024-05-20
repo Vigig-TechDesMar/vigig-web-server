@@ -49,6 +49,8 @@
         <EmbeddedResource Include="Scripts\09.Add_Claimed_Voucher_Table.sql" />
         <EmbeddedResource Include="Scripts\10.Add_Banner_Table.sql" />
         <EmbeddedResource Include="Scripts\11.Add_Popup_Table.sql" />
+        <None Remove="Scripts\12.Ensure_Data.sql" />
+        <EmbeddedResource Include="Scripts\12.Ensure_Data.sql" />
     </ItemGroup>
 
 </Project>
