@@ -10,9 +10,11 @@ public static class ExceptionMessage
 
     public const string MissingCustomSwaggerConfiguration = "Can not specified swagger configuration.";
     
+    
     public static class AuthenticationMessage
     { 
         public static string UserAlreadyExistMessage(string userEmail) =>  $"User {userEmail} is already exist.";
+        public static string InvalidTokenMessage => "The token is invalid.";
     }
 
     public static class BuildingMessage

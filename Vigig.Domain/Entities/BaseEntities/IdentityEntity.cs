@@ -32,5 +32,5 @@ public class IdentityEntity : BaseEntity<Guid>
     
     public DateTime CreatedDate { get; set; }
     
-    public bool? IsActive { get; set; }
+    public bool IsActive { get; set; }
 }

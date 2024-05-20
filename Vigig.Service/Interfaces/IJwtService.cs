@@ -9,4 +9,8 @@ public interface IJwtService
     string GenerateAccessToken(VigigUser vigigUser, ICollection<string> roles);
 
     Task<string> GenerateRefreshToken(Guid customerId);
+
+    bool IsValidToken(string token);
+
+    object? GetTokenClaim(string token, string claimName);
 }
