@@ -14,6 +14,6 @@ public class MissingCorsSettingsException: ArgumentException, IBusinessException
 
     public MissingCorsSettingsException()
     {
-        _customMessage = ExceptionMessage.MissingJwtSettingsConfiguration;
+        _customMessage = ExceptionMessage.MissingCorsSettingsConfiguration;
     }
 }

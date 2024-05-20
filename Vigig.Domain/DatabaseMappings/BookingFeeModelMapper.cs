@@ -15,6 +15,7 @@ public class BookingFeeModelMapper : IDatabaseModelMapper
             entity.Property(e => e.Id).ValueGeneratedOnAdd();
             entity.Property(e => e.Amount).HasDefaultValueSql("((0))");
             entity.Property(e => e.CreatedDate).HasColumnType("datetime");
+            
 
             entity.HasOne(d => d.Booking).WithMany(p => p.BookingFees)
                 .HasForeignKey(d => d.BookingId)

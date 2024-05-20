@@ -82,7 +82,7 @@ public class ServiceCategoryService : IServiceCategoryService
 
     public async Task<ServiceActionResult> GetPaginatedResultAsync(BasePaginatedRequest request)
     {
-        var categories = _mapper.ProjectTo<DtoServiceCategory>(await _serviceCategoryRepository.GetAllAsync());
+        var categories = _mapper.ProjectTo<DtoServiceCategory>(await _serviceCategoryRepository.FindAsync(x => x.IsActive));
         var paginatedResult = PaginationHelper.BuildPaginatedResult(categories, request.PageSize, request.PageIndex);
         return new ServiceActionResult(true)
         {

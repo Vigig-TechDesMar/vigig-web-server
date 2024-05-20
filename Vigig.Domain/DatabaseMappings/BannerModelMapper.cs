@@ -22,6 +22,7 @@ public class BannerModelMapper : IDatabaseModelMapper
             entity.HasOne(e => e.Event)
                 .WithMany(e => e.Banners)
                 .HasForeignKey(e => e.EventId);
+            
         });
     }
 }

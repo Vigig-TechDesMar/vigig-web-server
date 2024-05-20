@@ -88,7 +88,7 @@ public class BuildingService : IBuildingService
 
     public async Task<ServiceActionResult> GetPaginatedResultAsync(BasePaginatedRequest request)
     {
-        var building = _mapper.ProjectTo<DtoBuilding>(await _buildingRepository.GetAllAsync());
+        var building = _mapper.ProjectTo<DtoBuilding>(await _buildingRepository.FindAsync(x => x.IsActive));
         var paginatedResult = PaginationHelper.BuildPaginatedResult(building, request.PageSize, request.PageIndex);
         return new ServiceActionResult(true)
         {

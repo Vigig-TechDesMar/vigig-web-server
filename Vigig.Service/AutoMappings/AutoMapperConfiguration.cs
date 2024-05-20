@@ -1,8 +1,11 @@
 ﻿using AutoMapper;
+using Vigig.Domain.Dtos;
+using Vigig.Domain.Dtos.Badge;
 using Vigig.Domain.Dtos.Building;
 using Vigig.Domain.Dtos.Service;
 using Vigig.Domain.Entities;
 using Vigig.Service.Models.Request.Authentication;
+using Vigig.Service.Models.Request.Badge;
 using Vigig.Service.Models.Request.Building;
 using Vigig.Service.Models.Request.GigService;
 using Vigig.Service.Models.Request.Service;
@@ -17,6 +20,7 @@ public static class AutoMapperConfiguration
         CreateUserMaps(mapper);
         CreateBuildingMaps(mapper);
         CreateServiceMaps(mapper);
+        CreateBadgeMaps(mapper);
     }
 
     public static void CreateUserMaps(IMapperConfigurationExpression mapper)
@@ -45,6 +49,18 @@ public static class AutoMapperConfiguration
         mapper.CreateMap<UpdateGigServiceRequest, GigService>()
             .ForMember(s => s.Description ,opt => opt.Condition(r => !string.IsNullOrWhiteSpace(r.Description)))
             .ForMember(s => s.ServiceName ,opt => opt.Condition(r => !string.IsNullOrWhiteSpace(r.ServiceName)));
+    }
+
+    public static void CreateBadgeMaps(IMapperConfigurationExpression mapper)
+    {
+        mapper.CreateMap<CreateBadgeRequest, Badge>();
+        mapper.CreateMap<UpdateBadgeRequest, Badge>()
+            .ForMember(b => b.BadgeName,opt => opt.Condition(c => !string.IsNullOrWhiteSpace(c.BadgeName)))
+            .ForMember(b => b.Description,opt => opt.Condition(c => !string.IsNullOrWhiteSpace(c.Description)))
+            .ForMember(b => b.Benefit,opt => opt.Condition(c => !string.IsNullOrWhiteSpace(c.Benefit)));
+        mapper.CreateMap<Badge, DtoBadge>();
+        mapper.CreateMap<Badge, DtoBadgeWithStatus>();
+
     }
 
 }

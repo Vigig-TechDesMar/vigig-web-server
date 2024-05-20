@@ -14,7 +14,7 @@ public partial class Badge
 
     public string? Benefit { get; set; }
 
-    public bool? IsActive { get; set; }
+    public bool IsActive { get; set; }
 
     public string? ConcurrencyStamp { get; set; }
 
