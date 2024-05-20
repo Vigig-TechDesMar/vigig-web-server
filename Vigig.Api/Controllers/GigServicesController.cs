@@ -45,7 +45,7 @@ public class GigServicesController : BaseApiController
     
     [HttpPost]
     [Authorize(Roles = UserRoleConstant.InternalUser)]
-    public async Task<IActionResult> AddService(GigServiceRequest request)
+    public async Task<IActionResult> AddService([FromBody] GigServiceRequest request)
     {
         return await ExecuteServiceLogic(async () 
             => await _gigService.AddAsync(request).ConfigureAwait(false)).ConfigureAwait(false);
@@ -68,7 +68,7 @@ public class GigServicesController : BaseApiController
     
     [HttpGet("/ac-services")]
     [AllowAnonymous]
-    public async Task<IActionResult> GetACServices(BasePaginatedRequest request)
+    public async Task<IActionResult> GetACServices([FromQuery] BasePaginatedRequest request)
     {
         return await ExecuteServiceLogic(async ()
             => await _gigService.GetACServicesByCategory(request).ConfigureAwait(false)).ConfigureAwait(false);
