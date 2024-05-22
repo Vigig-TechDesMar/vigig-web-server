@@ -11,7 +11,7 @@ public partial class ProviderService
 
     public double? TotalBooking { get; set; }
 
-    public double? StickerPrice { get; set; }
+    public double StickerPrice { get; set; }
 
     public string? Description { get; set; }
 

@@ -8,6 +8,7 @@ using Vigig.Common.Settings;
 using Vigig.Common.Exceptions;
 using Vigig.DAL.Interfaces;
 using Vigig.Domain.Entities;
+using Vigig.Service.Constants;
 using Vigig.Service.Exceptions;
 using Vigig.Service.Interfaces;
 using JwtRegisteredClaimNames = Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames;
@@ -134,5 +135,10 @@ public class JwtService : IJwtService
         {
             throw new InvalidTokenException();
         }
+    }
+
+    public object? GetSubjectClaim(string token)
+    {
+        return GetTokenClaim(token, TokenClaimConstant.Subject);
     }
 }

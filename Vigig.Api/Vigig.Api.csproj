@@ -51,6 +51,10 @@
         <EmbeddedResource Include="Scripts\11.Add_Popup_Table.sql" />
         <None Remove="Scripts\12.Ensure_Data.sql" />
         <EmbeddedResource Include="Scripts\12.Ensure_Data.sql" />
+        <None Remove="Scripts\13.Update_Booking.sql" />
+        <EmbeddedResource Include="Scripts\13.Update_Booking.sql" />
+        <None Remove="Scripts\14.Update_Booking.sql" />
+        <EmbeddedResource Include="Scripts\14.Update_Booking.sql" />
     </ItemGroup>
 
 </Project>

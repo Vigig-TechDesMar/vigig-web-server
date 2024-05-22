@@ -7,7 +7,7 @@ public class CreateProviderServiceRequest
     [Required]
     public Guid ServiceId { get; set; }
     [Required]
-    public double? StickerPrice { get; set; }
+    public double StickerPrice { get; set; }
     [Required]
-    public string? Description { get; set; }
+    public required string Description { get; set; }
 }

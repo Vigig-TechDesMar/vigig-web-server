@@ -1,10 +1,14 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Vigig.Api.Controllers.Base;
+using Vigig.Service.Constants;
 using Vigig.Service.Interfaces;
 using Vigig.Service.Models.Request.Service;
 
 namespace Vigig.Api.Controllers;
 [Route("/api/[controller]")]
+[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 public class UsersController : BaseApiController
 {
     private readonly IUserService _userService;
@@ -29,6 +33,7 @@ public class UsersController : BaseApiController
     }
 
     [HttpPost("/register-gigservice")]
+    [Authorize(Roles = UserRoleConstant.Provider)]
     public async Task<IActionResult> UploadService(CreateProviderServiceRequest request)
     {
         return await ExecuteServiceLogic(async () =>

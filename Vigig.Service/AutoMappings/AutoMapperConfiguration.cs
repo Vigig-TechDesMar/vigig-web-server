@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Vigig.Domain.Dtos;
 using Vigig.Domain.Dtos.Badge;
+using Vigig.Domain.Dtos.Booking;
 using Vigig.Domain.Dtos.Building;
 using Vigig.Domain.Dtos.Service;
 using Vigig.Domain.Dtos.VigigUser;
@@ -23,6 +24,7 @@ public static class AutoMapperConfiguration
         CreateServiceMaps(mapper);
         CreateBadgeMaps(mapper);
         CreateVigigUserMaps(mapper);
+        CreateBookingMaps(mapper);
     }
 
     public static void CreateUserMaps(IMapperConfigurationExpression mapper)
@@ -74,4 +76,10 @@ public static class AutoMapperConfiguration
         mapper.CreateMap<VigigUser, DtoUserProfile>();
     }
 
+    public static void CreateBookingMaps(IMapperConfigurationExpression mapper)
+    {
+        mapper.CreateMap<Booking, DtoPlacedBooking>()
+        .ForMember(dto => dto.ProviderName, opt => opt.MapFrom(x => x.ProviderService.Provider.UserName))
+        .ForMember(dto => dto.ProviderServiceName, opt => opt.MapFrom(x => x.ProviderService.Service.ServiceName));
+    }
 }

@@ -13,4 +13,6 @@ public interface IJwtService
     bool IsValidToken(string token);
 
     object? GetTokenClaim(string token, string claimName);
+
+    object GetSubjectClaim(string token);
 }

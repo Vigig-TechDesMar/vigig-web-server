@@ -10,11 +10,11 @@ using Vigig.Service.Models.Request.Badge;
 namespace Vigig.Api.Controllers;
 [Route("/api/[controller]")]
 [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-public class BadgeController : BaseApiController
+public class BadgesController : BaseApiController
 {
     private readonly IBadgeService _badgeService;
 
-    public BadgeController(IBadgeService badgeService)
+    public BadgesController(IBadgeService badgeService)
     {
         _badgeService = badgeService;
     }
