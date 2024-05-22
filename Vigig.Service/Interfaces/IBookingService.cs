@@ -1,0 +1,20 @@
+﻿using Vigig.Common.Attribute;
+using Vigig.Service.Models.Common;
+using Vigig.Service.Models.Request.Booking;
+
+namespace Vigig.Service.Interfaces;
+[ServiceRegister]
+public interface IBookingService
+{
+    Task<ServiceActionResult> PlaceBookingAsync(string token, BookingPlaceRequest request);
+
+    Task<ServiceActionResult> AcceptBookingAsync(Guid id, string token);
+
+    Task<ServiceActionResult> DeclineBookingAsync(Guid id, string token);
+
+    Task<ServiceActionResult> CancelBookingByClientAsync(Guid id, string token);
+
+    Task<ServiceActionResult> CancelBookingByProviderAsync(Guid id, string token);
+
+    Task<ServiceActionResult> CompleteBookingAsync(Guid id, BookingCompleteRequest request, string token);
+}

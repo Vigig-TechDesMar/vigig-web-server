@@ -1,0 +1,2 @@
+﻿ALTER TABLE [Booking]
+ADD IsActive BIT DEFAULT 1
