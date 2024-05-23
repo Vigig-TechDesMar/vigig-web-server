@@ -141,4 +141,11 @@ public class GigServicesController : BaseApiController
             .ConfigureAwait(false);
     }
 
+    [HttpGet("/search")]
+    [AllowAnonymous]
+    public async Task<IActionResult> SearchUsingGet(SearchUsingGet request)
+    {
+        return await ExecuteServiceLogic(async() =>
+            await _gigService.SearchGigService(request).ConfigureAwait(false)).ConfigureAwait(false);
+    }
 }

@@ -127,4 +127,15 @@ public class GigServiceService : IGigServiceService
             Data = service
         };
     }
+
+    public async Task<ServiceActionResult> SearchGigService(SearchUsingGet request)
+    {
+        var gigServices = (await _gigServiceRepository.GetAllAsync()).AsEnumerable();
+        var searchResults = _mapper.Map<IEnumerable<DtoGigService>>(SearchHelper.BuildSearchResult<GigService>(gigServices, request));
+        var paginatedResult = PaginationHelper.BuildPaginatedResult(searchResults.AsQueryable(), request.PageSize, request.PageIndex);
+        return new ServiceActionResult(true)
+        {
+            Data = paginatedResult
+        };
+    }
 }
