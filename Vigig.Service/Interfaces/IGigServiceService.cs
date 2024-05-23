@@ -17,4 +17,6 @@ public interface IGigServiceService
     Task<ServiceActionResult> GetACServicesByCategory(BasePaginatedRequest request);
     
     Task<ServiceActionResult> GetACServiceByCategory(Guid id, BasePaginatedRequest request);
+
+    Task<ServiceActionResult> SearchGigService(SearchUsingGet request);
 }
