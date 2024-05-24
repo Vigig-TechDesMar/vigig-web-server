@@ -28,7 +28,7 @@ public class BookingMessageService : IBookingMessageService
 
 
 
-    public async Task SendMessage(string token, Guid bookingId, string message)
+    public async Task<BookingMessage> SendMessage(string token, Guid bookingId, string message)
     {
         var senderId = _jwtService.GetSubjectClaim(token);
         
@@ -48,8 +48,19 @@ public class BookingMessageService : IBookingMessageService
         };
         await _messageRepository.AddAsync(bookingMessage);
         await _unitOfWork.CommitAsync();
+
+        return bookingMessage;
     }
-    
+
+    public async Task<IQueryable> LoadAllBookingMessage(string token, Guid bookingId)
+    {
+        var isValid = await EnsureHasBookingAsync(token, bookingId);
+        if (!isValid)
+            throw new Exception($"User does not have booking id: {bookingId}");
+        var messages = await _messageRepository.FindAsync(x => x.BookingId == bookingId);
+        return messages;
+    }
+
     private async Task<bool> EnsureHasBookingAsync(string token, Guid bookingId)
     {
         var providerId = _jwtService.GetSubjectClaim(token);
