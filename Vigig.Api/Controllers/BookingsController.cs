@@ -72,5 +72,5 @@ public class BookingsController : BaseApiController
             await _bookingService.CompleteBookingAsync(id, request,GetJwtToken())).ConfigureAwait(false);
     }
 
-    
+
 }
