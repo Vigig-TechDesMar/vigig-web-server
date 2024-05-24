@@ -67,6 +67,35 @@ public class BookingService : IBookingService
         }; 
     }
 
+    public async Task<DtoPlacedBooking> RetrievedPlaceBookingAsync(string token, BookingPlaceRequest request)
+    {
+        var clientId = _jwtService.GetSubjectClaim(token)!.ToString();
+        var client = (await _vigigUserRepository.FindAsync(x => x.IsActive && x.Id.ToString() == clientId))
+            .FirstOrDefault() ?? throw new UserNotFoundException(clientId);
+        
+        var building = (await _buildingRepository.FindAsync(x => x.IsActive && x.Id == request.BuildingId))
+            .FirstOrDefault() ?? throw new BuildingNotFoundException(request.BuildingId);
+        var providerService =
+            (await _proServiceRepository.FindAsync(x => x.IsActive && x.Id == request.ProviderServiceId))
+            .FirstOrDefault() ?? throw new ProviderServiceNotFoundException(request.ProviderServiceId);
+
+        var booking = new Booking
+        {
+            Apartment = request.Apartment,
+            Building = building,
+            Status = (int)BookingStatus.Pending,
+            ProviderService = providerService,
+            BookerName = (string.IsNullOrWhiteSpace(request.BookerName)) ? client.UserName : request.BookerName,
+            BookerPhone = (string.IsNullOrWhiteSpace(request.BookerPhone)) ? client.Phone! : request.BookerPhone!,
+            CreatedDate = DateTime.Now,
+            VigigUser = client,
+            StickerPrice = providerService.StickerPrice
+        };
+        await _bookingRepository.AddAsync(booking);
+        await _unitOfWork.CommitAsync();
+        return _mapper.Map<DtoPlacedBooking>(booking);
+    }
+
     public async Task<ServiceActionResult> AcceptBookingAsync(Guid id, string token)
     {
         var isValidProvider = EnsureHasBookingAsync(token, id);

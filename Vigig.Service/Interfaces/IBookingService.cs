@@ -1,4 +1,5 @@
 ﻿using Vigig.Common.Attribute;
+using Vigig.Domain.Dtos.Booking;
 using Vigig.Service.Models.Common;
 using Vigig.Service.Models.Request.Booking;
 
@@ -7,6 +8,8 @@ namespace Vigig.Service.Interfaces;
 public interface IBookingService
 {
     Task<ServiceActionResult> PlaceBookingAsync(string token, BookingPlaceRequest request);
+
+    Task<DtoPlacedBooking> RetrievedPlaceBookingAsync(string token, BookingPlaceRequest request);
 
     Task<ServiceActionResult> AcceptBookingAsync(Guid id, string token);
 

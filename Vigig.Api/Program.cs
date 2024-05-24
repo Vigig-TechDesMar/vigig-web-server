@@ -1,6 +1,8 @@
 using System.Text.Json.Serialization;
 using NLog;
 using Vigig.Api.Extensions;
+using Vigig.Api.Hubs;
+using Vigig.Api.Hubs.Models;
 using Vigig.Common.Constants;
 using Vigig.Common.Helpers;
 
@@ -20,7 +22,8 @@ builder.Services.AddCustomSwagger(builder.Configuration);
 builder.Services.AddJwtAuthentication(builder.Configuration);
 builder.Services.AddCorsPolicy(builder.Configuration);
 builder.Services.RegisterService();
-
+builder.Services.AddSignalR();
+builder.Services.AddSingleton<BookingConnectionPool>();
 var app = builder.Build();
 
 app.UseSwagger();
@@ -33,7 +36,7 @@ app.MapControllers();
 
 app.UseAuthentication();
 app.UseAuthorization();
-
+app.MapHub<BookingHub>("/booking-hub");
 DataAccessHelper.EnsureMigrations(AppDomain.CurrentDomain.FriendlyName);
 
 app.Run();

@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Vigig.Common.Helpers;
 using Vigig.DAL.Interfaces;
 using Vigig.Domain.Dtos.Service;
+using Vigig.Domain.Entities;
 using Vigig.Service.Exceptions.NotFound;
 using Vigig.Service.Interfaces;
 using Vigig.Service.Models.Common;
@@ -43,5 +45,14 @@ public class ProviderServiceService : IProviderServiceService
         {
             Data = _mapper.Map<DtoProviderService>(providerService)
         };
+    }
+
+    public async Task<ProviderService> RetrieveProviderServiceByIdAsync(Guid id)
+    {
+        var providerService =
+            (await _providerServiceRepository.FindAsync(x => x.IsActive && x.Id == id && x.IsAvailable))
+            .Include(x => x.Provider)
+            .FirstOrDefault() ?? throw new ProviderServiceNotFoundException(id);
+        return providerService;
     }
 }
