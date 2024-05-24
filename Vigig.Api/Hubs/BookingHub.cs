@@ -54,5 +54,5 @@ public class BookingHub : Hub
         var providerConnectionId = _pool.connectionPool[provider.Id.ToString()].LastOrDefault();
         if (providerConnectionId is not null)
             Clients.Client(providerConnectionId)?.SendAsync("triggerBooking",dtoPlacedBooking);
-    }g
+    }
 }
