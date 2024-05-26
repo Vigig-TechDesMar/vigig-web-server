@@ -130,11 +130,8 @@ public static class ServiceCollectionExtension
             {
                 builder.WithOrigins(corsSetting.GetAllowedOriginsArray())
                     .WithHeaders(corsSetting.GetAllowedHeadersArray())
-                    .WithMethods(corsSetting.GetAllowedMethodsArray());
-                if (corsSetting.AllowCredentials)
-                {
-                    builder.AllowCredentials();
-                }
+                    .WithMethods(corsSetting.GetAllowedMethodsArray())
+                    .AllowCredentials();
                 builder.Build();
             });
         });
