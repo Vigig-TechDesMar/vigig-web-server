@@ -17,7 +17,7 @@ public class UserTokenModalMapper : IDatabaseModelMapper
             entity.Property(e => e.LoginProvider).IsRequired().HasMaxLength(255);
             entity.Property(e => e.Value).IsRequired().HasMaxLength(Int32.MaxValue);
 
-            entity.HasOne<VigigUser>().WithMany().HasForeignKey(e => e.UserId)
+            entity.HasOne<VigigUser>(e => e.User).WithMany(e => e.Tokens).HasForeignKey(e => e.UserId)
                 .OnDelete(DeleteBehavior.ClientSetNull);
         });
     }

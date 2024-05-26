@@ -116,7 +116,8 @@ public class AuthService : IAuthService
         var refreshToken = await _userTokenRepository.GetAsync(t => t.Value == token.RefreshToken);
         if (refreshToken is null)
             throw new RefreshTokenNotFoundException(token.RefreshToken);
-        var customer = await _vigigUserRepository.GetAsync(c => c.Id == refreshToken.UserId);
+        var customer = (await _vigigUserRepository.FindAsync(c => c.Id == refreshToken.UserId))
+            .Include(x => x.Roles).FirstOrDefault();
         if (customer is null)
             throw new UserNotFoundException(refreshToken.UserId.ToString());
         var tokenResponse = GenerateAuthResponseAsync(customer);
