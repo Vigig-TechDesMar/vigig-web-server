@@ -7,5 +7,7 @@ namespace Vigig.Service.Interfaces;
 
 public interface IBookingMessageService
 {
-    Task SendMessage(string token, Guid bookingId, string message);
+    Task<BookingMessage> SendMessage(string token, Guid bookingId, string message);
+
+    Task<IQueryable> LoadAllBookingMessage(string token, Guid bookingId);
 }

@@ -37,6 +37,7 @@ app.MapControllers();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapHub<BookingHub>("/booking-hub");
+app.MapHub<ChatHub>("/chat");
 DataAccessHelper.EnsureMigrations(AppDomain.CurrentDomain.FriendlyName);
 
 app.Run();
