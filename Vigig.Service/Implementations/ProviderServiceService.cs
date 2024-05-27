@@ -40,6 +40,8 @@ public class ProviderServiceService : IProviderServiceService
     {
         var providerService =
             (await _providerServiceRepository.FindAsync(x => x.IsActive && x.Id == id && x.IsAvailable))
+            .Include(x => x.Provider)
+            .Include(x => x.Service)
             .FirstOrDefault() ?? throw new ProviderServiceNotFoundException(id,nameof(ProviderService.Id));
         return new ServiceActionResult(true)
         {

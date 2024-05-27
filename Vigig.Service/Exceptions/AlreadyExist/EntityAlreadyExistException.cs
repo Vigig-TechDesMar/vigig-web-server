@@ -12,8 +12,8 @@ public abstract class EntityAlreadyExistException<T>: ArgumentException,IBusines
     public EntityAlreadyExistException(object validateValue, object validateProperty)
     {
         var propertyName = typeof(T).GetProperty((string)validateProperty) ??
-                           throw new Exception($"Not found property name: {validateProperty}.");
+                           throw new Exception($"Không tìm thấy thuộc tính: {validateProperty}.");
         
-        _customeMessage = $"Entity of type '{typeof(T).Name}' with {validateProperty} '{validateValue}' already exist.";
+        _customeMessage = $"'{typeof(T).Name}' với {validateProperty} '{validateValue}' đã tồn tại.";
     }
 }
