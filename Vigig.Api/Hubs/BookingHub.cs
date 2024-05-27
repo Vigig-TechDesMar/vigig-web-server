@@ -53,6 +53,9 @@ public class BookingHub : Hub
         var dtoPlacedBooking = await _bookingService.RetrievedPlaceBookingAsync(accessToken, request);
         var providerConnectionId = _pool.connectionPool[provider.Id.ToString()].LastOrDefault();
         if (providerConnectionId is not null)
+        {
             Clients.Client(providerConnectionId)?.SendAsync("triggerBooking",dtoPlacedBooking);
+        }
+        Clients.Caller.SendAsync("FinishBooking", dtoPlacedBooking);
     }
 }
