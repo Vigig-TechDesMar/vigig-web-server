@@ -11,9 +11,12 @@ public abstract class EntityNotFoundException<T> : ArgumentException,INotFoundEx
         _customeMessage = $"Entity of type '{typeof(T).Name}' was not found";
     }
 
-    public EntityNotFoundException(object id)
+    public EntityNotFoundException(object validateValue, object validateProperty)
     {
-        _customeMessage = $"Entity of type '{typeof(T).Name}' with id '{id}' was not found.";
+        var propertyName = typeof(T).GetProperty((string)validateProperty) ??
+                           throw new Exception($"Not found property name: {validateProperty}.");
+        
+        _customeMessage = $"Entity of type '{typeof(T).Name}' with {validateProperty} '{validateValue}' was not found.";
     }
 
     

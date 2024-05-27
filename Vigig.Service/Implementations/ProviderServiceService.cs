@@ -27,7 +27,7 @@ public class ProviderServiceService : IProviderServiceService
     public async Task<ServiceActionResult> GetAirConditionerServicesByTypeAsync(string type, BasePaginatedRequest request)
     {
         var gigService = (await _gigServiceRepository.FindAsync(s => s.ServiceName.Equals(type) && s.IsActive))
-            .FirstOrDefault() ?? throw new GigServiceNotFoundException(type);
+            .FirstOrDefault() ?? throw new GigServiceNotFoundException(type,nameof(GigService.ServiceName));
         var typedServices = _mapper.ProjectTo<DtoProviderService>(await _providerServiceRepository.FindAsync(x => x.ServiceId == gigService.Id));
         var paginatedResult = PaginationHelper.BuildPaginatedResult(typedServices, request.PageSize, request.PageIndex);
         return new ServiceActionResult(true)
@@ -40,7 +40,7 @@ public class ProviderServiceService : IProviderServiceService
     {
         var providerService =
             (await _providerServiceRepository.FindAsync(x => x.IsActive && x.Id == id && x.IsAvailable))
-            .FirstOrDefault() ?? throw new ProviderServiceNotFoundException(id);
+            .FirstOrDefault() ?? throw new ProviderServiceNotFoundException(id,nameof(ProviderService.Id));
         return new ServiceActionResult(true)
         {
             Data = _mapper.Map<DtoProviderService>(providerService)
@@ -52,7 +52,7 @@ public class ProviderServiceService : IProviderServiceService
         var providerService =
             (await _providerServiceRepository.FindAsync(x => x.IsActive && x.Id == id && x.IsAvailable))
             .Include(x => x.Provider)
-            .FirstOrDefault() ?? throw new ProviderServiceNotFoundException(id);
+            .FirstOrDefault() ?? throw new ProviderServiceNotFoundException(id,nameof(ProviderService.Id));
         return providerService;
     }
 }

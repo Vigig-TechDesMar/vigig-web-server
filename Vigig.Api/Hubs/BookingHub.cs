@@ -2,6 +2,7 @@
 using Vigig.Api.Hubs.Models;
 using Vigig.DAL.Interfaces;
 using Vigig.Domain.Dtos.Booking;
+using Vigig.Domain.Entities;
 using Vigig.Service.Exceptions.NotFound;
 using Vigig.Service.Interfaces;
 using Vigig.Service.Models.Request.Booking;
@@ -56,7 +57,7 @@ public class BookingHub : Hub
         var providerService = await _providerServiceService.RetrieveProviderServiceByIdAsync(request.ProviderServiceId);
 
         var provider = await _vigigUserRepository.GetAsync(x => x.Id == providerService.ProviderId)
-                       ?? throw new UserNotFoundException("providerService.ProviderId");
+                       ?? throw new UserNotFoundException(providerService.ProviderId,nameof(ProviderService.Id));
         var dtoPlacedBooking = await _bookingService.RetrievedPlaceBookingAsync(accessToken, request);
         _pool.connectionPool.TryGetValue(provider.Id.ToString(), out var providerConnectionIds);
         if (providerConnectionIds is null) return dtoPlacedBooking;

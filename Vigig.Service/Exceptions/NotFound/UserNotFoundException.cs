@@ -4,7 +4,7 @@ namespace Vigig.Service.Exceptions.NotFound;
 
 public class UserNotFoundException : EntityNotFoundException<VigigUser>
 {
-    public UserNotFoundException(object id) : base(id)
+    public UserNotFoundException(object validateValue, object validateProperty) : base(validateValue,validateProperty)
     {
     }
 

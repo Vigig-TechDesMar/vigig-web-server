@@ -4,7 +4,7 @@ namespace Vigig.Service.Exceptions.NotFound;
 
 public class GigServiceNotFoundException : EntityNotFoundException<GigService>
 {
-    public GigServiceNotFoundException(object id) : base(id)
+    public GigServiceNotFoundException(object validateValue, object validateProperty) : base(validateValue,validateProperty)
     {
     }
 }

@@ -5,7 +5,7 @@ namespace Vigig.Service.Exceptions.NotFound;
 
 public class ServiceCategoryNotFoundException : EntityNotFoundException<ServiceCategory>
 {
-    public ServiceCategoryNotFoundException(object id) : base(id)
+    public ServiceCategoryNotFoundException(object validateValue, object validateProperty) : base(validateValue,validateProperty)
     {
     }
 }

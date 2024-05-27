@@ -34,7 +34,7 @@ public class BookingMessageService : IBookingMessageService
         
         var sender = (await _vigigUserRepository.FindAsync(x => x.IsActive && x.Id.ToString() == senderId))
             .Include(x => x.Bookings)
-            .FirstOrDefault() ?? throw new UserNotFoundException(senderId);
+            .FirstOrDefault() ?? throw new UserNotFoundException(senderId,nameof(VigigUser.Id));
         if (!sender.Bookings.Any(booking => booking.Id == bookingId))
             throw new Exception($"{sender.UserName} does not have booking id: {bookingId}");
         var booking = await _bookingRepository.GetAsync(x => x.IsActive && x.Id == bookingId);
@@ -66,7 +66,7 @@ public class BookingMessageService : IBookingMessageService
         var providerId = _jwtService.GetSubjectClaim(token);
         var provider = (await _vigigUserRepository.FindAsync(x => x.IsActive && x.Id.ToString() == providerId))
             .Include(x => x.Bookings)
-            .FirstOrDefault() ?? throw new UserNotFoundException(providerId);
+            .FirstOrDefault() ?? throw new UserNotFoundException(providerId,nameof(VigigUser.Id));
         return false;
     }
 }
