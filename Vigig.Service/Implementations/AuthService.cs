@@ -115,12 +115,12 @@ public class AuthService : IAuthService
     {
         var refreshToken = await _userTokenRepository.GetAsync(t => t.Value == token.RefreshToken);
         if (refreshToken is null)
-            throw new RefreshTokenNotFoundException(token.RefreshToken,nameof(UserToken.Value));
+            throw new RefreshTokenNotFoundException(refreshToken,nameof(UserToken.Value));
         var customer = (await _vigigUserRepository.FindAsync(c => c.Id == refreshToken.UserId))
             .Include(x => x.Roles).FirstOrDefault();
         if (customer is null)
             throw new UserNotFoundException(refreshToken.UserId.ToString(),nameof(VigigUser.Id));
-        var tokenResponse = GenerateAuthResponseAsync(customer);
+        var tokenResponse = await GenerateAuthResponseAsync(customer);
         return new ServiceActionResult()
         {
             Data = tokenResponse

@@ -80,6 +80,7 @@ public static class AutoMapperConfiguration
     {
         mapper.CreateMap<Booking, DtoPlacedBooking>()
         .ForMember(dto => dto.ProviderName, opt => opt.MapFrom(x => x.ProviderService.Provider.UserName))
-        .ForMember(dto => dto.ProviderServiceName, opt => opt.MapFrom(x => x.ProviderService.Service.ServiceName));
+        .ForMember(dto => dto.ProviderServiceName, opt => opt.MapFrom(x => x.ProviderService.Service.ServiceName))
+        .ForMember(dto => dto.BuildingName, opt => opt.MapFrom(x => x.Building.BuildingName));
     }
 }
