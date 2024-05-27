@@ -63,7 +63,7 @@ public class BookingHub : Hub
         if (providerConnectionIds is null) return dtoPlacedBooking;
         var providerConnectionId = providerConnectionIds.LastOrDefault();
         if ( providerConnectionId is not null)
-            Clients.Client(providerConnectionId)?.SendAsync("triggerBooking",dtoPlacedBooking);
+            Clients.Client(providerConnectionId)?.SendAsync("ReceiveBooking",dtoPlacedBooking);
         return dtoPlacedBooking;    
     }
 }
