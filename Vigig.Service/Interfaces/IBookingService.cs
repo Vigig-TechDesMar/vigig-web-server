@@ -20,4 +20,6 @@ public interface IBookingService
     Task<ServiceActionResult> CancelBookingByProviderAsync(Guid id, string token);
 
     Task<ServiceActionResult> CompleteBookingAsync(Guid id, BookingCompleteRequest request, string token);
+
+    Task<ServiceActionResult> LoadOwnBookingAsync(string token);
 }
