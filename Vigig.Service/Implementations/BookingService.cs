@@ -1,6 +1,8 @@
-﻿using AutoMapper;
+﻿using System.Security.Claims;
+using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualBasic;
 using Vigig.DAL.Interfaces;
 using Vigig.Domain.Dtos.Booking;
 using Vigig.Domain.Entities;
@@ -190,6 +192,29 @@ public class BookingService : IBookingService
         return new ServiceActionResult(true)
         {
             StatusCode = StatusCodes.Status204NoContent
+        };
+    }
+
+    public async Task<ServiceActionResult> LoadOwnBookingAsync(string token)
+    {
+        var userId = _jwtService.GetSubjectClaim(token).ToString();
+        var userRole = _jwtService.GetRoleClaim(token);
+        var bookings = userRole switch
+        {
+            UserRoleConstant.Client => (await _bookingRepository.FindAsync(x =>
+                                             x.IsActive && x.CustomerId.ToString() == userId))
+                                         .Include(x => x.BookingMessages)
+                                         ?? throw new UserNotFoundException(userId, nameof(VigigUser.Id)),
+            UserRoleConstant.Provider => (await _bookingRepository.FindAsync(x =>
+                                             x.IsActive && x.ProviderService.ProviderId.ToString() == userId))
+                                         .Include(x => x.BookingMessages)
+                                         ?? throw new UserNotFoundException(userId, nameof(VigigUser.Id)),
+            _ => new List<Booking>().AsQueryable(),
+        };
+
+        return new ServiceActionResult(true)
+        {
+            Data = _mapper.ProjectTo<DtoBookChat>(bookings)
         };
     }
 

@@ -22,7 +22,7 @@ public class ChatHub : Hub
         var token = Context.GetHttpContext()!.Request.Query["access_token"].ToString();
         var messages = await _bookingMessageService.LoadAllBookingMessage(token,Guid.Parse(conn.BookingId));
         await Clients.Group(conn.BookingId)
-            .SendAsync("JoinSpecificChatRoom",messages);
+            .SendAsync("LoadAllMessage",messages);
     }
 
     public async Task SendMessage(string msg)
