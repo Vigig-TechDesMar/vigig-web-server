@@ -59,10 +59,10 @@ public class JwtService : IJwtService
 
     public async Task<string> GenerateRefreshToken(Guid customerId)
     {
-        var existingRefreshToken = await _userTokenRepository.GetAsync(token =>
-            token.Name == TokenTypeConstants.RefreshToken &&
+        var existingRefreshToken = (await _userTokenRepository.FindAsync(token =>
+                token.Name == TokenTypeConstants.RefreshToken &&
                 token.LoginProvider == LoginProviderConstants.VigigApp &&
-                token.UserId == customerId);
+                token.UserId == customerId)).FirstOrDefault();
         if (existingRefreshToken is null)
         {
             existingRefreshToken = new UserToken()
