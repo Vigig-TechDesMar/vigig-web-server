@@ -32,4 +32,5 @@ public interface IGenericRepository<T>  where T:class
     
     bool Exists(Expression<Func<T, bool>> predicate);
     Task<bool> ExistsAsync(Expression<Func<T, bool>> predicate);
+    
 }

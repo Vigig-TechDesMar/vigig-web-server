@@ -1,6 +1,7 @@
 ﻿using Vigig.Common.Attribute;
 using Vigig.Common.Interfaces;
 using Vigig.Domain.Entities;
+using Vigig.Service.Models.Common;
 
 namespace Vigig.Service.Interfaces;
 [ServiceRegister]
@@ -17,4 +18,6 @@ public interface IJwtService
     object GetSubjectClaim(string token);
 
     object GetRoleClaim(string token);
+
+    AuthModel GetAuthModel(string token);
 }

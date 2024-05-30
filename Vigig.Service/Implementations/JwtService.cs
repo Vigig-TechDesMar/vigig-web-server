@@ -11,6 +11,7 @@ using Vigig.Domain.Entities;
 using Vigig.Service.Constants;
 using Vigig.Service.Exceptions;
 using Vigig.Service.Interfaces;
+using Vigig.Service.Models.Common;
 using JwtRegisteredClaimNames = Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames;
 
 namespace Vigig.Service.Implementations;
@@ -161,6 +162,40 @@ public class JwtService : IJwtService
             tokenHandler.ValidateToken(token, tokenValidationParameters, out var validatedToken);
             var jwtSecurityToken = (JwtSecurityToken)validatedToken;
             return jwtSecurityToken.Claims.FirstOrDefault(x => x.Type == "role").Value;
+        }
+        catch
+        {
+            throw new InvalidTokenException();
+        }
+    }
+
+    public AuthModel GetAuthModel(string token)
+    {
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var tokenValidationParameters = new TokenValidationParameters
+        {
+            ValidIssuer = _jwtSetting.Issuer,
+            ValidateIssuer = _jwtSetting.ValidateIssuer,
+            ValidAudience = _jwtSetting.Audience,
+            ValidateAudience = _jwtSetting.ValidateAudience,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSetting.SigningKey)),
+            ValidateIssuerSigningKey = _jwtSetting.ValidateIssuerSigningKey,
+            ValidateLifetime = _jwtSetting.ValidateLifetime,
+            ClockSkew = TimeSpan.Zero
+        };
+        try
+        {
+            tokenHandler.ValidateToken(token, tokenValidationParameters, out var validatedToken);
+            var jwtSecurityToken = (JwtSecurityToken)validatedToken;
+            var role =  jwtSecurityToken.Claims.FirstOrDefault(x => x.Type == "role").Value;
+            var userName = jwtSecurityToken.Claims.FirstOrDefault(x => x.Type == "name").Value;
+            var userId = jwtSecurityToken.Subject;
+            return new AuthModel
+            {
+                UserId = new Guid(userId),
+                UserName = userName,
+                Role = role
+            };
         }
         catch
         {
