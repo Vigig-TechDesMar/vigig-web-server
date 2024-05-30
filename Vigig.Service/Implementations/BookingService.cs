@@ -229,6 +229,6 @@ public class BookingService : IBookingService
             if (booking.Id == bookingId)
                 return true;
         }
-        return false;
+        return false;;
     }
 }

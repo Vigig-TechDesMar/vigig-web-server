@@ -24,6 +24,7 @@ builder.Services.AddCorsPolicy(builder.Configuration);
 builder.Services.RegisterService();
 builder.Services.AddSignalR();
 builder.Services.AddSingleton<BookingConnectionPool>();
+builder.Services.AddSingleton<ChatConnectionPool>();
 var app = builder.Build();
 
 app.UseSwagger();

@@ -38,7 +38,7 @@ public class JwtService : IJwtService
         {
             new Claim(JwtRegisteredClaimNames.Email,vigigUser.Email ?? ""),
             new Claim(JwtRegisteredClaimNames.Sub,vigigUser.Id.ToString() ?? ""),
-            new Claim(JwtRegisteredClaimNames.Name,vigigUser.FullName ?? ""),
+            new Claim(JwtRegisteredClaimNames.Name,vigigUser.UserName ?? ""),
         };
         claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role.ToString())));
 
