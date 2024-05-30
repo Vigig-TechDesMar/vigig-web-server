@@ -1,6 +1,8 @@
-﻿using AutoMapper;
+﻿using System.Security.Claims;
+using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualBasic;
 using Vigig.DAL.Interfaces;
 using Vigig.Domain.Dtos.Booking;
 using Vigig.Domain.Entities;
@@ -38,13 +40,13 @@ public class BookingService : IBookingService
     {
         var clientId = _jwtService.GetSubjectClaim(token)!.ToString();
         var client = (await _vigigUserRepository.FindAsync(x => x.IsActive && x.Id.ToString() == clientId))
-            .FirstOrDefault() ?? throw new UserNotFoundException(clientId);
+            .FirstOrDefault() ?? throw new UserNotFoundException(clientId,nameof(VigigUser.Id));
         
         var building = (await _buildingRepository.FindAsync(x => x.IsActive && x.Id == request.BuildingId))
-            .FirstOrDefault() ?? throw new BuildingNotFoundException(request.BuildingId);
+            .FirstOrDefault() ?? throw new BuildingNotFoundException(request.BuildingId,nameof(Building.Id));
         var providerService =
             (await _proServiceRepository.FindAsync(x => x.IsActive && x.Id == request.ProviderServiceId))
-            .FirstOrDefault() ?? throw new ProviderServiceNotFoundException(request.ProviderServiceId);
+            .FirstOrDefault() ?? throw new ProviderServiceNotFoundException(request.ProviderServiceId,nameof(ProviderService.Id));
 
         var booking = new Booking
         {
@@ -71,13 +73,13 @@ public class BookingService : IBookingService
     {
         var clientId = _jwtService.GetSubjectClaim(token)!.ToString();
         var client = (await _vigigUserRepository.FindAsync(x => x.IsActive && x.Id.ToString() == clientId))
-            .FirstOrDefault() ?? throw new UserNotFoundException(clientId);
+            .FirstOrDefault() ?? throw new UserNotFoundException(clientId,nameof(VigigUser.Id));
         
         var building = (await _buildingRepository.FindAsync(x => x.IsActive && x.Id == request.BuildingId))
-            .FirstOrDefault() ?? throw new BuildingNotFoundException(request.BuildingId);
+            .FirstOrDefault() ?? throw new BuildingNotFoundException(request.BuildingId,nameof(Building.Id));
         var providerService =
             (await _proServiceRepository.FindAsync(x => x.IsActive && x.Id == request.ProviderServiceId))
-            .FirstOrDefault() ?? throw new ProviderServiceNotFoundException(request.ProviderServiceId);
+            .FirstOrDefault() ?? throw new ProviderServiceNotFoundException(request.ProviderServiceId,nameof(ProviderService.Id));
 
         var booking = new Booking
         {
@@ -104,7 +106,7 @@ public class BookingService : IBookingService
         var booking = (await _bookingRepository.FindAsync(x => x.Id == id 
                                                                && x.Status == (int) BookingStatus.Pending
                                                                && x.IsActive))
-            .FirstOrDefault() ?? throw new BuildingNotFoundException(id);
+            .FirstOrDefault() ?? throw new BuildingNotFoundException(id,nameof(Building.Id));
         booking.Status = (int)BookingStatus.Accepted;
         await _bookingRepository.UpdateAsync(booking);
         await _unitOfWork.CommitAsync();
@@ -122,7 +124,7 @@ public class BookingService : IBookingService
         var booking = (await _bookingRepository.FindAsync(x => x.Id == id 
                                                                && x.Status == (int) BookingStatus.Pending
                                                                && x.IsActive))
-            .FirstOrDefault() ?? throw new BuildingNotFoundException(id);
+            .FirstOrDefault() ?? throw new BuildingNotFoundException(id,nameof(Building.Id));
 
         booking.Status = (int)BookingStatus.Declined;
         await _bookingRepository.UpdateAsync(booking);
@@ -141,7 +143,7 @@ public class BookingService : IBookingService
         var booking = (await _bookingRepository.FindAsync(x => x.Id == id 
                                                                && x.Status == (int) BookingStatus.Accepted 
                                                                && x.IsActive))
-            .FirstOrDefault() ?? throw new BuildingNotFoundException(id);
+            .FirstOrDefault() ?? throw new BuildingNotFoundException(id,nameof(Building.Id));
 
         booking.Status = (int)BookingStatus.CancelledByClient;
         await _bookingRepository.UpdateAsync(booking);
@@ -160,7 +162,7 @@ public class BookingService : IBookingService
         var booking = (await _bookingRepository.FindAsync(x => x.Id == id
                                                                && x.Status == (int) BookingStatus.Accepted
                                                                && x.IsActive))
-            .FirstOrDefault() ?? throw new BuildingNotFoundException(id);
+            .FirstOrDefault() ?? throw new BuildingNotFoundException(id,nameof(Building.Id));
 
         booking.Status = (int)BookingStatus.CancelledByProvider;
         await _bookingRepository.UpdateAsync(booking);
@@ -180,7 +182,7 @@ public class BookingService : IBookingService
                                                                && x.Status == (int)BookingStatus.Accepted
                                                                && x.IsActive))
             .Include( x => x.ProviderService)
-            .FirstOrDefault() ?? throw new BookingNotFoundException(id);
+            .FirstOrDefault() ?? throw new BookingNotFoundException(id,nameof(Building.Id));
         booking.Status = (int)BookingStatus.Completed;
         booking.CustomerRating = request.CustomerRating;
         booking.CustomerReview = request.CustomerReview;
@@ -193,12 +195,35 @@ public class BookingService : IBookingService
         };
     }
 
+    public async Task<ServiceActionResult> LoadOwnBookingAsync(string token)
+    {
+        var userId = _jwtService.GetSubjectClaim(token).ToString();
+        var userRole = _jwtService.GetRoleClaim(token);
+        var bookings = userRole switch
+        {
+            UserRoleConstant.Client => (await _bookingRepository.FindAsync(x =>
+                                             x.IsActive && x.CustomerId.ToString() == userId))
+                                         .Include(x => x.BookingMessages)
+                                         ?? throw new UserNotFoundException(userId, nameof(VigigUser.Id)),
+            UserRoleConstant.Provider => (await _bookingRepository.FindAsync(x =>
+                                             x.IsActive && x.ProviderService.ProviderId.ToString() == userId))
+                                         .Include(x => x.BookingMessages)
+                                         ?? throw new UserNotFoundException(userId, nameof(VigigUser.Id)),
+            _ => new List<Booking>().AsQueryable(),
+        };
+
+        return new ServiceActionResult(true)
+        {
+            Data = _mapper.ProjectTo<DtoBookChat>(bookings)
+        };
+    }
+
     private async Task<bool> EnsureHasBookingAsync(string token, Guid bookingId)
     {
         var providerId = _jwtService.GetSubjectClaim(token);
         var provider = (await _vigigUserRepository.FindAsync(x => x.IsActive && x.Id.ToString() == providerId))
             .Include(x => x.Bookings)
-            .FirstOrDefault() ?? throw new UserNotFoundException(providerId);
+            .FirstOrDefault() ?? throw new UserNotFoundException(providerId,nameof(VigigUser.Id));
         foreach (var booking in provider.Bookings)
         {
             if (booking.Id == bookingId)

@@ -50,7 +50,7 @@ public class AuthService : IAuthService
             .FirstOrDefault() ?? throw new RoleNotFoundException(request.Role.ToString());
         
         var building =  (await _buildingRepository.FindAsync(b => b.Id == request.BuildingId)).FirstOrDefault() 
-                        ?? throw new BuildingNotFoundException(request.BuildingId);
+                        ?? throw new BuildingNotFoundException(request.BuildingId,nameof(Building.Id));
         
         if (retrivedUser is not null)
             throw new UserAlreadyExistException(request.Email);
@@ -77,7 +77,7 @@ public class AuthService : IAuthService
             if (role.Name.Equals(UserRoleConstant.Provider))
             {
                 retrivedUser.Badge = (await _badgeRepository.FindAsync(x => x.IsActive && x.BadgeName == BadgeConstant.PromisingProvider))
-                    .FirstOrDefault() ?? throw new BadgeNotFoundException(BadgeConstant.PromisingProvider);
+                    .FirstOrDefault() ?? throw new BadgeNotFoundException(BadgeConstant.PromisingProvider,nameof(BadgeConstant));
             }
 
             await _vigigUserRepository.AddAsync(retrivedUser);
@@ -94,7 +94,7 @@ public class AuthService : IAuthService
             .FirstOrDefault();
 
         if (retrivedUser is null)
-            throw new UserNotFoundException(request.Email);
+            throw new UserNotFoundException(request.Email,nameof(VigigUser.Email));
         var isValidPassword = PasswordHashHelper.VerifyPassword(request.Password, retrivedUser.Password);
         if (!isValidPassword)
             throw new InvalidPasswordException();

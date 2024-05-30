@@ -51,7 +51,7 @@ public class BadgeService : IBadgeService
     public async Task<ServiceActionResult> GetByIdAsync(Guid id)
     {
         var badge = _mapper.Map<DtoBadge>((await _badgeRepository
-            .FindAsync(b => b.IsActive && b.Id == id)).FirstOrDefault() ?? throw new BadgeNotFoundException(id));
+            .FindAsync(b => b.IsActive && b.Id == id)).FirstOrDefault() ?? throw new BadgeNotFoundException(id,nameof(Badge.Id)));
         return new ServiceActionResult(true)
         {
             Data = badge
@@ -61,7 +61,7 @@ public class BadgeService : IBadgeService
     public async Task<ServiceActionResult> UpdateAsync(UpdateBadgeRequest request)
     {
         var existedBadge = (await _badgeRepository
-            .FindAsync(b => b.IsActive && b.Id == request.Id)).FirstOrDefault() ?? throw new BadgeNotFoundException(request.Id);
+            .FindAsync(b => b.IsActive && b.Id == request.Id)).FirstOrDefault() ?? throw new BadgeNotFoundException(request.Id,nameof(Badge.Id));
         _mapper.Map(request, existedBadge);
         await _badgeRepository.UpdateAsync(existedBadge);
         await _unitOfWork.CommitAsync();

@@ -30,4 +30,6 @@ public partial class VigigUser : IdentityEntity
     public virtual ICollection<ProviderKPI> KPIs { get; set; } = new List<ProviderKPI>();
 
     public virtual ICollection<Deposit> Deposits { get; set; } = new List<Deposit>();
+
+    public virtual ICollection<UserToken> Tokens { get; set; } = new List<UserToken>();
 }

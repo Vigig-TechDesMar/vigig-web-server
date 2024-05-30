@@ -37,7 +37,7 @@ public class UserService : IUserService
     {
         var userId = GetIdClaimFromToken(token);
         var userInfo = _mapper.Map<DtoUserProfile>((await _vigigUserRepository.FindAsync(x => x.Id.ToString() == userId && x.IsActive))
-            .FirstOrDefault()) ?? throw new UserNotFoundException(userId);
+            .FirstOrDefault()) ?? throw new UserNotFoundException(userId,nameof(VigigUser.Id));
         return new ServiceActionResult(true)
         {
             Data = userInfo
@@ -49,10 +49,10 @@ public class UserService : IUserService
         var userId = GetIdClaimFromToken(token);
         
         var provider = (await _vigigUserRepository.FindAsync(x => x.IsActive && x.Id.ToString() == userId))
-            .FirstOrDefault() ?? throw new UserNotFoundException(userId);
+            .FirstOrDefault() ?? throw new UserNotFoundException(userId,nameof(VigigUser.Id));
         
         var gigService = (await _gigServiceRepository.FindAsync(x => x.IsActive && x.Id == request.ServiceId))
-            .FirstOrDefault() ?? throw new GigServiceNotFoundException(request.ServiceId);
+            .FirstOrDefault() ?? throw new GigServiceNotFoundException(request.ServiceId,nameof(GigService.Id));
 
         var providerService = new ProviderService()
         {

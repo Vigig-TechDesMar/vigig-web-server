@@ -15,4 +15,6 @@ public interface IJwtService
     object? GetTokenClaim(string token, string claimName);
 
     object GetSubjectClaim(string token);
+
+    object GetRoleClaim(string token);
 }

@@ -7,4 +7,6 @@ public class DtoUserProfile
     public string? Phone { get; set; }
     
     public string? Address { get; set; }
+    
+    public Guid BuildingId { get; set; }
 }

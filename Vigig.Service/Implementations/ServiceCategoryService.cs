@@ -38,7 +38,7 @@ public class ServiceCategoryService : IServiceCategoryService
     public async Task<ServiceActionResult> GetByIdAsync(Guid serviceCategoryId)
     {
         var category = (await _serviceCategoryRepository.FindAsync(sc => sc.Id == serviceCategoryId && sc.IsActive))
-            .FirstOrDefault() ?? throw new ServiceCategoryNotFoundException(serviceCategoryId.ToString());
+            .FirstOrDefault() ?? throw new ServiceCategoryNotFoundException(serviceCategoryId,nameof(ServiceCategory.Id));
         return new ServiceActionResult(true)
         {
             Data = _mapper.Map<DtoServiceCategory>(category)
@@ -64,7 +64,7 @@ public class ServiceCategoryService : IServiceCategoryService
     public async Task<ServiceActionResult> UpdateAsync(UpdateServiceCategoryRequest request)
     {
         var existedCategory = (await _serviceCategoryRepository.FindAsync(sc => sc.Id == request.Id && sc.IsActive))
-            .FirstOrDefault() ?? throw new ServiceCategoryNotFoundException(request.Id);
+            .FirstOrDefault() ?? throw new ServiceCategoryNotFoundException(request.Id,nameof(ServiceCategory.Id));
         
         _mapper.Map(request,existedCategory);
         await _serviceCategoryRepository.UpdateAsync(existedCategory);

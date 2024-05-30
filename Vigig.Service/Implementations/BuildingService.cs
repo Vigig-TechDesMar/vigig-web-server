@@ -53,7 +53,7 @@ public class BuildingService : IBuildingService
     public async Task<ServiceActionResult> GetById(Guid buildingId)
     {
         var building = (await _buildingRepository.FindAsync(b => b.Id == buildingId && b.IsActive)).FirstOrDefault()
-                       ?? throw new BuildingNotFoundException(buildingId.ToString());
+                       ?? throw new BuildingNotFoundException(buildingId.ToString(),nameof(Building.Id));
         return new ServiceActionResult(true)
         {
             Data = _mapper.Map<DtoBuilding>(building)
@@ -63,7 +63,7 @@ public class BuildingService : IBuildingService
     public async Task<ServiceActionResult> UpdateAsync(UpdateBuildingRequest building)
     {
         var existedBuilding = (await _buildingRepository.FindAsync(b => b.Id == building.Id && b.IsActive)).FirstOrDefault()
-            ?? throw new BuildingNotFoundException(building.Id.ToString());
+            ?? throw new BuildingNotFoundException(building.Id,nameof(Building.Id));
         existedBuilding.BuildingName = (string.IsNullOrEmpty(building.BuildingName)) ? existedBuilding.BuildingName : building.BuildingName;
         existedBuilding.Note = (string.IsNullOrEmpty(building.Note)) ? existedBuilding.Note : building.Note;
         
@@ -78,7 +78,7 @@ public class BuildingService : IBuildingService
     public async Task<ServiceActionResult> DeactivateAsync(Guid buildingId)
     {
         var building = (await _buildingRepository.FindAsync(b => b.IsActive && b.Id == buildingId)).FirstOrDefault()
-                       ?? throw new BuildingNotFoundException(buildingId.ToString());
+                       ?? throw new BuildingNotFoundException(buildingId,nameof(Building.Id));
         building.IsActive = false;
         return new ServiceActionResult(true)
         {

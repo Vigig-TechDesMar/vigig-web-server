@@ -8,12 +8,15 @@ public abstract class EntityNotFoundException<T> : ArgumentException,INotFoundEx
     public override string Message => _customeMessage ?? Message;
     public EntityNotFoundException()
     {
-        _customeMessage = $"Entity of type '{typeof(T).Name}' was not found";
+        _customeMessage = $"'{typeof(T).Name}' không tồn tại";
     }
 
-    public EntityNotFoundException(object id)
+    public EntityNotFoundException(object validateValue, object validateProperty)
     {
-        _customeMessage = $"Entity of type '{typeof(T).Name}' with id '{id}' was not found.";
+        var propertyName = typeof(T).GetProperty((string)validateProperty) ??
+                           throw new Exception($"Not found property name: {validateProperty}.");
+        
+        _customeMessage = $"'{typeof(T).Name}' với {validateProperty} '{validateValue}' không tồn tại.";
     }
 
     

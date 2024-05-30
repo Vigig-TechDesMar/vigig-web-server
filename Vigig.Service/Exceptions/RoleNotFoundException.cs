@@ -9,6 +9,7 @@ public class RoleNotFoundException : ArgumentException, IBadRequestException
 
     public RoleNotFoundException(string role)
     {
-        _customeMessage = $"Role {role} is not available in our system.";
+        // _customeMessage = $"Role {role} is not available in our system.";
+        _customeMessage = $"Role {role} không được hổ trợ trong hệ thống.";
     }
 }

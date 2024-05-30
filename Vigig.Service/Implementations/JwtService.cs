@@ -141,4 +141,30 @@ public class JwtService : IJwtService
     {
         return GetTokenClaim(token, TokenClaimConstant.Subject);
     }
+
+    public object? GetRoleClaim(string token)
+    {
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var tokenValidationParameters = new TokenValidationParameters
+        {
+            ValidIssuer = _jwtSetting.Issuer,
+            ValidateIssuer = _jwtSetting.ValidateIssuer,
+            ValidAudience = _jwtSetting.Audience,
+            ValidateAudience = _jwtSetting.ValidateAudience,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSetting.SigningKey)),
+            ValidateIssuerSigningKey = _jwtSetting.ValidateIssuerSigningKey,
+            ValidateLifetime = _jwtSetting.ValidateLifetime,
+            ClockSkew = TimeSpan.Zero
+        };
+        try
+        {
+            tokenHandler.ValidateToken(token, tokenValidationParameters, out var validatedToken);
+            var jwtSecurityToken = (JwtSecurityToken)validatedToken;
+            return jwtSecurityToken.Claims.FirstOrDefault(x => x.Type == "role").Value;
+        }
+        catch
+        {
+            throw new InvalidTokenException();
+        }
+    }
 }
