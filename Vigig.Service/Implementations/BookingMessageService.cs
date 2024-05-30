@@ -1,9 +1,12 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Vigig.DAL.Interfaces;
+using Vigig.Domain.Dtos.Booking;
 using Vigig.Domain.Entities;
+using Vigig.Service.Constants;
 using Vigig.Service.Exceptions.NotFound;
 using Vigig.Service.Interfaces;
+using Vigig.Service.Models.Common;
 
 namespace Vigig.Service.Implementations;
 
@@ -28,45 +31,58 @@ public class BookingMessageService : IBookingMessageService
 
 
 
-    public async Task<BookingMessage> SendMessage(string token, Guid bookingId, string message)
+    public async Task<DtoBookingMessage> SendMessage(string token, Guid bookingId, string message)
     {
-        var senderId = _jwtService.GetSubjectClaim(token);
-        
-        var sender = (await _vigigUserRepository.FindAsync(x => x.IsActive && x.Id.ToString() == senderId))
-            .Include(x => x.Bookings)
-            .FirstOrDefault() ?? throw new UserNotFoundException(senderId,nameof(VigigUser.Id));
-        if (!sender.Bookings.Any(booking => booking.Id == bookingId))
-            throw new Exception($"{sender.UserName} does not have booking id: {bookingId}");
+        var authModel = _jwtService.GetAuthModel(token);
+        await ValidateUserBookingAsync(authModel, bookingId);
         var booking = await _bookingRepository.GetAsync(x => x.IsActive && x.Id == bookingId);
-        
         var bookingMessage = new BookingMessage
         {
-            SenderName = sender.UserName,
+            SenderName = authModel.UserName,
             Content = message.Trim(),
             Booking = booking,
             SentAt = DateTime.Now
         };
         await _messageRepository.AddAsync(bookingMessage);
         await _unitOfWork.CommitAsync();
-
-        return bookingMessage;
+        return _mapper.Map<DtoBookingMessage>(bookingMessage);
     }
 
-    public async Task<IQueryable> LoadAllBookingMessage(string token, Guid bookingId)
+    public async Task<IQueryable<DtoBookingMessage>> LoadAllBookingMessage(string token, Guid bookingId)
     {
         var isValid = await EnsureHasBookingAsync(token, bookingId);
         if (!isValid)
             throw new Exception($"User does not have booking id: {bookingId}");
         var messages = await _messageRepository.FindAsync(x => x.BookingId == bookingId);
-        return messages;
+        return _mapper.ProjectTo<DtoBookingMessage>(messages);
     }
 
     private async Task<bool> EnsureHasBookingAsync(string token, Guid bookingId)
     {
-        var providerId = _jwtService.GetSubjectClaim(token);
-        var provider = (await _vigigUserRepository.FindAsync(x => x.IsActive && x.Id.ToString() == providerId))
+        var userId = _jwtService.GetSubjectClaim(token);
+        var provider = (await _vigigUserRepository.FindAsync(x => x.IsActive && x.Id.ToString() == userId))
             .Include(x => x.Bookings)
-            .FirstOrDefault() ?? throw new UserNotFoundException(providerId,nameof(VigigUser.Id));
-        return false;
+            .FirstOrDefault() ?? throw new UserNotFoundException(userId,nameof(VigigUser.Id));
+        return true;
+    }
+    
+    private async Task ValidateUserBookingAsync(AuthModel authModel, Guid bookingId)
+    {
+        bool isValid = false;
+        if (authModel.Role == UserRoleConstant.Client)
+        {
+            isValid = await _bookingRepository.ExistsAsync(x =>
+                x.Id == bookingId && x.CustomerId == authModel.UserId);
+        }
+        if (authModel.Role == UserRoleConstant.Provider)
+        {
+            isValid = await _bookingRepository.ExistsAsync(x =>
+                x.Id == bookingId && x.ProviderService.ProviderId == authModel.UserId);
+        }
+        
+        if (!isValid)
+        {
+            throw new Exception($"{authModel.UserName} does not have booking ID: {bookingId}");
+        }
     }
 }

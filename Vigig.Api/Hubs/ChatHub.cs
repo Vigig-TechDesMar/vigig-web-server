@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using Vigig.Api.Hubs.Models;
+using Vigig.Domain.Dtos.Booking;
+using Vigig.Domain.Entities;
 using Vigig.Service.Interfaces;
 
 namespace Vigig.Api.Hubs;
@@ -8,34 +10,54 @@ public class ChatHub : Hub
 {
     private readonly ChatConnectionPool _chatConnectionPool;
     private readonly IBookingMessageService _bookingMessageService;
+    private IJwtService _jwtService;
 
-    public ChatHub(ChatConnectionPool chatConnectionPool, IBookingMessageService bookingMessageService)
+    public ChatHub(ChatConnectionPool chatConnectionPool, IBookingMessageService bookingMessageService, IJwtService jwtService)
     {
         _chatConnectionPool = chatConnectionPool;
         _bookingMessageService = bookingMessageService;
+        _jwtService = jwtService;
     }
 
-    public async Task JoinSpecificChatRoom(UserConnection conn)
+    public override Task<string> OnConnectedAsync()
     {
-        await Groups.AddToGroupAsync(Context.ConnectionId, conn.BookingId);
-        _chatConnectionPool.connections[Context.ConnectionId] = conn;
-        var token = Context.GetHttpContext()!.Request.Query["access_token"].ToString();
-        var messages = await _bookingMessageService.LoadAllBookingMessage(token,Guid.Parse(conn.BookingId));
-        await Clients.Group(conn.BookingId)
-            .SendAsync("LoadAllMessage",messages);
-    }
+        var accessToken = Context.GetHttpContext().Request.Query["access_token"].ToString();
+        var userId = _jwtService.GetSubjectClaim(accessToken).ToString();
+        var connectionId = Context.ConnectionId;
 
-    public async Task SendMessage(string msg)
-    {
-        var token = Context.GetHttpContext()!.Request.Query["access_token"].ToString();
-
-        if (_chatConnectionPool.connections.TryGetValue(Context.ConnectionId, out UserConnection conn))
+        if (!string.IsNullOrEmpty(userId) && !string.IsNullOrEmpty(connectionId))
         {
-            await _bookingMessageService.SendMessage(token, Guid.Parse(conn.BookingId), msg);
-            
-            await Clients.Group(conn.BookingId)
-                .SendAsync("ReceiveSpecificMessage", conn.UserName, msg);
-        }   
+            if (!_chatConnectionPool.connections.ContainsKey(userId))
+            {
+                _chatConnectionPool.connections[userId] = new ();
+            }
+            _chatConnectionPool.connections[userId].Add(string.Empty);
+        }
+        base.OnConnectedAsync();
+        return Task.FromResult("aaa");
+    }
+
+    public async Task<IEnumerable<DtoBookingMessage>>JoinSpecificChatRoom(string bookingId)
+    {
+        
+        await Groups.AddToGroupAsync(Context.ConnectionId, bookingId);
+        var token = Context.GetHttpContext()!.Request.Query["access_token"].ToString();
+        var userId = _jwtService.GetSubjectClaim(token).ToString();
+        _chatConnectionPool.connections[userId].Add(bookingId);
+        var messages = await _bookingMessageService.LoadAllBookingMessage(token,Guid.Parse(bookingId));
+        // await Clients.Group(bookingId)
+        //     .SendAsync("LoadAllMessage",messages);
+
+        return messages.ToList();
+    }
+
+    public async Task SendMessage(string msg, string bookingId)
+    {
+        var token = Context.GetHttpContext()!.Request.Query["access_token"].ToString();
+        var message = await _bookingMessageService.SendMessage(token, Guid.Parse(bookingId), msg);
+        // Console.WriteLine(Clients.Groups());
+        await Clients.Group(bookingId)
+            .SendAsync("ReceiveSpecificMessage", message);
     }
     
 }

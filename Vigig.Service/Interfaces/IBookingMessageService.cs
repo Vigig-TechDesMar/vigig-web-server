@@ -1,4 +1,5 @@
 ﻿using Vigig.Common.Attribute;
+using Vigig.Domain.Dtos.Booking;
 using Vigig.Domain.Entities;
 
 namespace Vigig.Service.Interfaces;
@@ -7,7 +8,7 @@ namespace Vigig.Service.Interfaces;
 
 public interface IBookingMessageService
 {
-    Task<BookingMessage> SendMessage(string token, Guid bookingId, string message);
+    Task<DtoBookingMessage> SendMessage(string token, Guid bookingId, string message);
 
-    Task<IQueryable> LoadAllBookingMessage(string token, Guid bookingId);
+    Task<IQueryable<DtoBookingMessage>> LoadAllBookingMessage(string token, Guid bookingId);
 }
