@@ -115,11 +115,13 @@ public class AuthService : IAuthService
     {
         var refreshToken = await _userTokenRepository.GetAsync(t => t.Value == token.RefreshToken);
         if (refreshToken is null)
-            throw new RefreshTokenNotFoundException(refreshToken,nameof(UserToken.Value));
+            // throw new RefreshTokenNotFoundException(token.RefreshToken);
+            throw new Exception("Not found token.");
         var customer = (await _vigigUserRepository.FindAsync(c => c.Id == refreshToken.UserId))
-            .Include(x => x.Roles).FirstOrDefault();
+            .Include(x => x.Roles)
+            .FirstOrDefault();
         if (customer is null)
-            throw new UserNotFoundException(refreshToken.UserId.ToString(),nameof(VigigUser.Id));
+            throw new UserNotFoundException(refreshToken.UserId.ToString());
         var tokenResponse = await GenerateAuthResponseAsync(customer);
         return new ServiceActionResult()
         {
@@ -134,12 +136,12 @@ public class AuthService : IAuthService
         var reponse = new AuthResponse()
         {
             Name = vigigUser.UserName ?? vigigUser.Email ?? String.Empty,
-            Roles = roles,
+            Roles = roles ,
             Token = new TokenResponse()
             {
                 AccessToken = _jwtService.GenerateAccessToken(vigigUser,roles),
                 RefreshToken = await _jwtService.GenerateRefreshToken(vigigUser.Id),
-                ExpiresAt = DateTimeOffset.Now.AddHours(_jwtSetting.RefreshTokenLifetimeInMinutes)
+                ExpiresAt = DateTimeOffset.Now.AddMinutes(_jwtSetting.RefreshTokenLifetimeInMinutes)
             }
         };
         return reponse;
