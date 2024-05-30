@@ -121,7 +121,7 @@ public class AuthService : IAuthService
             .Include(x => x.Roles)
             .FirstOrDefault();
         if (customer is null)
-            throw new UserNotFoundException(refreshToken.UserId.ToString());
+            throw new UserNotFoundException(refreshToken.UserId,nameof(VigigUser.Id));
         var tokenResponse = await GenerateAuthResponseAsync(customer);
         return new ServiceActionResult()
         {
