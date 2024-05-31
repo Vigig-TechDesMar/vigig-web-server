@@ -88,6 +88,7 @@ public static class AutoMapperConfiguration
                 opt => opt.MapFrom(x => x.ProviderService.Provider.ProfileImage))
             .ForMember(dto => dto.ClientName, opt => opt.MapFrom(x => x.VigigUser.UserName))
             .ForMember(dto => dto.ClientProfileImage, opt => opt.MapFrom(x => x.VigigUser.ProfileImage))
+            .ForMember(dto => dto.ChatTitle, opt=> opt.MapFrom(x => x.ProviderService.Service.ServiceName +" - "+ x.CreatedDate.Date))
             .ForMember(dto => dto.LastMessage, opt =>
             {
                 opt.Condition(x => x.BookingMessages.Any());

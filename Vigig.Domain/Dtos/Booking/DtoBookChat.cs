@@ -8,4 +8,6 @@ public class DtoBookChat
     public required string ClientProfileImage { get; set; }
     public required string ProviderProfileImage { get; set; }
     public required string LastMessage { get; set; } = String.Empty;
+
+    public required string ChatTitle { get; set; } = String.Empty;
 }
