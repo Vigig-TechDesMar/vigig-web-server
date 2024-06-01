@@ -39,7 +39,7 @@ public class ProviderServiceService : IProviderServiceService
     public async Task<ServiceActionResult> GetProviderServiceByIdAsync(Guid id)
     {
         var providerService =
-            (await _providerServiceRepository.FindAsync(x => x.IsActive && x.Id == id && x.IsAvailable))
+            (await _providerServiceRepository.FindAsync(x => x.IsActive && x.Id == id && x.IsVisible))
             .Include(x => x.Provider)
             .Include(x => x.Service)
             .FirstOrDefault() ?? throw new ProviderServiceNotFoundException(id,nameof(ProviderService.Id));
@@ -52,7 +52,7 @@ public class ProviderServiceService : IProviderServiceService
     public async Task<ProviderService> RetrieveProviderServiceByIdAsync(Guid id)
     {
         var providerService =
-            (await _providerServiceRepository.FindAsync(x => x.IsActive && x.Id == id && x.IsAvailable))
+            (await _providerServiceRepository.FindAsync(x => x.IsActive && x.Id == id && x.IsVisible))
             .Include(x => x.Provider)
             .FirstOrDefault() ?? throw new ProviderServiceNotFoundException(id,nameof(ProviderService.Id));
         return providerService;

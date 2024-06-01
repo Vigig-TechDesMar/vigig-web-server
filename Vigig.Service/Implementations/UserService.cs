@@ -64,6 +64,7 @@ public class UserService : IUserService
                     ? request.StickerPrice : throw new PriceNotInRangeException(gigService.ServiceName),
             TotalBooking = 0,
             Rating = 0,
+            RatingCount = 0
         };
 
         await _providerServiceRepository.AddAsync(providerService);
