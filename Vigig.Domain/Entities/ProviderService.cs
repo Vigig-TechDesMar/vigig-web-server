@@ -9,15 +9,15 @@ public partial class ProviderService
 
     public double? Rating { get; set; }
 
+    public int RatingCount { get; set; } = default;
+
     public double? TotalBooking { get; set; }
 
     public double StickerPrice { get; set; }
 
     public string? Description { get; set; }
 
-    public bool IsAvailable { get; set; }
-
-    public bool? IsVisible { get; set; }
+    public bool IsVisible { get; set; }
 
     public bool IsActive { get; set; }
 
