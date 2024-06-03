@@ -198,7 +198,7 @@ public class BookingService : IBookingService
         };
     }
 
-    public async Task<ServiceActionResult> LoadOwnBookingAsync(string token)
+    public async Task<ServiceActionResult> LoadOwnChatBookingAsync(string token)
     {
         var userId = _jwtService.GetSubjectClaim(token).ToString();
         var userRole = _jwtService.GetRoleClaim(token);
@@ -221,14 +221,14 @@ public class BookingService : IBookingService
         };
     }
 
-    public async Task<ServiceActionResult> RatingBookingAsync(string token, BookingRatingRequest request)
+    public async Task<ServiceActionResult> RatingBookingAsync(string token, Guid bookingId, BookingRatingRequest request)
     {
         var user = _jwtService.GetAuthModel(token);
         var booking = user.Role switch
         {
-            UserRoleConstant.Client => await GetBookingForClientAsync(user.UserId, request.BookingId, user.UserName),
-            UserRoleConstant.Provider => await GetBookingForProviderAsync(user.UserId, request.BookingId, user.UserName),
-            _ => throw new BookingNotFoundException(request.BookingId, nameof(request.BookingId))
+            UserRoleConstant.Client => await GetBookingForClientAsync(user.UserId, bookingId, user.UserName),
+            UserRoleConstant.Provider => await GetBookingForProviderAsync(user.UserId, bookingId, user.UserName),
+            _ => throw new BookingNotFoundException(bookingId, nameof(Booking.Id))
         };
         if (user.Role == UserRoleConstant.Provider)
         {
@@ -250,6 +250,16 @@ public class BookingService : IBookingService
         };
     }
 
+    public async Task<ServiceActionResult> LoadAllBookingsAsync(string token)
+    {
+        var provider = _jwtService.GetAuthModel(token);
+        var bookings = await _bookingRepository.FindAsync(x => x.ProviderService.ProviderId == provider.UserId);
+        return new ServiceActionResult(true)
+        {
+            Data = _mapper.ProjectTo<DtoBooking>(bookings)
+        };
+    }
+
     private async Task<bool> EnsureHasBookingAsync(string token, Guid bookingId)
     {
         var providerId = _jwtService.GetSubjectClaim(token);
@@ -265,7 +275,8 @@ public class BookingService : IBookingService
             x.IsActive &&
             x.CustomerId == userId &&
             x.Id == bookingId &&
-            x.Status == (int)BookingStatus.Completed)).FirstOrDefault();
+            x.Status == (int)BookingStatus.Completed))
+            .Include(x => x.ProviderService).FirstOrDefault();
 
         if (booking == null)
         {
@@ -281,7 +292,8 @@ public class BookingService : IBookingService
             x.IsActive &&
             x.ProviderService.ProviderId == userId &&
             x.Id == bookingId &&
-            x.Status == (int)BookingStatus.Completed)).FirstOrDefault();
+            x.Status == (int)BookingStatus.Completed))
+            .Include(x => x.ProviderService).FirstOrDefault();
 
         if (booking == null)
         {

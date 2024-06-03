@@ -3,7 +3,6 @@ using Vigig.Api.Controllers.Base;
 using Vigig.Service.Interfaces;
 
 namespace Vigig.Api.Controllers;
-[Route("/api/[controller]")]
 public class MediaController : BaseApiController
 {
     private readonly IMediaService _mediaService;

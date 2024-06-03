@@ -12,4 +12,6 @@ public interface IProviderServiceService
     Task<ServiceActionResult> GetProviderServiceByIdAsync(Guid id);
     
     Task<ProviderService> RetrieveProviderServiceByIdAsync(Guid id);
+
+    Task<ServiceActionResult> GetOwnProviderServiceAsync(string token);
 }

@@ -82,6 +82,10 @@ public static class AutoMapperConfiguration
         .ForMember(dto => dto.ProviderName, opt => opt.MapFrom(x => x.ProviderService.Provider.UserName))
         .ForMember(dto => dto.ProviderServiceName, opt => opt.MapFrom(x => x.ProviderService.Service.ServiceName))
         .ForMember(dto => dto.BuildingName, opt => opt.MapFrom(x => x.Building.BuildingName));
+        mapper.CreateMap<Booking,DtoBooking>()
+            .ForMember(dto => dto.ProviderName, opt => opt.MapFrom(x => x.ProviderService.Provider.UserName))
+            .ForMember(dto => dto.ProviderServiceName, opt => opt.MapFrom(x => x.ProviderService.Service.ServiceName))
+            .ForMember(dto => dto.BuildingName, opt => opt.MapFrom(x => x.Building.BuildingName));
         mapper.CreateMap<Booking, DtoBookChat>()
             .ForMember(dto => dto.ProviderName, opt => opt.MapFrom(x => x.ProviderService.Provider.UserName))
             .ForMember(dto => dto.ProviderProfileImage,
