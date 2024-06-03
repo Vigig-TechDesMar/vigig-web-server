@@ -61,6 +61,8 @@
         <EmbeddedResource Include="Scripts\17.Update_VigigUser.sql" />
         <None Remove="Scripts\18.Drop_FK_VigigUser.sql" />
         <EmbeddedResource Include="Scripts\18.Drop_FK_VigigUser.sql" />
+        <None Remove="Scripts\19.Drop_FK_Complaint.sql" />
+        <EmbeddedResource Include="Scripts\19.Drop_FK_Complaint.sql" />
     </ItemGroup>
 
 </Project>
