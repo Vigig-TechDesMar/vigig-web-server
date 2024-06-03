@@ -22,7 +22,7 @@ public class ProviderKPIService : IProviderKPIService
     private readonly IMapper _mapper;
 
 
-    public ProviderKPIService(IProviderKPIService providerKpiService, IVigigUserRepository vigigUserRepository, ILeaderBoardRepository leaderBoardRepository, IUnitOfWork unitOfWork, IMapper mapper, IProviderKPIRepository providerKpiRepository)
+    public ProviderKPIService(IVigigUserRepository vigigUserRepository, ILeaderBoardRepository leaderBoardRepository, IUnitOfWork unitOfWork, IMapper mapper, IProviderKPIRepository providerKpiRepository)
     {
         _vigigUserRepository = vigigUserRepository;
         _leaderBoardRepository = leaderBoardRepository;

@@ -10,7 +10,6 @@ using Vigig.Service.Models.Request.Complaint;
 namespace Vigig.Api.Controllers;
 
 [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-[Route("/api/[Controller]")]
 public class ComplaintTypeController : BaseApiController
 {
     private readonly IComplaintTypeService _complaintTypeService;
@@ -20,7 +19,7 @@ public class ComplaintTypeController : BaseApiController
         _complaintTypeService = complaintTypeService;
     }
 
-    [HttpGet("/all")]
+    [HttpGet("all")]
     [Authorize(Roles = UserRoleConstant.InternalUser)]
     public async Task<IActionResult> GetAllComplaintTypes()
     {
@@ -44,7 +43,7 @@ public class ComplaintTypeController : BaseApiController
             await _complaintTypeService.GetById(id).ConfigureAwait(false)).ConfigureAwait(false);
     }
     
-    [HttpGet("/search")]
+    [HttpGet("search")]
     [AllowAnonymous]
     public async Task<IActionResult> SearchUsingGet(SearchUsingGet request)
     {

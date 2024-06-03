@@ -11,7 +11,6 @@ using Vigig.Service.Models.Request.Fees;
 namespace Vigig.Api.Controllers;
 
 [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-[Route("/api/[Controller]")]
 public class BookingFeeController : BaseApiController
 {
     private readonly IBookingFeeService _bookingFeeService;
@@ -21,7 +20,7 @@ public class BookingFeeController : BaseApiController
         _bookingFeeService = bookingFeeService;
     }
 
-    [HttpGet("/all")]
+    [HttpGet("all")]
     [Authorize(Roles = UserRoleConstant.InternalUser)]
     public async Task<IActionResult> GetAllBookingFees()
     {
@@ -45,7 +44,7 @@ public class BookingFeeController : BaseApiController
             await _bookingFeeService.GetById(id).ConfigureAwait(false)).ConfigureAwait(false);
     }
     
-    [HttpGet("/search")]
+    [HttpGet("search")]
     [AllowAnonymous]
     public async Task<IActionResult> SearchUsingGet(SearchUsingGet request)
     {

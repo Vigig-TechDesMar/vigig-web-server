@@ -10,7 +10,6 @@ using Vigig.Service.Models.Request.Wallet;
 namespace Vigig.Api.Controllers;
 
 [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-[Route("/api/[Controller]")]
 public class WalletController : BaseApiController
 {
     
@@ -21,7 +20,7 @@ public class WalletController : BaseApiController
         _walletService = walletService;
     }
 
-    [HttpGet("/all")]
+    [HttpGet("all")]
     [Authorize(Roles = UserRoleConstant.InternalUser)]
     public async Task<IActionResult> GetAllWallets()
     {
@@ -45,7 +44,7 @@ public class WalletController : BaseApiController
             await _walletService.GetById(id).ConfigureAwait(false)).ConfigureAwait(false);
     }
     
-    [HttpGet("/search")]
+    [HttpGet("search")]
     [AllowAnonymous]
     public async Task<IActionResult> SearchUsingGet(SearchUsingGet request)
     {

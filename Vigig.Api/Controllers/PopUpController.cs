@@ -10,7 +10,6 @@ using Vigig.Service.Models.Request.Event;
 namespace Vigig.Api.Controllers;
 
 [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-[Route("/api/[Controller]")]
 public class PopUpController : BaseApiController
 {
     private readonly IPopUpService _popUpService;
@@ -20,7 +19,7 @@ public class PopUpController : BaseApiController
         _popUpService = popUpService;
     }
 
-    [HttpGet("/all")]
+    [HttpGet("all")]
     [Authorize(Roles = UserRoleConstant.InternalUser)]
     public async Task<IActionResult> GetAllpopUps()
     {
@@ -44,7 +43,7 @@ public class PopUpController : BaseApiController
             await _popUpService.GetById(id).ConfigureAwait(false)).ConfigureAwait(false);
     }
     
-    [HttpGet("/search")]
+    [HttpGet("search")]
     [AllowAnonymous]
     public async Task<IActionResult> SearchUsingGet(SearchUsingGet request)
     {
