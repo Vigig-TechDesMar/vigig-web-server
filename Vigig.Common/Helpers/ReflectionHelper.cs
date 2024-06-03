@@ -17,6 +17,4 @@ public class ReflectionHelper
         var propertyValue = property.GetValue(obj);
         return propertyValue ?? 0;
     }
-
-
 }

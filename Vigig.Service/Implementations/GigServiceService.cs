@@ -44,7 +44,7 @@ public class GigServiceService : IGigServiceService
         var existedService = (await _gigServiceRepository.FindAsync(s => s.Id == gigId && s.IsActive))
             .FirstOrDefault() ;
         if (existedService is null)
-            throw new GigServiceNotFoundException(gigId);
+            throw new GigServiceNotFoundException(gigId,nameof(GigService.Id));
         var service = _mapper.Map<DtoGigService>(existedService);
         return new ServiceActionResult(true)
         {
@@ -55,7 +55,7 @@ public class GigServiceService : IGigServiceService
     public async Task<ServiceActionResult> AddAsync(GigServiceRequest request)
     {
         if (!await _serviceCategoryRepository.ExistsAsync(c => c.Id == request.ServiceCategoryId && c.IsActive))
-             throw new ServiceCategoryNotFoundException(request.ServiceCategoryId);
+             throw new ServiceCategoryNotFoundException(request.ServiceCategoryId,nameof(ServiceCategory.Id));
         var service = _mapper.Map<GigService>(request);
         await _gigServiceRepository.AddAsync(service);
         await _unitOfWork.CommitAsync();
@@ -73,7 +73,7 @@ public class GigServiceService : IGigServiceService
         // var service = _mapper.Map<GigService>(request);
 
         var service = (await _gigServiceRepository.FindAsync(gs => gs.IsActive && gs.Id == request.Id))
-            .FirstOrDefault() ?? throw new GigServiceNotFoundException(request.Id);
+            .FirstOrDefault() ?? throw new GigServiceNotFoundException(request.Id,nameof(GigService.Id));
         _mapper.Map(request, service);
         await _gigServiceRepository.UpdateAsync(service);
         await _unitOfWork.CommitAsync();
@@ -125,6 +125,17 @@ public class GigServiceService : IGigServiceService
         return new ServiceActionResult(true)
         {
             Data = service
+        };
+    }
+
+    public async Task<ServiceActionResult> SearchGigService(SearchUsingGet request)
+    {
+        var gigServices = (await _gigServiceRepository.GetAllAsync()).AsEnumerable();
+        var searchResults = _mapper.Map<IEnumerable<DtoGigService>>(SearchHelper.BuildSearchResult<GigService>(gigServices, request));
+        var paginatedResult = PaginationHelper.BuildPaginatedResult(searchResults.AsQueryable(), request.PageSize, request.PageIndex);
+        return new ServiceActionResult(true)
+        {
+            Data = paginatedResult
         };
     }
 }

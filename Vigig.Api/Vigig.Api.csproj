@@ -10,6 +10,7 @@
 
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.15" />
+        <PackageReference Include="Microsoft.AspNet.SignalR" Version="2.4.3" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.1"/>
         <PackageReference Include="NLog" Version="5.2.5" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0"/>
@@ -49,6 +50,13 @@
         <EmbeddedResource Include="Scripts\09.Add_Claimed_Voucher_Table.sql" />
         <EmbeddedResource Include="Scripts\10.Add_Banner_Table.sql" />
         <EmbeddedResource Include="Scripts\11.Add_Popup_Table.sql" />
+        <EmbeddedResource Include="Scripts\12.Ensure_Data.sql" />
+        <EmbeddedResource Include="Scripts\13.Update_Booking.sql" />
+        <EmbeddedResource Include="Scripts\14.Update_Booking.sql" />
+        <None Remove="Scripts\15.Update_ProviderService.sql" />
+        <EmbeddedResource Include="Scripts\15.Update_ProviderService.sql" />
+        <None Remove="Scripts\16.Update_booking.sql" />
+        <EmbeddedResource Include="Scripts\16.Update_booking.sql" />
     </ItemGroup>
 
 </Project>

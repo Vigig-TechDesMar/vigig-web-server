@@ -7,19 +7,19 @@ public partial class ProviderService
 {
     public Guid Id { get; set; }
 
-    public double? Rating { get; set; }
+    public double Rating { get; set; } = default;
 
-    public double? TotalBooking { get; set; }
+    public int RatingCount { get; set; } = default;
 
-    public double? StickerPrice { get; set; }
+    public double TotalBooking { get; set; } = default;
+
+    public double StickerPrice { get; set; }
 
     public string? Description { get; set; }
 
-    public bool? IsAvailable { get; set; }
+    public bool IsVisible { get; set; }
 
-    public bool? IsVisible { get; set; }
-
-    public bool? IsActive { get; set; }
+    public bool IsActive { get; set; }
 
     public Guid ProviderId { get; set; }
 

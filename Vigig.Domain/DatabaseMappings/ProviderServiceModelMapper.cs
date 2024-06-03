@@ -14,8 +14,8 @@ public class ProviderServiceModelMapper : IDatabaseModelMapper
 
             entity.Property(e => e.Id).ValueGeneratedOnAdd();
             entity.Property(e => e.IsActive).HasDefaultValueSql("((1))");
-            entity.Property(e => e.IsAvailable).HasDefaultValueSql("((0))");
-            entity.Property(e => e.IsVisible).HasDefaultValueSql("((0))");
+            entity.Property(e => e.IsVisible).HasDefaultValueSql("((1))");
+            entity.Property(e => e.RatingCount).HasColumnType("int");
 
             entity.HasOne(d => d.Provider).WithMany(p => p.ProviderServices)
                 .HasForeignKey(d => d.ProviderId)

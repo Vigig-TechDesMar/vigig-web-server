@@ -7,7 +7,8 @@ using Vigig.Service.Models.Common;
 using ILogger = NLog.ILogger;
 
 namespace Vigig.Api.Controllers.Base;
-
+[ApiController]
+[Route("/api/[controller]")]
 public abstract class BaseApiController : ControllerBase
 {
     private readonly ILogger logger = LogManager.GetLogger(AppDomain.CurrentDomain.FriendlyName);
@@ -40,12 +41,10 @@ public abstract class BaseApiController : ControllerBase
         else if (e.GetType().IsAssignableFrom(typeof(IBadRequestException)))
             statusCode = StatusCodes.Status400BadRequest;
         errorResult.StatusCode = statusCode;
-        return base.Ok(errorResult);
+        return base.StatusCode(errorResult.StatusCode,errorResult.Messages);
     }
     protected async Task<IActionResult> ExecuteServiceLogic(Func<Task<ServiceActionResult>> serviceActionFunc)
     {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState);
         return await ExecuteServiceLogic(serviceActionFunc, null);
     }
     protected async Task<IActionResult> ExecuteServiceLogic(Func<Task<ServiceActionResult>> serviceActionFunc,

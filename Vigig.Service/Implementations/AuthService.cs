@@ -8,6 +8,7 @@ using Vigig.Common.Helpers;
 using Vigig.Common.Settings;
 using Vigig.DAL.Interfaces;
 using Vigig.Domain.Entities;
+using Vigig.Service.Constants;
 using Vigig.Service.Exceptions;
 using Vigig.Service.Exceptions.NotFound;
 using Vigig.Service.Interfaces;
@@ -23,12 +24,13 @@ public class AuthService : IAuthService
     private readonly IVigigUserRepository _vigigUserRepository;
     private readonly IVigigRoleRepository _vigigRoleRepository;
     private readonly IBuildingRepository _buildingRepository;
+    private readonly IBadgeRepository _badgeRepository;
     private readonly IJwtService _jwtService;
     private readonly JwtSetting _jwtSetting;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
 
-    public AuthService(IVigigUserRepository vigigUserRepository, IMapper mapper, IUnitOfWork unitOfWork, IBuildingRepository buildingRepository, IJwtService jwtService, IConfiguration configuration, IUserTokenRepository userTokenRepository, IVigigRoleRepository vigigRoleRepository)
+    public AuthService(IVigigUserRepository vigigUserRepository, IMapper mapper, IUnitOfWork unitOfWork, IBuildingRepository buildingRepository, IJwtService jwtService, IConfiguration configuration, IUserTokenRepository userTokenRepository, IVigigRoleRepository vigigRoleRepository, IBadgeRepository badgeRepository)
     {
         _vigigUserRepository = vigigUserRepository;
         _mapper = mapper;
@@ -38,6 +40,7 @@ public class AuthService : IAuthService
         _userTokenRepository = userTokenRepository;
         _vigigRoleRepository = vigigRoleRepository;
         _jwtSetting = configuration.GetSection(nameof(JwtSetting)).Get<JwtSetting>() ?? throw new MissingJwtSettingsException();
+        _badgeRepository = badgeRepository;
     }
     public async Task<ServiceActionResult> RegisterAsync(RegisterRequest request)
     {
@@ -45,6 +48,9 @@ public class AuthService : IAuthService
 
         var role = (await _vigigRoleRepository.FindAsync(r => r.NormalizedName == request.Role.ToString()))
             .FirstOrDefault() ?? throw new RoleNotFoundException(request.Role.ToString());
+        
+        var building =  (await _buildingRepository.FindAsync(b => b.Id == request.BuildingId)).FirstOrDefault() 
+                        ?? throw new BuildingNotFoundException(request.BuildingId,nameof(Building.Id));
         
         if (retrivedUser is not null)
             throw new UserAlreadyExistException(request.Email);
@@ -58,7 +64,6 @@ public class AuthService : IAuthService
         
         if (retrivedUser is null)
         {
-            
             retrivedUser = _mapper.Map<VigigUser>(request);
             var hashedPassword = PasswordHashHelper.HashPassword(request.Password);
             retrivedUser.Password = hashedPassword;
@@ -66,11 +71,18 @@ public class AuthService : IAuthService
             retrivedUser.NormalizedEmail = request.Email.ToUpper();
             retrivedUser.UserName = request.Email.Split("@")[0];
             retrivedUser.NormalizedUserName = retrivedUser.UserName.Split("@")[0].ToUpper();
-            retrivedUser.Building =  (await _buildingRepository.FindAsync(b => b.Id == new Guid("e9f94484-6bf6-43eb-4827-08dc73e1398f"))).FirstOrDefault() 
-                                     ?? throw new BuildingNotFoundException("e9f94484-6bf6-43eb-4827-08dc73e1398f");
+            retrivedUser.Building = building;
             retrivedUser.Roles.Add(role);
+
+            if (role.Name.Equals(UserRoleConstant.Provider))
+            {
+                retrivedUser.Badge = (await _badgeRepository.FindAsync(x => x.IsActive && x.BadgeName == BadgeConstant.PromisingProvider))
+                    .FirstOrDefault() ?? throw new BadgeNotFoundException(BadgeConstant.PromisingProvider,nameof(BadgeConstant));
+            }
+
             await _vigigUserRepository.AddAsync(retrivedUser);
         }
+        
         await _unitOfWork.CommitAsync();
         return new ServiceActionResult(true) { Data = _mapper.Map<RegisterResponse>(retrivedUser)};
     }
@@ -82,7 +94,7 @@ public class AuthService : IAuthService
             .FirstOrDefault();
 
         if (retrivedUser is null)
-            throw new UserNotFoundException(request.Email);
+            throw new UserNotFoundException(request.Email,nameof(VigigUser.Email));
         var isValidPassword = PasswordHashHelper.VerifyPassword(request.Password, retrivedUser.Password);
         if (!isValidPassword)
             throw new InvalidPasswordException();
@@ -103,11 +115,14 @@ public class AuthService : IAuthService
     {
         var refreshToken = await _userTokenRepository.GetAsync(t => t.Value == token.RefreshToken);
         if (refreshToken is null)
-            throw new RefreshTokenNotFoundException(token.RefreshToken);
-        var customer = await _vigigUserRepository.GetAsync(c => c.Id == refreshToken.UserId);
+            // throw new RefreshTokenNotFoundException(token.RefreshToken);
+            throw new Exception("Not found token.");
+        var customer = (await _vigigUserRepository.FindAsync(c => c.Id == refreshToken.UserId))
+            .Include(x => x.Roles)
+            .FirstOrDefault();
         if (customer is null)
-            throw new UserNotFoundException(refreshToken.UserId.ToString());
-        var tokenResponse = GenerateAuthResponseAsync(customer);
+            throw new UserNotFoundException(refreshToken.UserId,nameof(VigigUser.Id));
+        var tokenResponse = await GenerateAuthResponseAsync(customer);
         return new ServiceActionResult()
         {
             Data = tokenResponse
@@ -121,12 +136,12 @@ public class AuthService : IAuthService
         var reponse = new AuthResponse()
         {
             Name = vigigUser.UserName ?? vigigUser.Email ?? String.Empty,
-            Roles = roles,
+            Roles = roles ,
             Token = new TokenResponse()
             {
                 AccessToken = _jwtService.GenerateAccessToken(vigigUser,roles),
                 RefreshToken = await _jwtService.GenerateRefreshToken(vigigUser.Id),
-                ExpiresAt = DateTimeOffset.Now.AddHours(_jwtSetting.RefreshTokenLifetimeInMinutes)
+                ExpiresAt = DateTimeOffset.Now.AddMinutes(_jwtSetting.RefreshTokenLifetimeInMinutes)
             }
         };
         return reponse;

@@ -8,5 +8,5 @@ public partial class ServiceImage
 
     public Guid ProviderServiceId { get; set; }
 
-    public virtual required ProviderService ProviderService { get; set; }
+    public virtual ProviderService ProviderService { get; set; } = null!;
 }

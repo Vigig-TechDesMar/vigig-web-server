@@ -1,0 +1,5 @@
+﻿ALTER TABLE [Booking]
+ADD BookerName NVARCHAR(450) NOT NULL
+
+ALTER TABLE [Booking]
+ADD BookerPhone NVARCHAR(10) NOT NULL 

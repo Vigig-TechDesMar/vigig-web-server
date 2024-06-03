@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Vigig.Domain.Dtos;
 using Vigig.Domain.Dtos.Badge;
+using Vigig.Domain.Dtos.Booking;
 using Vigig.Domain.Dtos.Building;
 using Vigig.Domain.Dtos.Complaint;
 using Vigig.Domain.Dtos.Event;
@@ -9,6 +10,7 @@ using Vigig.Domain.Dtos.Service;
 using Vigig.Domain.Dtos.SubscriptionPlan;
 using Vigig.Domain.Dtos.Voucher;
 using Vigig.Domain.Dtos.Wallet;
+using Vigig.Domain.Dtos.VigigUser;
 using Vigig.Domain.Entities;
 using Vigig.Service.Models.Request.Authentication;
 using Vigig.Service.Models.Request.Badge;
@@ -39,6 +41,8 @@ public static class AutoMapperConfiguration
         CreateEventMaps(mapper);
         CreateComplaintMaps(mapper);
         CreateVoucherMaps(mapper);
+        CreateVigigUserMaps(mapper);
+        CreateBookingMaps(mapper);
     }
 
     public static void CreateUserMaps(IMapperConfigurationExpression mapper)
@@ -67,6 +71,10 @@ public static class AutoMapperConfiguration
         mapper.CreateMap<UpdateGigServiceRequest, GigService>()
             .ForMember(s => s.Description ,opt => opt.Condition(r => !string.IsNullOrWhiteSpace(r.Description)))
             .ForMember(s => s.ServiceName ,opt => opt.Condition(r => !string.IsNullOrWhiteSpace(r.ServiceName)));
+        mapper.CreateMap<ProviderService, DtoProviderService>()
+            .ForMember(dto => dto.ServiceName, opt => opt.MapFrom(x => x.Service.ServiceName))
+            .ForMember(dto => dto.ProviderName, opt => opt.MapFrom(x => x.Provider.UserName));
+        mapper.CreateMap<ServiceImage, DtoServiceImage>();
     }
 
     public static void CreateBadgeMaps(IMapperConfigurationExpression mapper)
@@ -80,7 +88,7 @@ public static class AutoMapperConfiguration
         mapper.CreateMap<Badge, DtoBadgeWithStatus>();
 
     }
-
+  
     public static void CreateSubscriptionPlanMaps(IMapperConfigurationExpression mapper)
     {
         mapper.CreateMap<CreateSubscriptionPlanRequest, SubscriptionPlan>();
@@ -191,5 +199,36 @@ public static class AutoMapperConfiguration
         mapper.CreateMap<ClaimedVoucher,DtoClaimedVoucher>();
         mapper.CreateMap<CreateClaimedVoucherRequest,ClaimedVoucher>();
         mapper.CreateMap<UpdateClaimedVoucherRequest,ClaimedVoucher>();
+    }
+  
+    public static void CreateVigigUserMaps(IMapperConfigurationExpression mapper)
+    {
+        mapper.CreateMap<VigigUser, DtoUserProfile>();
+    }
+
+    public static void CreateBookingMaps(IMapperConfigurationExpression mapper)
+    {
+        mapper.CreateMap<Booking, DtoPlacedBooking>()
+        .ForMember(dto => dto.ProviderName, opt => opt.MapFrom(x => x.ProviderService.Provider.UserName))
+        .ForMember(dto => dto.ProviderServiceName, opt => opt.MapFrom(x => x.ProviderService.Service.ServiceName))
+        .ForMember(dto => dto.BuildingName, opt => opt.MapFrom(x => x.Building.BuildingName));
+        mapper.CreateMap<Booking,DtoBooking>()
+            .ForMember(dto => dto.ProviderName, opt => opt.MapFrom(x => x.ProviderService.Provider.UserName))
+            .ForMember(dto => dto.ProviderServiceName, opt => opt.MapFrom(x => x.ProviderService.Service.ServiceName))
+            .ForMember(dto => dto.BuildingName, opt => opt.MapFrom(x => x.Building.BuildingName));
+        mapper.CreateMap<Booking, DtoBookChat>()
+            .ForMember(dto => dto.ProviderName, opt => opt.MapFrom(x => x.ProviderService.Provider.UserName))
+            .ForMember(dto => dto.ProviderProfileImage,
+                opt => opt.MapFrom(x => x.ProviderService.Provider.ProfileImage))
+            .ForMember(dto => dto.ClientName, opt => opt.MapFrom(x => x.VigigUser.UserName))
+            .ForMember(dto => dto.ClientProfileImage, opt => opt.MapFrom(x => x.VigigUser.ProfileImage))
+            .ForMember(dto => dto.ChatTitle, opt=> opt.MapFrom(x => x.ProviderService.Service.ServiceName +" - "+ x.CreatedDate.Date))
+            .ForMember(dto => dto.LastMessage, opt =>
+            {
+                opt.Condition(x => x.BookingMessages.Any());
+                opt.MapFrom(x => x.BookingMessages.OrderByDescending(x => x.SentAt).FirstOrDefault().Content);
+            });
+        mapper.CreateMap<BookingMessage, DtoBookingMessage>()
+            .ForMember(dto => dto.SenderName, opt => opt.MapFrom(x => x.SenderName));
     }
 }

@@ -100,14 +100,29 @@ public static class ServiceCollectionExtension
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSetting.SigningKey)),
                 ValidateIssuerSigningKey = jwtSetting.ValidateIssuerSigningKey,
                 ClockSkew = TimeSpan.Zero
-            };  
+            };
+
+            opt.Events = new JwtBearerEvents
+            {
+                OnMessageReceived = context =>
+                {
+                    var accessToken = context.Request.Query["access_token"];
+                    var path = context.HttpContext.Request.Path;
+                    if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/booking"))
+                    {
+                        context.Token = accessToken;
+                    }
+                    return Task.CompletedTask;
+                }
+            };
+
         });
         return services;
     }
 
     public static IServiceCollection AddCorsPolicy(this IServiceCollection services, IConfiguration configuration)
     {
-        var corsSetting = configuration.GetSection(nameof(CorSetting)).Get<CorSetting>()
+        var corsSetting = configuration.GetSection(nameof(CorsSetting)).Get<CorsSetting>()
             ?? throw new  MissingCorsSettingsException();
         services.AddCors(opt =>
         {
@@ -115,11 +130,8 @@ public static class ServiceCollectionExtension
             {
                 builder.WithOrigins(corsSetting.GetAllowedOriginsArray())
                     .WithHeaders(corsSetting.GetAllowedHeadersArray())
-                    .WithMethods(corsSetting.GetAllowedMethodsArray());
-                if (corsSetting.AllowCredentials)
-                {
-                    builder.AllowCredentials();
-                }
+                    .WithMethods(corsSetting.GetAllowedMethodsArray())
+                    .AllowCredentials();
                 builder.Build();
             });
         });

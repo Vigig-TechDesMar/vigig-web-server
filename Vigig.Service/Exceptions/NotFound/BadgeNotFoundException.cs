@@ -4,7 +4,7 @@ namespace Vigig.Service.Exceptions.NotFound;
 
 public class BadgeNotFoundException : EntityNotFoundException<Badge>
 {
-    public BadgeNotFoundException(object id) : base(id)
+    public BadgeNotFoundException(object validateValue, object validateProperty) : base(validateValue,validateProperty)
     {
     }
 }

@@ -4,7 +4,7 @@ namespace Vigig.Service.Exceptions.NotFound;
 
 public class RefreshTokenNotFoundException : EntityNotFoundException<RefreshTokenRequest>
 {
-    public RefreshTokenNotFoundException(object id) : base(id)
+    public RefreshTokenNotFoundException(object validateValue, object validateProperty) : base(validateValue,validateProperty)
     {
     }
 }

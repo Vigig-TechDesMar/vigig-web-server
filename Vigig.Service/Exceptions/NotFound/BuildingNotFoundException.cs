@@ -5,7 +5,7 @@ namespace Vigig.Service.Exceptions.NotFound;
 
 public class BuildingNotFoundException : EntityNotFoundException<Building>
 {
-    public BuildingNotFoundException(object id) : base(id)
+    public BuildingNotFoundException(object validateValue, object validateProperty) : base(validateValue,validateProperty)
     {
     }
 }

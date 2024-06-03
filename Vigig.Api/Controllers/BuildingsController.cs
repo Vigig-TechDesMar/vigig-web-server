@@ -9,7 +9,6 @@ using Vigig.Service.Models.Common;
 using Vigig.Service.Models.Request.Building;
 
 namespace Vigig.Api.Controllers;
-[Route("/api/[controller]")]
 [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 public class BuildingsController : BaseApiController
 {

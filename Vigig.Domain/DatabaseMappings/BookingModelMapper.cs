@@ -16,6 +16,9 @@ public class BookingModelMapper : IDatabaseModelMapper
             entity.Property(e => e.Id).ValueGeneratedOnAdd();
             entity.Property(e => e.Apartment).HasMaxLength(255);
             entity.Property(e => e.CreatedDate).HasColumnType("datetime");
+            entity.Property(e => e.BookerName).HasMaxLength(450);
+            entity.Property(e => e.BookerPhone).HasMaxLength(10);
+            entity.Property(e => e.IsActive).HasDefaultValueSql("((1))");
             entity.Property(e => e.ConcurrencyStamp).IsConcurrencyToken().HasValueGenerator<StringValueGenerator>();
 
 
