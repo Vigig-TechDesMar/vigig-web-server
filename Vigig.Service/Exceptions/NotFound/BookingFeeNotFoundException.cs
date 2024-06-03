@@ -4,8 +4,7 @@ namespace Vigig.Service.Exceptions.NotFound;
 
 public class BookingFeeNotFoundException : EntityNotFoundException<BookingFee>
 {
-    public BookingFeeNotFoundException(object id) : base(id)
+    public BookingFeeNotFoundException(object validateValue, object validateProperty) : base(validateValue,validateProperty)
     {
-        
     }
 }

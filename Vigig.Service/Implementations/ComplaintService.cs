@@ -41,7 +41,7 @@ public class ComplaintService : IComplaintService
     public async Task<ServiceActionResult> GetById(Guid id)
     {
         var complaint = (await _complaintRepository.FindAsync(sc => sc.Id == id && sc.IsActive)).FirstOrDefault()
-                        ?? throw new ComplaintNotFoundException(id.ToString());
+                        ?? throw new ComplaintNotFoundException(id.ToString(),nameof(Complaint.Id));
         return new ServiceActionResult(true)
         {
             Data = _mapper.Map<DtoComplaint>(complaint)
@@ -77,12 +77,12 @@ public class ComplaintService : IComplaintService
     {
         //Check Complaint Type
         if (!await _complaintTypeRepository.ExistsAsync(sc => sc.IsActive && sc.Id == request.ComplaintTypeId))
-            throw new ComplaintTypeNotFoundException(request.ComplaintTypeId);
+            throw new ComplaintTypeNotFoundException(request.ComplaintTypeId,nameof(ComplaintType.Id));
         
         //Check Booking
         if(request.BookingId != null)
             if (!await _bookingRepository.ExistsAsync(sc => sc.Id == request.BookingId))
-                throw new BookingNotFoundException(request.BookingId);
+                throw new BookingNotFoundException(request.BookingId,nameof(Booking.Id));
 
         var complaint = _mapper.Map<Complaint>(request);
         await _complaintRepository.AddAsync(complaint);
@@ -98,17 +98,17 @@ public class ComplaintService : IComplaintService
     {
         //Check Complaint Type
         if (!await _complaintTypeRepository.ExistsAsync(sc => sc.IsActive && sc.Id == request.ComplaintTypeId))
-            throw new ComplaintTypeNotFoundException(request.ComplaintTypeId);
+            throw new ComplaintTypeNotFoundException(request.ComplaintTypeId,nameof(ComplaintType.Id));
         
         //Check Booking
         if(request.BookingId != null)
             if (!await _bookingRepository.ExistsAsync(sc => sc.Id == request.BookingId))
-                throw new BookingNotFoundException(request.BookingId);
+                throw new BookingNotFoundException(request.BookingId,nameof(Booking.Id));
         
         //Check Complaint
         var complaint =
             (await _complaintRepository.FindAsync(sc => sc.Id == request.Id && sc.IsActive)).FirstOrDefault()
-            ?? throw new ComplaintNotFoundException(request.Id);
+            ?? throw new ComplaintNotFoundException(request.Id,nameof(Complaint.Id));
         
         _mapper.Map(request, complaint);
         await _complaintRepository.AddAsync(complaint);

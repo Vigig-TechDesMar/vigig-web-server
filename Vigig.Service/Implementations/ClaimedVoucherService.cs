@@ -41,7 +41,7 @@ public class ClaimedVoucherService : IClaimedVoucherService
     public async Task<ServiceActionResult> GetById(Guid id)
     {
         var claimedVoucher = (await _claimedVoucherRepository.FindAsync(sc => sc.Id == id)).FirstOrDefault() ??
-                              throw new ClaimedVoucherNotFoundException(id.ToString());
+                              throw new ClaimedVoucherNotFoundException(id.ToString(),nameof(ClaimedVoucher.Id));
         return new ServiceActionResult(true)
         {
             Data = _mapper.Map<DtoClaimedVoucher>(claimedVoucher)
@@ -78,11 +78,11 @@ public class ClaimedVoucherService : IClaimedVoucherService
     {
         //Check Voucher
         if (!await _voucherRepository.ExistsAsync(sc => sc.Id == request.VoucherId && sc.IsActive))
-            throw new VoucherNotFoundException(request.VoucherId);
+            throw new VoucherNotFoundException(request.VoucherId,nameof(Voucher.Id));
 
         //Check User
         if (!await _vigigUserRepository.ExistsAsync(sc => sc.Id == request.CustomerId && sc.IsActive))
-            throw new UserNotFoundException(request.CustomerId);
+            throw new UserNotFoundException(request.CustomerId,nameof(VigigUser.Id));
 
         var claimedVoucher = _mapper.Map<ClaimedVoucher>(request);
         await _claimedVoucherRepository.AddAsync(claimedVoucher);
@@ -98,14 +98,14 @@ public class ClaimedVoucherService : IClaimedVoucherService
     {
         //Check Voucher
         if (!await _voucherRepository.ExistsAsync(sc => sc.Id == request.VoucherId && sc.IsActive))
-            throw new VoucherNotFoundException(request.VoucherId);
+            throw new VoucherNotFoundException(request.VoucherId,nameof(Voucher.Id));
 
         //Check User
         if (!await _vigigUserRepository.ExistsAsync(sc => sc.Id == request.CustomerId && sc.IsActive))
-            throw new UserNotFoundException(request.CustomerId);
+            throw new UserNotFoundException(request.CustomerId,nameof(VigigUser.Id));
 
         var claimedVoucher = (await _claimedVoucherRepository.FindAsync(sc => sc.Id == request.Id)).FirstOrDefault()
-                             ?? throw new ClaimedVoucherNotFoundException(request.Id);
+                             ?? throw new ClaimedVoucherNotFoundException(request.Id,nameof(ClaimedVoucher.Id));
 
         _mapper.Map(request, claimedVoucher);
         await _claimedVoucherRepository.UpdateAsync(claimedVoucher);

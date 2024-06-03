@@ -39,7 +39,7 @@ public class BookingFeeService : IBookingFeeService
     {
         var bookingFee = (await _bookingFeeRepository.FindAsync(sc => sc.Id == id)).FirstOrDefault();
         if (bookingFee is null)
-            throw new BookingFeeNotFoundException(id.ToString());
+            throw new BookingFeeNotFoundException(id.ToString(),nameof(BookingFee.Id));
         return new ServiceActionResult(true)
         {
             Data = _mapper.Map<DtoBookingFee>(bookingFee)
@@ -75,7 +75,7 @@ public class BookingFeeService : IBookingFeeService
     public async Task<ServiceActionResult> AddAsync(CreateBookingFeeRequest request)
     {
         if (!await _bookingRepository.ExistsAsync(sc=> sc.Id == request.BookingId))
-            throw new BookingNotFoundException(request.BookingId);
+            throw new BookingNotFoundException(request.BookingId,nameof(Booking.Id));
         var bookingFee = _mapper.Map<BookingFee>(request);
         await _bookingFeeRepository.AddAsync(bookingFee);
         await _unitOfWork.CommitAsync();
@@ -89,9 +89,9 @@ public class BookingFeeService : IBookingFeeService
     public async Task<ServiceActionResult> UpdateAsync(UpdateBookingFeeRequest request)
     {
         if (!await _bookingRepository.ExistsAsync(sc=> sc.Id == request.BookingId))
-            throw new BookingNotFoundException(request.BookingId);
+            throw new BookingNotFoundException(request.BookingId,nameof(Booking.Id));
         var bookingFee = (await _bookingFeeRepository.FindAsync(sc => sc.Id == request.Id)).FirstOrDefault() ??
-                      throw new BookingFeeNotFoundException(request.Id);
+                      throw new BookingFeeNotFoundException(request.Id,nameof(BookingFee.Id));
 
         _mapper.Map(request, bookingFee);
         await _bookingFeeRepository.UpdateAsync(bookingFee);

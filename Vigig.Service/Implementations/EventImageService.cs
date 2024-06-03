@@ -41,7 +41,7 @@ public class EventImageService : IEventImageService
     public async Task<ServiceActionResult> GetById(Guid id)
     {
         var image = (await _eventImageRepository.FindAsync(sc => sc.Id == id)).FirstOrDefault()
-                    ?? throw new EventImageNotFoundException(id.ToString());
+                    ?? throw new EventImageNotFoundException(id.ToString(),nameof(EventImage.Id));
         return new ServiceActionResult(true)
         {
             Data = _mapper.Map<DtoEventImage>(image)

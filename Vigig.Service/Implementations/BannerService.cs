@@ -40,7 +40,7 @@ public class BannerService : IBannerService
     public async Task<ServiceActionResult> GetById(Guid id)
     {
         var banner = (await _bannerRepository.FindAsync(sc => sc.Id == id)).FirstOrDefault()
-                     ?? throw new BannerNotFoundException(id.ToString());
+                     ?? throw new BannerNotFoundException(id.ToString(),nameof(Banner.Id));
         return new ServiceActionResult(true)
         {
             Data = _mapper.Map<DtoBanner>(banner)
@@ -76,7 +76,7 @@ public class BannerService : IBannerService
     {
         //Check Event
         if (!await _eventRepository.ExistsAsync(sc => sc.Id == request.EventId && sc.IsActive))
-            throw new EventNotFoundException(request.EventId);
+            throw new EventNotFoundException(request.EventId, nameof(Event.Id));
 
         var banner = _mapper.Map<Banner>(request);
         await _bannerRepository.AddAsync(banner);
@@ -92,10 +92,10 @@ public class BannerService : IBannerService
     {
         //Check Event
         if (!await _eventRepository.ExistsAsync(sc => sc.Id == request.EventId && sc.IsActive))
-            throw new EventNotFoundException(request.EventId);
+            throw new EventNotFoundException(request.EventId,nameof(Event.Id));
 
         var banner = (await _bannerRepository.FindAsync(sc => sc.Id == request.Id)).FirstOrDefault()
-                     ?? throw new BannerNotFoundException(request.Id);
+                     ?? throw new BannerNotFoundException(request.Id,nameof(Banner.Id));
 
         _mapper.Map(request, banner);
         await _bannerRepository.UpdateAsync(banner);

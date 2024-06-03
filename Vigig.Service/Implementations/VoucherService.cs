@@ -40,7 +40,7 @@ public class VoucherService : IVoucherService
     public async Task<ServiceActionResult> GetById(Guid id)
     {
         var voucher = (await _voucherRepository.FindAsync(sc => sc.Id == id && sc.IsActive)).FirstOrDefault()
-                      ?? throw new VoucherNotFoundException(id.ToString());
+                      ?? throw new VoucherNotFoundException(id.ToString(),nameof(Voucher.Id));
 
         return new ServiceActionResult(true)
         {
@@ -77,7 +77,7 @@ public class VoucherService : IVoucherService
     {
         //Check Event
         if(!await _eventRepository.ExistsAsync(sc=> sc.Id == request.EventId && sc.IsActive))
-            throw new EventNotFoundException(request.EventId);
+            throw new EventNotFoundException(request.EventId,nameof(Event.Id));
         
         var voucher = _mapper.Map<Voucher>(request);
         await _voucherRepository.AddAsync(voucher);
@@ -93,10 +93,10 @@ public class VoucherService : IVoucherService
     {
         //Check Event
         if(!await _eventRepository.ExistsAsync(sc=> sc.Id == request.EventId && sc.IsActive))
-            throw new EventNotFoundException(request.EventId);
+            throw new EventNotFoundException(request.EventId,nameof(Event.Id));
 
         var voucher = (await _voucherRepository.FindAsync(sc => sc.Id == request.Id && sc.IsActive)).FirstOrDefault()
-                      ?? throw new VoucherNotFoundException(request.Id);
+                      ?? throw new VoucherNotFoundException(request.Id,nameof(Voucher.Id));
         
         _mapper.Map(request, voucher);
         await _voucherRepository.UpdateAsync(voucher);

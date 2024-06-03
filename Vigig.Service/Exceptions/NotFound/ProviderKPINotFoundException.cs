@@ -4,7 +4,7 @@ namespace Vigig.Service.Exceptions.NotFound;
 
 public class ProviderKPINotFoundException : EntityNotFoundException<ProviderKPI>
 {
-    public ProviderKPINotFoundException(object id) : base(id)
+    public ProviderKPINotFoundException(object validateValue, object validateProperty) : base(validateValue,validateProperty)
     {
     }
 }

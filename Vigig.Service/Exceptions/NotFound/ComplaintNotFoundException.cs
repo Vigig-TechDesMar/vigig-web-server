@@ -4,7 +4,7 @@ namespace Vigig.Service.Exceptions.NotFound;
 
 public class ComplaintNotFoundException : EntityNotFoundException<Complaint>
 {
-    public ComplaintNotFoundException(object id) : base(id)
+    public ComplaintNotFoundException(object validateValue, object validateProperty) : base(validateValue,validateProperty)
     {
     }
 }

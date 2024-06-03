@@ -5,8 +5,7 @@ namespace Vigig.Service.Exceptions.NotFound;
 
 public class SubscriptionPlanNotFoundException: EntityNotFoundException<SubscriptionPlan>
 {
-    public SubscriptionPlanNotFoundException(object id) : base(id)
+    public SubscriptionPlanNotFoundException(object validateValue, object validateProperty) : base(validateValue,validateProperty)
     {
-        
     }
 }

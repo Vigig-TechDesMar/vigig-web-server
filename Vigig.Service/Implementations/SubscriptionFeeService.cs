@@ -39,7 +39,7 @@ public class SubscriptionFeeService : ISubscriptionFeeService
     public async Task<ServiceActionResult> GetById(Guid id)
     {
         var subscriptionFee = (await _subscriptionFeeRepository.FindAsync(sc => sc.Id == id)).FirstOrDefault() ??
-                              throw new SubscriptionFeeNotFoundException(id.ToString());
+                              throw new SubscriptionFeeNotFoundException(id.ToString(),nameof(SubscriptionFee.Id));
         return new ServiceActionResult(true)
         {
             Data = _mapper.Map<DtoSubscriptionFee>(subscriptionFee)
@@ -74,7 +74,7 @@ public class SubscriptionFeeService : ISubscriptionFeeService
     public async Task<ServiceActionResult> AddAsync(CreateSubscriptionFeeRequest request)
     {
         if (!await _subscriptionPlanRepository.ExistsAsync(sc => sc.Id == request.SubscriptionPlanId && sc.IsActive))
-            throw new SubscriptionPlanNotFoundException(request.SubscriptionPlanId);
+            throw new SubscriptionPlanNotFoundException(request.SubscriptionPlanId,nameof(SubscriptionFee.Id));
         
         //Validation
         if (request.CreatedDate is null)
@@ -93,11 +93,11 @@ public class SubscriptionFeeService : ISubscriptionFeeService
     public async Task<ServiceActionResult> UpdateAsync(UpdateSubscriptionFeeRequest request)
     {
         if (!await _subscriptionPlanRepository.ExistsAsync(sc => sc.Id == request.SubscriptionPlanId && sc.IsActive))
-            throw new SubscriptionPlanNotFoundException(request.SubscriptionPlanId);
+            throw new SubscriptionPlanNotFoundException(request.SubscriptionPlanId,nameof(SubscriptionPlan.Id));
 
         var subscriptionFee =
             (await _subscriptionFeeRepository.FindAsync(sc => sc.Id == request.Id)).FirstOrDefault() ??
-            throw new SubscriptionFeeNotFoundException(request.Id);
+            throw new SubscriptionFeeNotFoundException(request.Id,nameof(SubscriptionFee.Id));
 
         _mapper.Map(request, subscriptionFee);
         await _subscriptionFeeRepository.UpdateAsync(subscriptionFee);

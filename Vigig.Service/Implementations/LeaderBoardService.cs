@@ -38,7 +38,7 @@ public class LeaderBoardService : ILeaderBoardService
     public async Task<ServiceActionResult> GetById(Guid id)
     {
         var leaderBoard = (await _leaderBoardRepository.FindAsync(sc => sc.Id == id)).FirstOrDefault()
-                          ?? throw new LeaderBoardNotFoundException(id.ToString());
+                          ?? throw new LeaderBoardNotFoundException(id.ToString(),nameof(LeaderBoard.Id));
         return new ServiceActionResult(true)
         {
             Data = _mapper.Map<DtoLeaderBoard>(leaderBoard)
@@ -75,7 +75,7 @@ public class LeaderBoardService : ILeaderBoardService
     {
         //Check Event
         if (!await _eventRepository.ExistsAsync(sc => sc.Id == request.EventId && sc.IsActive))
-            throw new EventNotFoundException(request.EventId);
+            throw new EventNotFoundException(request.EventId,nameof(Event.Id));
 
         var leaderboard = _mapper.Map<LeaderBoard>(request);
         await _leaderBoardRepository.AddAsync(leaderboard);
@@ -92,10 +92,10 @@ public class LeaderBoardService : ILeaderBoardService
         
         //Check Event
         if (!await _eventRepository.ExistsAsync(sc => sc.Id == request.EventId && sc.IsActive))
-            throw new EventNotFoundException(request.EventId);
+            throw new EventNotFoundException(request.EventId,nameof(Event.Id));
 
         var leaderBoard = (await _leaderBoardRepository.FindAsync(sc => sc.Id == request.Id)).FirstOrDefault()
-                          ?? throw new LeaderBoardNotFoundException(request.Id);
+                          ?? throw new LeaderBoardNotFoundException(request.Id,nameof(LeaderBoard.Id));
 
         _mapper.Map(request, leaderBoard);
         await _leaderBoardRepository.UpdateAsync(leaderBoard);
