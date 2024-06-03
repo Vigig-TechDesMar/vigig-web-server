@@ -13,7 +13,7 @@ public partial class SubscriptionPlan
 
     public double? Price { get; set; }
 
-    public bool? IsActive { get; set; }
+    public bool IsActive { get; set; }
 
     public string? ConcurrencyStamp { get; set; }
 

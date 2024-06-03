@@ -17,7 +17,6 @@ public class BannerModelMapper : IDatabaseModelMapper
             entity.Property(e => e.AltText);
             entity.Property(e => e.StartDate);
             entity.Property(e => e.EndDate);
-            entity.Property(e => e.Field);
             entity.Property(e => e.EventId);
             entity.HasOne(e => e.Event)
                 .WithMany(e => e.Banners)

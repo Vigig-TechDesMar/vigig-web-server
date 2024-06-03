@@ -17,8 +17,6 @@ public class EventImageModelMapper : IDatabaseModelMapper
             entity.Property(e => e.EventId);
             entity.Property(e => e.ImageUrl)
                 .IsRequired();
-            entity.Property(e => e.Field)
-                .IsRequired();
             entity.Property(e => e.StartDate)
                 .IsRequired();
             entity.Property(e => e.EndDate)
