@@ -11,7 +11,6 @@ using Vigig.Service.Models.Request.Service;
 
 namespace Vigig.Api.Controllers;
 [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-[Route("/api/[Controller]")]
 public class ServiceCategoriesController : BaseApiController
 {
     private readonly IServiceCategoryService _gigCategoryServiceService;

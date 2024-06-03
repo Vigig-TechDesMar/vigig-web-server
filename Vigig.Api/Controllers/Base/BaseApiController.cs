@@ -8,6 +8,7 @@ using ILogger = NLog.ILogger;
 
 namespace Vigig.Api.Controllers.Base;
 [ApiController]
+[Route("/api/[controller]")]
 public abstract class BaseApiController : ControllerBase
 {
     private readonly ILogger logger = LogManager.GetLogger(AppDomain.CurrentDomain.FriendlyName);

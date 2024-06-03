@@ -7,7 +7,6 @@ using Vigig.Service.Interfaces;
 using Vigig.Service.Models.Request.Booking;
 
 namespace Vigig.Api.Controllers;
-[Route("/api/[controller]")]
 [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 public class BookingsController : BaseApiController
 {
@@ -75,17 +74,26 @@ public class BookingsController : BaseApiController
 
     [HttpGet("own-bookings/chat")]
     [AllowAnonymous]
-    public async Task<IActionResult> GetOwnBooking()
+    public async Task<IActionResult> GetOwnChatBooking()
     {
         return await ExecuteServiceLogic(async () => 
-            await _bookingService.LoadOwnBookingAsync(GetJwtToken()).ConfigureAwait(false)).ConfigureAwait(false);
+            await _bookingService.LoadOwnChatBookingAsync(GetJwtToken()).ConfigureAwait(false)).ConfigureAwait(false);
+    }
+
+    [HttpGet("own-bookings")]
+    [Authorize(Roles = UserRoleConstant.Provider)]
+    public async Task<IActionResult> GetOwnBooking()
+    {
+        return await ExecuteServiceLogic(async () =>
+            await _bookingService.LoadAllBookingsAsync(GetJwtToken()).ConfigureAwait(false)).ConfigureAwait(false);
     }
 
     [HttpPut("{id:guid}/rating")]
-    public async Task<IActionResult> ReviewBooking(BookingRatingRequest request)
+    [Authorize(Roles = UserRoleConstant.Client)]
+    public async Task<IActionResult> ReviewBooking(Guid id,BookingRatingRequest request)
     {
         return await ExecuteServiceLogic(async () =>
-            await _bookingService.RatingBookingAsync(GetJwtToken(),request)).ConfigureAwait(false);
+            await _bookingService.RatingBookingAsync(GetJwtToken(),id,request)).ConfigureAwait(false);
     }
 
 

@@ -15,13 +15,15 @@ public class ProviderServiceService : IProviderServiceService
 {
     private readonly IProviderServiceRepository _providerServiceRepository;
     private readonly IGigServiceRepository _gigServiceRepository;
+    private readonly IJwtService _jwtService;
     private readonly IMapper _mapper;
 
-    public ProviderServiceService(IProviderServiceRepository providerServiceRepository, IGigServiceRepository gigServiceRepository, IMapper mapper)
+    public ProviderServiceService(IProviderServiceRepository providerServiceRepository, IGigServiceRepository gigServiceRepository, IMapper mapper, IJwtService jwtService)
     {
         _providerServiceRepository = providerServiceRepository;
         _gigServiceRepository = gigServiceRepository;
         _mapper = mapper;
+        _jwtService = jwtService;
     }
 
     public async Task<ServiceActionResult> GetAirConditionerServicesByTypeAsync(string type, BasePaginatedRequest request)
@@ -56,5 +58,15 @@ public class ProviderServiceService : IProviderServiceService
             .Include(x => x.Provider)
             .FirstOrDefault() ?? throw new ProviderServiceNotFoundException(id,nameof(ProviderService.Id));
         return providerService;
+    }
+
+    public async Task<ServiceActionResult> GetOwnProviderServiceAsync(string token)
+    {
+        var provider = _jwtService.GetAuthModel(token);
+        var providerServices = await _providerServiceRepository.FindAsync(x => x.ProviderId == provider.UserId && x.IsActive);
+        return new ServiceActionResult(true)
+        {
+            Data = _mapper.ProjectTo<DtoProviderService>(providerServices)
+        };
     }
 }

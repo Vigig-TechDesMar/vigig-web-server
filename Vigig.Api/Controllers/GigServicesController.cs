@@ -10,7 +10,6 @@ using Vigig.Service.Models.Request.Service;
 
 namespace Vigig.Api.Controllers;
 
-[Route("/api/[controller]")]
 [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 public class GigServicesController : BaseApiController
 {
@@ -86,61 +85,7 @@ public class GigServicesController : BaseApiController
         return await ExecuteServiceLogic(async ()
             => await _gigService.GetById(id).ConfigureAwait(false)).ConfigureAwait(false);
     }
-
-    [HttpGet("/ac-cleaning-services")]
-    [AllowAnonymous]
-    public async Task<IActionResult> GetACCleaningServices([FromQuery] BasePaginatedRequest request)
-    {
-        return await ExecuteServiceLogic(async () =>
-                await _providerServiceService
-                    .GetAirConditionerServicesByTypeAsync(GigServiceConstant.AirConditioner.Cleaning,request)
-                    .ConfigureAwait(false))
-            .ConfigureAwait(false);
-    }
-    [HttpGet("/ac-repair-services")]
-    [AllowAnonymous]
-    public async Task<IActionResult> GetACRepairServices([FromQuery] BasePaginatedRequest request)
-    {
-        return await ExecuteServiceLogic(async () =>
-                await _providerServiceService
-                    .GetAirConditionerServicesByTypeAsync(GigServiceConstant.AirConditioner.Repair,request)
-                    .ConfigureAwait(false))
-            .ConfigureAwait(false);
-    }
     
-    [HttpGet("/ac-gas-refill-services")]
-    [AllowAnonymous]
-    public async Task<IActionResult> GetACGasRepairServices([FromQuery] BasePaginatedRequest request)
-    {
-        return await ExecuteServiceLogic(async () =>
-                await _providerServiceService
-                    .GetAirConditionerServicesByTypeAsync(GigServiceConstant.AirConditioner.GasRefill,request)
-                    .ConfigureAwait(false))
-            .ConfigureAwait(false);
-    }
-    
-    [HttpGet("/ac-inspection-services")]
-    [AllowAnonymous]
-    public async Task<IActionResult> GetACInspectionServices([FromQuery] BasePaginatedRequest request)
-    {
-        return await ExecuteServiceLogic(async () =>
-                await _providerServiceService
-                    .GetAirConditionerServicesByTypeAsync(GigServiceConstant.AirConditioner.Inspection,request)
-                    .ConfigureAwait(false))
-            .ConfigureAwait(false);
-    }
-    
-    [HttpGet("/provider-services/{id:guid}")]
-    [AllowAnonymous]
-    public async Task<IActionResult> GetProviderService(Guid id)
-    {
-        return await ExecuteServiceLogic(async () =>
-                await _providerServiceService
-                    .GetProviderServiceByIdAsync(id)
-                    .ConfigureAwait(false))
-            .ConfigureAwait(false);
-    }
-
     [HttpGet("/search")]
     [AllowAnonymous]
     public async Task<IActionResult> SearchUsingGet(SearchUsingGet request)
