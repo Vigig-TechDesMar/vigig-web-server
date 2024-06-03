@@ -21,9 +21,6 @@ public partial class Booking
     public DateTime CreatedDate { get; set; }
 
     public bool IsActive { get; set; }
-    public double? ProviderRating { get; set; }
-
-    public string? ProviderReview { get; set; }
 
     public double? CustomerRating { get; set; }
 

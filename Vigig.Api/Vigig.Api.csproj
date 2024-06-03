@@ -55,6 +55,8 @@
         <EmbeddedResource Include="Scripts\14.Update_Booking.sql" />
         <None Remove="Scripts\15.Update_ProviderService.sql" />
         <EmbeddedResource Include="Scripts\15.Update_ProviderService.sql" />
+        <None Remove="Scripts\16.Update_booking.sql" />
+        <EmbeddedResource Include="Scripts\16.Update_booking.sql" />
     </ItemGroup>
 
 </Project>
