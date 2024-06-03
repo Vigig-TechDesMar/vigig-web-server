@@ -9,6 +9,8 @@ public static class ExceptionMessage
     public const string MissingCorsSettingsConfiguration = "Can not find specified cors configuration.";
 
     public const string MissingCustomSwaggerConfiguration = "Can not specified swagger configuration.";
+
+    public const string MissingAzureConfiguration = "Can not specified azure configuration.";
     
     
     public static class AuthenticationMessage

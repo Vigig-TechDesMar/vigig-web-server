@@ -32,7 +32,8 @@ public class BookingsController : BaseApiController
             await _bookingService.PlaceBookingAsync(GetJwtToken(),request)).ConfigureAwait(false);
     }
     
-    [HttpPut("/bookings/{id:guid}/accepted")]
+    [HttpPut]
+    [Route("{id:guid}/accepted")]
     [Authorize(Roles = UserRoleConstant.Provider)]
     public async Task<IActionResult> AcceptBooking(Guid id)
     {
@@ -40,7 +41,7 @@ public class BookingsController : BaseApiController
             await _bookingService.AcceptBookingAsync(id,GetJwtToken())).ConfigureAwait(false);
     }
     
-    [HttpPut("/bookings/{id:guid}/declined")]
+    [HttpPut("{id:guid}/declined")]
     [Authorize(Roles = UserRoleConstant.Provider)]
     public async Task<IActionResult> DeclineBooking(Guid id)
     {
@@ -48,7 +49,7 @@ public class BookingsController : BaseApiController
             await _bookingService.DeclineBookingAsync(id,GetJwtToken())).ConfigureAwait(false);
     }
     
-    [HttpPut("/bookings/{id:guid}/canceled-by-client")]
+    [HttpPut("{id:guid}/canceled-by-client")]
     [Authorize(Roles = UserRoleConstant.Client)]
     public async Task<IActionResult> CancelBookingByClient(Guid id)
     {
@@ -56,7 +57,7 @@ public class BookingsController : BaseApiController
             await _bookingService.CancelBookingByClientAsync(id,GetJwtToken())).ConfigureAwait(false);
     }
     
-    [HttpPut("/bookings/{id:guid}/canceled-by-provider")]
+    [HttpPut("{id:guid}/canceled-by-provider")]
     [Authorize(Roles = UserRoleConstant.Provider)]
     public async Task<IActionResult> CancelBookingByProvider(Guid id)
     {
@@ -64,15 +65,15 @@ public class BookingsController : BaseApiController
             await _bookingService.CancelBookingByProviderAsync(id,GetJwtToken())).ConfigureAwait(false);
     }
     
-    [HttpPut("/bookings/{id:guid}/completed")]
+    [HttpPut("{id:guid}/completed")]
     [Authorize(Roles = UserRoleConstant.Provider)]
-    public async Task<IActionResult> CompleteBooking(Guid id, BookingCompleteRequest request)
+    public async Task<IActionResult> CompleteBooking(Guid id,[FromBody]BookingCompleteRequest request)
     {
         return await ExecuteServiceLogic(async () =>
             await _bookingService.CompleteBookingAsync(id, request,GetJwtToken())).ConfigureAwait(false);
     }
 
-    [HttpGet("own-booking")]
+    [HttpGet("own-booking/chat")]
     [AllowAnonymous]
     public async Task<IActionResult> GetOwnBooking()
     {
@@ -80,6 +81,12 @@ public class BookingsController : BaseApiController
             await _bookingService.LoadOwnBookingAsync(GetJwtToken()).ConfigureAwait(false)).ConfigureAwait(false);
     }
 
+    [HttpPut("{id:guid}/rating")]
+    public async Task<IActionResult> ReviewBooking(BookingRatingRequest request)
+    {
+        return await ExecuteServiceLogic(async () =>
+            await _bookingService.RatingBookingAsync(GetJwtToken(),request)).ConfigureAwait(false);
+    }
 
 
 }

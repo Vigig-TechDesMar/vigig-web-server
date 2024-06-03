@@ -3,6 +3,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualBasic;
+using Vigig.Common.Helpers;
 using Vigig.DAL.Interfaces;
 using Vigig.Domain.Dtos.Booking;
 using Vigig.Domain.Entities;
@@ -46,11 +47,13 @@ public class BookingService : IBookingService
             .FirstOrDefault() ?? throw new BuildingNotFoundException(request.BuildingId,nameof(Building.Id));
         var providerService =
             (await _proServiceRepository.FindAsync(x => x.IsActive && x.Id == request.ProviderServiceId))
+            .Include(x => x.Provider)
+            .Include(x => x.Service)
             .FirstOrDefault() ?? throw new ProviderServiceNotFoundException(request.ProviderServiceId,nameof(ProviderService.Id));
 
         var booking = new Booking
         {
-            Apartment = "20.01",
+            Apartment = request.Apartment,
             Building = building,
             Status = (int)BookingStatus.Pending,
             ProviderService = providerService,
@@ -218,17 +221,73 @@ public class BookingService : IBookingService
         };
     }
 
+    public async Task<ServiceActionResult> RatingBookingAsync(string token, BookingRatingRequest request)
+    {
+        var user = _jwtService.GetAuthModel(token);
+        var booking = user.Role switch
+        {
+            UserRoleConstant.Client => await GetBookingForClientAsync(user.UserId, request.BookingId, user.UserName),
+            UserRoleConstant.Provider => await GetBookingForProviderAsync(user.UserId, request.BookingId, user.UserName),
+            _ => throw new BookingNotFoundException(request.BookingId, nameof(request.BookingId))
+        };
+        if (user.Role == UserRoleConstant.Provider)
+        {
+            booking.ProviderReview = request.Review;
+            booking.ProviderRating = request.Rating;
+        } else if (user.Role == UserRoleConstant.Client)
+        {
+            booking.CustomerReview = request.Review;
+            booking.ProviderRating = request.Rating;
+            booking.ProviderService.Rating = AverageHelper.GetAverage(booking.ProviderService.Rating,
+                booking.ProviderService.RatingCount, request.Rating);
+            booking.ProviderService.RatingCount++;
+        }
+        await _bookingRepository.UpdateAsync(booking);
+        await _unitOfWork.CommitAsync();
+        return new ServiceActionResult(true)
+        {
+            StatusCode = StatusCodes.Status204NoContent
+        };
+    }
+
     private async Task<bool> EnsureHasBookingAsync(string token, Guid bookingId)
     {
         var providerId = _jwtService.GetSubjectClaim(token);
-        var provider = (await _vigigUserRepository.FindAsync(x => x.IsActive && x.Id.ToString() == providerId))
-            .Include(x => x.Bookings)
-            .FirstOrDefault() ?? throw new UserNotFoundException(providerId,nameof(VigigUser.Id));
-        foreach (var booking in provider.Bookings)
+        var hasBooking = await _bookingRepository.ExistsAsync(x =>
+            x.Id == bookingId && x.ProviderService.ProviderId == Guid.Parse(providerId.ToString()));
+        if (hasBooking)
+            return true;
+        return false;
+    }
+    private async Task<Booking> GetBookingForClientAsync(Guid userId, Guid bookingId, string userName)
+    {
+        var booking = (await _bookingRepository.FindAsync(x =>
+            x.IsActive &&
+            x.CustomerId == userId &&
+            x.Id == bookingId &&
+            x.Status == (int)BookingStatus.Completed)).FirstOrDefault();
+
+        if (booking == null)
         {
-            if (booking.Id == bookingId)
-                return true;
+            throw new Exception($"{userName} does not have booking {bookingId}");
         }
-        return false;;
+
+        return booking;
+    }
+
+    private async Task<Booking> GetBookingForProviderAsync(Guid userId, Guid bookingId, string userName)
+    {
+        var booking = (await _bookingRepository.FindAsync(x =>
+            x.IsActive &&
+            x.ProviderService.ProviderId == userId &&
+            x.Id == bookingId &&
+            x.Status == (int)BookingStatus.Completed)).FirstOrDefault();
+
+        if (booking == null)
+        {
+            throw new Exception($"{userName} does not have booking {bookingId}");
+        }
+
+        return booking;
     }
 }

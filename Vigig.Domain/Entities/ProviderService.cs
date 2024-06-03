@@ -7,11 +7,11 @@ public partial class ProviderService
 {
     public Guid Id { get; set; }
 
-    public double? Rating { get; set; }
+    public double Rating { get; set; } = default;
 
     public int RatingCount { get; set; } = default;
 
-    public double? TotalBooking { get; set; }
+    public double TotalBooking { get; set; } = default;
 
     public double StickerPrice { get; set; }
 
