@@ -73,7 +73,7 @@ public class BookingsController : BaseApiController
             await _bookingService.CompleteBookingAsync(id, request,GetJwtToken())).ConfigureAwait(false);
     }
 
-    [HttpGet("own-bookingsg/chat")]
+    [HttpGet("own-bookings/chat")]
     [AllowAnonymous]
     public async Task<IActionResult> GetOwnBooking()
     {
