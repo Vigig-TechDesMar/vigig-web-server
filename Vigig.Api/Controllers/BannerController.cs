@@ -10,7 +10,6 @@ using Vigig.Service.Models.Request.Event;
 namespace Vigig.Api.Controllers;
 
 [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-[Route("/api/[Controller]")]
 public class BannerController : BaseApiController
 {
     private readonly IBannerService _bannerService;
@@ -20,7 +19,7 @@ public class BannerController : BaseApiController
         _bannerService = bannerService;
     }
 
-    [HttpGet("/all")]
+    [HttpGet("all")]
     [Authorize(Roles = UserRoleConstant.InternalUser)]
     public async Task<IActionResult> GetAllBanners()
     {
@@ -44,7 +43,7 @@ public class BannerController : BaseApiController
             await _bannerService.GetById(id).ConfigureAwait(false)).ConfigureAwait(false);
     }
     
-    [HttpGet("/search")]
+    [HttpGet("search")]
     [AllowAnonymous]
     public async Task<IActionResult> SearchUsingGet(SearchUsingGet request)
     {

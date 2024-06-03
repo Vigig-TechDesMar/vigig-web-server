@@ -9,7 +9,6 @@ using Vigig.Service.Models.Common;
 namespace Vigig.Api.Controllers;
 
 [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-[Route("/api/[Controller]")]
 public class TransactionController : BaseApiController
 {
     private readonly ITransactionService _transactionService;
@@ -19,7 +18,7 @@ public class TransactionController : BaseApiController
         _transactionService = transactionService;
     }
 
-    [HttpGet("/all")]
+    [HttpGet("all")]
     [Authorize(Roles = UserRoleConstant.InternalUser)]
     public async Task<IActionResult> GetAllTransactions()
     {
@@ -43,7 +42,7 @@ public class TransactionController : BaseApiController
             await _transactionService.GetById(id).ConfigureAwait(false)).ConfigureAwait(false);
     }
     
-    [HttpGet("/search")]
+    [HttpGet("search")]
     [AllowAnonymous]
     public async Task<IActionResult> SearchUsingGet(SearchUsingGet request)
     {

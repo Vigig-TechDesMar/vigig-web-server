@@ -10,7 +10,6 @@ using Vigig.Service.Models.Request.Event;
 namespace Vigig.Api.Controllers;
 
 [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-[Route("/api/[Controller]")]
 public class LeaderBoardController : BaseApiController
 {
     private readonly ILeaderBoardService _leaderBoardService;
@@ -20,7 +19,7 @@ public class LeaderBoardController : BaseApiController
         _leaderBoardService = leaderBoardService;
     }
 
-    [HttpGet("/all")]
+    [HttpGet("all")]
     [Authorize(Roles = UserRoleConstant.InternalUser)]
     public async Task<IActionResult> GetAllLeaderBoards()
     {
@@ -44,7 +43,7 @@ public class LeaderBoardController : BaseApiController
             await _leaderBoardService.GetById(id).ConfigureAwait(false)).ConfigureAwait(false);
     }
     
-    [HttpGet("/search")]
+    [HttpGet("search")]
     [AllowAnonymous]
     public async Task<IActionResult> SearchUsingGet(SearchUsingGet request)
     {

@@ -18,7 +18,7 @@ public class BadgesController : BaseApiController
         _badgeService = badgeService;
     }
 
-    [HttpGet("/all")]
+    [HttpGet("all")]
     [Authorize(Roles = UserRoleConstant.InternalUser)]
     public async Task<IActionResult> GetAllBadges()
     {

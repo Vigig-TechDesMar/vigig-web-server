@@ -10,7 +10,6 @@ using Vigig.Service.Models.Request.Fees;
 namespace Vigig.Api.Controllers;
 
 [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-[Route("/api/[Controller]")]
 public class DepositController : BaseApiController
 {
     
@@ -21,7 +20,7 @@ public class DepositController : BaseApiController
         _depositService = depositService;
     }
 
-    [HttpGet("/all")]
+    [HttpGet("all")]
     [Authorize(Roles = UserRoleConstant.InternalUser)]
     public async Task<IActionResult> GetAllDeposits()
     {
@@ -45,7 +44,7 @@ public class DepositController : BaseApiController
             await _depositService.GetById(id).ConfigureAwait(false)).ConfigureAwait(false);
     }
     
-    [HttpGet("/search")]
+    [HttpGet("search")]
     [AllowAnonymous]
     public async Task<IActionResult> SearchUsingGet(SearchUsingGet request)
     {

@@ -10,7 +10,6 @@ using Vigig.Service.Models.Request.Event;
 namespace Vigig.Api.Controllers;
 
 [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-[Route("/api/[Controller]")]
 public class ProviderKPIController : BaseApiController
 {
     private readonly IProviderKPIService _providerKPIService;
@@ -20,7 +19,7 @@ public class ProviderKPIController : BaseApiController
         _providerKPIService = providerKPIService;
     }
 
-    [HttpGet("/all")]
+    [HttpGet("all")]
     [Authorize(Roles = UserRoleConstant.InternalUser)]
     public async Task<IActionResult> GetAllProviderKPIs()
     {
@@ -44,7 +43,7 @@ public class ProviderKPIController : BaseApiController
             await _providerKPIService.GetById(id).ConfigureAwait(false)).ConfigureAwait(false);
     }
     
-    [HttpGet("/search")]
+    [HttpGet("search")]
     [AllowAnonymous]
     public async Task<IActionResult> SearchUsingGet(SearchUsingGet request)
     {

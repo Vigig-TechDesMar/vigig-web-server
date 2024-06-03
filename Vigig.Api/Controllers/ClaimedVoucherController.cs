@@ -10,7 +10,6 @@ using Vigig.Service.Models.Request.Voucher;
 namespace Vigig.Api.Controllers;
 
 [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-[Route("/api/[Controller]")]
 public class ClaimedVoucherController : BaseApiController
 {
     
@@ -21,7 +20,7 @@ public class ClaimedVoucherController : BaseApiController
         _claimedVoucherService = claimedVoucherService;
     }
 
-    [HttpGet("/all")]
+    [HttpGet("all")]
     [Authorize(Roles = UserRoleConstant.InternalUser)]
     public async Task<IActionResult> GetAllClaimedVouchers()
     {
@@ -45,7 +44,7 @@ public class ClaimedVoucherController : BaseApiController
             await _claimedVoucherService.GetById(id).ConfigureAwait(false)).ConfigureAwait(false);
     }
     
-    [HttpGet("/search")]
+    [HttpGet("search")]
     [AllowAnonymous]
     public async Task<IActionResult> SearchUsingGet(SearchUsingGet request)
     {
