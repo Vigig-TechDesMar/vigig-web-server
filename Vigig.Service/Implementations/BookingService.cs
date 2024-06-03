@@ -187,8 +187,6 @@ public class BookingService : IBookingService
             .Include( x => x.ProviderService)
             .FirstOrDefault() ?? throw new BookingNotFoundException(id,nameof(Building.Id));
         booking.Status = (int)BookingStatus.Completed;
-        booking.CustomerRating = request.CustomerRating;
-        booking.CustomerReview = request.CustomerReview;
         booking.ProviderService.TotalBooking++;
         await _bookingRepository.UpdateAsync(booking);
         await _unitOfWork.CommitAsync();
@@ -224,24 +222,12 @@ public class BookingService : IBookingService
     public async Task<ServiceActionResult> RatingBookingAsync(string token, Guid bookingId, BookingRatingRequest request)
     {
         var user = _jwtService.GetAuthModel(token);
-        var booking = user.Role switch
-        {
-            UserRoleConstant.Client => await GetBookingForClientAsync(user.UserId, bookingId, user.UserName),
-            UserRoleConstant.Provider => await GetBookingForProviderAsync(user.UserId, bookingId, user.UserName),
-            _ => throw new BookingNotFoundException(bookingId, nameof(Booking.Id))
-        };
-        if (user.Role == UserRoleConstant.Provider)
-        {
-            booking.ProviderReview = request.Review;
-            booking.ProviderRating = request.Rating;
-        } else if (user.Role == UserRoleConstant.Client)
-        {
-            booking.CustomerReview = request.Review;
-            booking.ProviderRating = request.Rating;
-            booking.ProviderService.Rating = AverageHelper.GetAverage(booking.ProviderService.Rating,
-                booking.ProviderService.RatingCount, request.Rating);
-            booking.ProviderService.RatingCount++;
-        }
+        var booking = await GetBookingForClientAsync(user.UserId, bookingId, user.UserName);
+        booking.CustomerReview = request.Review;
+        booking.CustomerRating = request.Rating;
+        booking.ProviderService.Rating = 
+            AverageHelper.GetAverage(booking.ProviderService.Rating, booking.ProviderService.RatingCount, request.Rating);
+        booking.ProviderService.RatingCount++;
         await _bookingRepository.UpdateAsync(booking);
         await _unitOfWork.CommitAsync();
         return new ServiceActionResult(true)
@@ -274,23 +260,6 @@ public class BookingService : IBookingService
         var booking = (await _bookingRepository.FindAsync(x =>
             x.IsActive &&
             x.CustomerId == userId &&
-            x.Id == bookingId &&
-            x.Status == (int)BookingStatus.Completed))
-            .Include(x => x.ProviderService).FirstOrDefault();
-
-        if (booking == null)
-        {
-            throw new Exception($"{userName} does not have booking {bookingId}");
-        }
-
-        return booking;
-    }
-
-    private async Task<Booking> GetBookingForProviderAsync(Guid userId, Guid bookingId, string userName)
-    {
-        var booking = (await _bookingRepository.FindAsync(x =>
-            x.IsActive &&
-            x.ProviderService.ProviderId == userId &&
             x.Id == bookingId &&
             x.Status == (int)BookingStatus.Completed))
             .Include(x => x.ProviderService).FirstOrDefault();
