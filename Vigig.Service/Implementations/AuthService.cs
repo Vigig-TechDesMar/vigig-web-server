@@ -48,10 +48,7 @@ public class AuthService : IAuthService
 
         var role = (await _vigigRoleRepository.FindAsync(r => r.NormalizedName == request.Role.ToString()))
             .FirstOrDefault() ?? throw new RoleNotFoundException(request.Role.ToString());
-        
-        var building =  (await _buildingRepository.FindAsync(b => b.Id == request.BuildingId)).FirstOrDefault() 
-                        ?? throw new BuildingNotFoundException(request.BuildingId,nameof(Building.Id));
-        
+
         if (retrivedUser is not null)
             throw new UserAlreadyExistException(request.Email);
 
@@ -71,7 +68,11 @@ public class AuthService : IAuthService
             retrivedUser.NormalizedEmail = request.Email.ToUpper();
             retrivedUser.UserName = request.Email.Split("@")[0];
             retrivedUser.NormalizedUserName = retrivedUser.UserName.Split("@")[0].ToUpper();
-            retrivedUser.Building = building;
+            if (request.BuildingId != default)
+            {
+                retrivedUser.Building =  (await _buildingRepository.FindAsync(b => b.Id == request.BuildingId)).FirstOrDefault() 
+                                         ?? throw new BuildingNotFoundException(request.BuildingId,nameof(Building.Id));
+            }
             retrivedUser.Roles.Add(role);
 
             if (role.Name.Equals(UserRoleConstant.Provider))
