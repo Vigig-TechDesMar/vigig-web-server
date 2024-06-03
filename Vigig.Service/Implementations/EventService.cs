@@ -37,7 +37,7 @@ public class EventService : IEventService
     public async Task<ServiceActionResult> GetById(Guid id)
     {
         var ev = (await _eventRepository.FindAsync(sc => sc.IsActive && sc.Id == id)).FirstOrDefault()
-            ?? throw new EventNotFoundException(id.ToString());
+            ?? throw new EventNotFoundException(id.ToString(),nameof(Event.Id));
         return new ServiceActionResult(true)
         {
             Data = _mapper.Map<DtoEvent>(ev)
@@ -84,7 +84,7 @@ public class EventService : IEventService
     public async Task<ServiceActionResult> UpdateAsync(UpdateEventRequest request)
     {
         var ev = (await _eventRepository.FindAsync(sc => sc.Id == request.Id && sc.IsActive)).FirstOrDefault()
-                 ?? throw new EventNotFoundException(request.Id);
+                 ?? throw new EventNotFoundException(request.Id,nameof(Event.Id));
         _mapper.Map(request, ev);
         await _eventRepository.UpdateAsync(ev);
         await _unitOfWork.CommitAsync();

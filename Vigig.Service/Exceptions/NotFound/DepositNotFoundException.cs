@@ -4,8 +4,7 @@ namespace Vigig.Service.Exceptions.NotFound;
 
 public class DepositNotFoundException : EntityNotFoundException<Deposit>
 {
-    public DepositNotFoundException(object id) : base(id)
+    public DepositNotFoundException(object validateValue, object validateProperty) : base(validateValue,validateProperty)
     {
-        
     }
 }

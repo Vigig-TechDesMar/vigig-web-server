@@ -4,8 +4,7 @@ namespace Vigig.Service.Exceptions.NotFound;
 
 public class TransactionNotFoundException : EntityNotFoundException<Transaction>
 {
-    public TransactionNotFoundException(object id) : base(id)
+    public TransactionNotFoundException(object validateValue, object validateProperty) : base(validateValue,validateProperty)
     {
-        
     }
 }

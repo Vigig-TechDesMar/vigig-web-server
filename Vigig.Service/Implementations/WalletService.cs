@@ -39,7 +39,7 @@ public class WalletService : IWalletService
     {
         var wallet = (await _walletRepository.FindAsync(x => x.Id == id)).FirstOrDefault();
         if (wallet is null)
-            throw new WalletNotFoundException(id.ToString());
+            throw new WalletNotFoundException(id.ToString(),nameof(Wallet.Id));
         return new ServiceActionResult(true)
         {
             Data = _mapper.Map<DtoWallet>(wallet)
@@ -75,7 +75,7 @@ public class WalletService : IWalletService
     public async Task<ServiceActionResult> AddAsync(CreateWalletRequest request)
     {
         if (!await _vigigUserRepository.ExistsAsync(sc => sc.Id == request.ProviderId && sc.IsActive))
-            throw new UserNotFoundException(request.ProviderId);
+            throw new UserNotFoundException(request.ProviderId,nameof(VigigUser.Id));
         var wallet = _mapper.Map<Wallet>(request);
         await _walletRepository.AddAsync(wallet);
         await _unitOfWork.CommitAsync();
@@ -90,9 +90,9 @@ public class WalletService : IWalletService
     public async Task<ServiceActionResult> UpdateAsync(UpdateWalletRequest request)
     {
         if (!await _vigigUserRepository.ExistsAsync(sc => sc.Id == request.ProviderId && sc.IsActive))
-            throw new UserNotFoundException(request.ProviderId);
+            throw new UserNotFoundException(request.ProviderId,nameof(VigigUser.Id));
         var wallet = (await _walletRepository.FindAsync(sc => sc.Id == request.Id)).FirstOrDefault()
-                     ?? throw new WalletNotFoundException(request.Id);
+                     ?? throw new WalletNotFoundException(request.Id,nameof(Wallet.Id));
 
         _mapper.Map(request, wallet);
         await _walletRepository.UpdateAsync(wallet);

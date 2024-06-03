@@ -4,7 +4,7 @@ namespace Vigig.Service.Exceptions.NotFound;
 
 public class BannerNotFoundException : EntityNotFoundException<Banner>
 {
-    public BannerNotFoundException(object id) : base(id)
+    public BannerNotFoundException(object validateValue, object validateProperty) : base(validateValue,validateProperty)
     {
     }
 }

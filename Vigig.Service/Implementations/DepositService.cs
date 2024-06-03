@@ -41,7 +41,7 @@ public class DepositService : IDepositService
     {
         var deposit = (await _depositRepository.FindAsync(sc => sc.Id == id)).FirstOrDefault();
         if (deposit is null)
-            throw new DepositNotFoundException(id.ToString());
+            throw new DepositNotFoundException(id.ToString(),nameof(Deposit.Id));
         return new ServiceActionResult(true)
         {
             Data = _mapper.Map<DtoDeposit>(deposit)
@@ -75,7 +75,7 @@ public class DepositService : IDepositService
     public async Task<ServiceActionResult> AddAsync(CreateDepositRequest request)
     {
         if (!await _vigigUserRepository.ExistsAsync(sc => sc.Id == request.ProviderId && sc.IsActive))
-            throw new UserNotFoundException(request.ProviderId);
+            throw new UserNotFoundException(request.ProviderId,nameof(VigigUser.Id));
         var deposit = _mapper.Map<Deposit>(request);
         await _depositRepository.AddAsync(deposit);
         await _unitOfWork.CommitAsync();
@@ -91,9 +91,9 @@ public class DepositService : IDepositService
     public async Task<ServiceActionResult> UpdateAsync(UpdateDepositRequest request)
     {
         if (!await _vigigUserRepository.ExistsAsync(sc => sc.Id == request.ProviderId && sc.IsActive))
-            throw new UserNotFoundException(request.ProviderId);
+            throw new UserNotFoundException(request.ProviderId,nameof(VigigUser.Id));
         var deposit = (await _depositRepository.FindAsync(sc => sc.Id == request.Id)).FirstOrDefault() ??
-                      throw new DepositNotFoundException(request.Id);
+                      throw new DepositNotFoundException(request.Id,nameof(Deposit.Id));
         _mapper.Map(request,deposit);
         await _depositRepository.UpdateAsync(deposit);
         await _unitOfWork.CommitAsync();

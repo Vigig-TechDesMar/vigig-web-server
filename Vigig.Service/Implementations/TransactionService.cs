@@ -47,7 +47,7 @@ public class TransactionService : ITransactionService
     {
         var transaction = (await _transactionRepository.FindAsync(sc => sc.Id == id)).FirstOrDefault();
         if (transaction is null)
-            throw new TransactionNotFoundException(id);
+            throw new TransactionNotFoundException(id,nameof(Transaction.Id));
         return new ServiceActionResult(true)
         {
             Data = _mapper.Map<DtoTransaction>(transaction)

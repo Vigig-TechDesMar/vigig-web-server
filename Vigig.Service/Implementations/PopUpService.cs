@@ -38,7 +38,7 @@ public class PopUpService : IPopUpService
     public async Task<ServiceActionResult> GetById(Guid id)
     {
         var popUp = (await _popUpRepository.FindAsync(sc => sc.Id == id)).FirstOrDefault()
-                     ?? throw new PopUpNotFoundException(id.ToString());
+                     ?? throw new PopUpNotFoundException(id.ToString(),nameof(PopUp.Id));
         return new ServiceActionResult(true)
         {
             Data = _mapper.Map<DtoPopUp>(popUp)
@@ -74,7 +74,7 @@ public class PopUpService : IPopUpService
     {
         //Check Event
         if (!await _eventRepository.ExistsAsync(sc => sc.Id == request.EventId && sc.IsActive))
-            throw new EventNotFoundException(request.EventId);
+            throw new EventNotFoundException(request.EventId,nameof(Event.Id));
 
         var popUp = _mapper.Map<PopUp>(request);
         await _popUpRepository.AddAsync(popUp);
@@ -90,10 +90,10 @@ public class PopUpService : IPopUpService
     {
         //Check Event
         if (!await _eventRepository.ExistsAsync(sc => sc.Id == request.EventId && sc.IsActive))
-            throw new EventNotFoundException(request.EventId);
+            throw new EventNotFoundException(request.EventId,nameof(Event.Id));
 
         var popUp = (await _popUpRepository.FindAsync(sc => sc.Id == request.Id)).FirstOrDefault()
-                     ?? throw new PopUpNotFoundException(request.Id);
+                     ?? throw new PopUpNotFoundException(request.Id,nameof(PopUp.Id));
 
         _mapper.Map(request, popUp);
         await _popUpRepository.UpdateAsync(popUp);

@@ -4,7 +4,7 @@ namespace Vigig.Service.Exceptions.NotFound;
 
 public class LeaderBoardNotFoundException : EntityNotFoundException<LeaderBoard>
 {
-    public LeaderBoardNotFoundException(object id) : base(id)
+    public LeaderBoardNotFoundException(object validateValue, object validateProperty) : base(validateValue,validateProperty)
     {
     }
 }

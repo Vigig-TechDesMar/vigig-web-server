@@ -4,7 +4,7 @@ namespace Vigig.Service.Exceptions.NotFound;
 
 public class PopUpNotFoundException : EntityNotFoundException<PopUp>
 {
-    public PopUpNotFoundException(object id) : base(id)
+    public PopUpNotFoundException(object validateValue, object validateProperty) : base(validateValue,validateProperty)
     {
     }
 }

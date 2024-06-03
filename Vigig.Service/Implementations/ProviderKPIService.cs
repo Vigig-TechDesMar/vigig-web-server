@@ -43,7 +43,7 @@ public class ProviderKPIService : IProviderKPIService
     public async Task<ServiceActionResult> GetById(Guid id)
     {
         var kpi = (await _providerKpiRepository.FindAsync(sc => sc.Id == id)).FirstOrDefault()
-                  ?? throw new ProviderKPINotFoundException(id.ToString());
+                  ?? throw new ProviderKPINotFoundException(id.ToString(),nameof(ProviderKPI.Id));
         return new ServiceActionResult(true)
         {
             Data = _mapper.Map<DtoProviderKPI>(kpi)
@@ -79,11 +79,11 @@ public class ProviderKPIService : IProviderKPIService
     {
         //Check Provider
         if (!await _vigigUserRepository.ExistsAsync(sc => sc.Id == request.ProviderId && sc.IsActive))
-            throw new UserNotFoundException(request.ProviderId);
+            throw new UserNotFoundException(request.ProviderId,nameof(VigigUser.Id));
 
         //Check LeaderBoard
         if (!await _leaderBoardRepository.ExistsAsync(sc => sc.Id == request.LeaderBoardId))
-            throw new LeaderBoardNotFoundException(request.LeaderBoardId);
+            throw new LeaderBoardNotFoundException(request.LeaderBoardId,nameof(ProviderKPI.Id));
 
         var kpi = _mapper.Map<ProviderKPI>(request);
         await _providerKpiRepository.AddAsync(kpi);
@@ -99,14 +99,14 @@ public class ProviderKPIService : IProviderKPIService
     {
         //Check Provider
         if (!await _vigigUserRepository.ExistsAsync(sc => sc.Id == request.ProviderId && sc.IsActive))
-            throw new UserNotFoundException(request.ProviderId);
+            throw new UserNotFoundException(request.ProviderId,nameof(VigigUser.Id));
 
         //Check LeaderBoard
         if (!await _leaderBoardRepository.ExistsAsync(sc => sc.Id == request.LeaderBoardId))
-            throw new LeaderBoardNotFoundException(request.LeaderBoardId);
+            throw new LeaderBoardNotFoundException(request.LeaderBoardId,nameof(LeaderBoard.Id));
 
         var kpi = (await _providerKpiRepository.FindAsync(sc => sc.Id == request.Id)).FirstOrDefault()
-                  ?? throw new ProviderKPINotFoundException(request.Id);
+                  ?? throw new ProviderKPINotFoundException(request.Id,nameof(ProviderKPI.Id));
         
         _mapper.Map(request, kpi);
         await _providerKpiRepository.UpdateAsync(kpi);

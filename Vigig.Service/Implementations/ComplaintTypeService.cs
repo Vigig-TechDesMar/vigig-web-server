@@ -38,7 +38,7 @@ public class ComplaintTypeService : IComplaintTypeService
         var complaintType =
             (await _complaintTypeRepository.FindAsync(sc => sc.Id == id && sc.IsActive)).FirstOrDefault();
         if (complaintType is null)
-            throw new ComplaintTypeNotFoundException(id.ToString());
+            throw new ComplaintTypeNotFoundException(id.ToString(),nameof(ComplaintType.Id));
         return new ServiceActionResult(true)
         {
             Data = _mapper.Map<DtoComplaintType>(complaintType)
@@ -89,7 +89,7 @@ public class ComplaintTypeService : IComplaintTypeService
     {
         var complaintType = (await _complaintTypeRepository.FindAsync(sc => sc.Id == request.Id && sc.IsActive))
                             .FirstOrDefault()
-                            ?? throw new ComplaintTypeNotFoundException(request.Id);
+                            ?? throw new ComplaintTypeNotFoundException(request.Id,nameof(ComplaintType.Id));
         _mapper.Map(request, complaintType);
         await _complaintTypeRepository.UpdateAsync(complaintType);
         await _unitOfWork.CommitAsync();

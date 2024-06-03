@@ -41,7 +41,7 @@ public class SubscriptionPlanService: ISubscriptionPlanService
             .FirstOrDefault();
 
         if (exist is null)
-            throw new SubscriptionPlanNotFoundException(Id);
+            throw new SubscriptionPlanNotFoundException(Id,nameof(SubscriptionPlan.Id));
         var plan = _mapper.Map<DtoSubscriptionPlan>(exist);
         return new ServiceActionResult(true)
         {
@@ -64,7 +64,7 @@ public class SubscriptionPlanService: ISubscriptionPlanService
     public async Task<ServiceActionResult> UpdateAsync(UpdateSubscriptionPlanRequest request)
     {
         var plan = (await _subscriptionPlanRepository.FindAsync(s => s.Id == request.Id && s.IsActive))
-            .FirstOrDefault() ?? throw new SubscriptionPlanNotFoundException(request.Id);
+            .FirstOrDefault() ?? throw new SubscriptionPlanNotFoundException(request.Id,nameof(SubscriptionPlan.Id));
         
         _mapper.Map(request, plan);
         await _subscriptionPlanRepository.UpdateAsync(plan);
