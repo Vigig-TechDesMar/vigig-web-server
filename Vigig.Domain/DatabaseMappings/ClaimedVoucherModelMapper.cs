@@ -17,7 +17,6 @@ public class ClaimedVoucherModelMapper : IDatabaseModelMapper
             entity.Property(e => e.EventTitle);
             entity.Property(e => e.StartDate);
             entity.Property(e => e.EndDate);
-            entity.Property(e => e.Field);
             entity.HasOne(e => e.Voucher)
                 .WithMany(v => v.ClaimedVouchers)
                 .HasForeignKey(e => e.VoucherId);

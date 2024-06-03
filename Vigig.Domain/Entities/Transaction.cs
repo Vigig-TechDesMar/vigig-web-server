@@ -19,11 +19,11 @@ public partial class Transaction
 
     public Guid WalletId { get; set; }
 
-    public Guid DepositId { get; set; }
+    public Guid? DepositId { get; set; }
 
-    public Guid BookingFeeId { get; set; }
+    public Guid? BookingFeeId { get; set; }
 
-    public Guid SubscriptionFeeId { get; set; }
+    public Guid? SubscriptionFeeId { get; set; }
 
     public virtual required BookingFee BookingFee { get; set; } 
     public virtual required Deposit Deposit { get; set; } 

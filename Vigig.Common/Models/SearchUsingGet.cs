@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using Vigig.Common.Models;
 
 namespace Vigig.Service.Models.Common;

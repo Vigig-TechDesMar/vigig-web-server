@@ -1,4 +1,4 @@
-﻿namespace Vigig.Common.Helpers;
+namespace Vigig.Common.Helpers;
 
 public class ReflectionHelper
 {
@@ -17,6 +17,4 @@ public class ReflectionHelper
         var propertyValue = property.GetValue(obj);
         return propertyValue ?? 0;
     }
-
-
 }

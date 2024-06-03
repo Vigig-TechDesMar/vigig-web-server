@@ -1,4 +1,4 @@
-﻿using Vigig.Domain.Entities;
+using Vigig.Domain.Entities;
 
 namespace Vigig.Service.Exceptions.NotFound;
 
