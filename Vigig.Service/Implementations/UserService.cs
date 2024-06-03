@@ -18,12 +18,13 @@ public class UserService : IUserService
 {
     private readonly IVigigUserRepository _vigigUserRepository;
     private readonly IProviderServiceRepository _providerServiceRepository;
+    private readonly IMediaService _mediaService;
     private readonly IGigServiceRepository _gigServiceRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
     private readonly IJwtService _jwtService;
 
-    public UserService(IVigigUserRepository vigigUserRepository, IProviderServiceRepository providerServiceRepository, IUnitOfWork unitOfWork, IMapper mapper, IJwtService jwtService, IGigServiceRepository gigServiceRepository)
+    public UserService(IVigigUserRepository vigigUserRepository, IProviderServiceRepository providerServiceRepository, IUnitOfWork unitOfWork, IMapper mapper, IJwtService jwtService, IGigServiceRepository gigServiceRepository, IMediaService mediaService)
     {
         _vigigUserRepository = vigigUserRepository;
         _providerServiceRepository = providerServiceRepository;
@@ -31,6 +32,7 @@ public class UserService : IUserService
         _mapper = mapper;
         _jwtService = jwtService;
         _gigServiceRepository = gigServiceRepository;
+        _mediaService = mediaService;
     }
 
     public async Task<ServiceActionResult> GetProfileInformation(string token)
@@ -54,6 +56,8 @@ public class UserService : IUserService
         var gigService = (await _gigServiceRepository.FindAsync(x => x.IsActive && x.Id == request.ServiceId))
             .FirstOrDefault() ?? throw new GigServiceNotFoundException(request.ServiceId,nameof(GigService.Id));
 
+        var imageUrls = await _mediaService.GetUrlAfterUploadingFile(request.Images);
+        
         var providerService = new ProviderService()
         {
             Provider = provider,
@@ -64,10 +68,19 @@ public class UserService : IUserService
                     ? request.StickerPrice : throw new PriceNotInRangeException(gigService.ServiceName),
             TotalBooking = 0,
             Rating = 0,
-            RatingCount = 0
+            RatingCount = 0,
         };
 
         await _providerServiceRepository.AddAsync(providerService);
+        await _unitOfWork.CommitAsync();
+        
+        var serviceImages = imageUrls.Select(x => new ServiceImage
+        {
+            ImageUrl = x,
+        }).ToList();
+        
+        providerService.ServiceImages = serviceImages;
+        await _providerServiceRepository.UpdateAsync(providerService);
         await _unitOfWork.CommitAsync();
         return new ServiceActionResult(true)
         {
@@ -84,6 +97,4 @@ public class UserService : IUserService
         var userId = _jwtService.GetTokenClaim(token, TokenClaimConstant.Subject)?.ToString();
         return userId;
     }
-    
-    
 }

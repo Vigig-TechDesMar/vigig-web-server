@@ -22,4 +22,6 @@ public interface IBookingService
     Task<ServiceActionResult> CompleteBookingAsync(Guid id, BookingCompleteRequest request, string token);
 
     Task<ServiceActionResult> LoadOwnBookingAsync(string token);
+
+    Task<ServiceActionResult> RatingBookingAsync(string token, BookingRatingRequest request);
 }

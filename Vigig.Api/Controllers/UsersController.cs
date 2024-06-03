@@ -34,7 +34,7 @@ public class UsersController : BaseApiController
 
     [HttpPost("/register-gigservice")]
     [Authorize(Roles = UserRoleConstant.Provider)]
-    public async Task<IActionResult> UploadService(CreateProviderServiceRequest request)
+    public async Task<IActionResult> UploadService([FromForm]CreateProviderServiceRequest request)
     {
         return await ExecuteServiceLogic(async () =>
             await _userService.UploadService(GetJwtToken(),request).ConfigureAwait(false)).ConfigureAwait(false);
