@@ -203,11 +203,11 @@ public class BookingService : IBookingService
         var bookings = userRole switch
         {
             UserRoleConstant.Client => (await _bookingRepository.FindAsync(x =>
-                                             x.IsActive && x.CustomerId.ToString() == userId))
+                                             x.IsActive && x.CustomerId.ToString() == userId && x.Status ==(int) BookingStatus.Accepted))
                                          .Include(x => x.BookingMessages)
                                          ?? throw new UserNotFoundException(userId, nameof(VigigUser.Id)),
             UserRoleConstant.Provider => (await _bookingRepository.FindAsync(x =>
-                                             x.IsActive && x.ProviderService.ProviderId.ToString() == userId))
+                                             x.IsActive && x.ProviderService.ProviderId.ToString() == userId && x.Status == (int)BookingStatus.Accepted))
                                          .Include(x => x.BookingMessages)
                                          ?? throw new UserNotFoundException(userId, nameof(VigigUser.Id)),
             _ => new List<Booking>().AsQueryable(),

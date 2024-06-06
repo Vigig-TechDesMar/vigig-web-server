@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Linq.Expressions;
-using Vigig.Common.Models;
 using Vigig.Service.Models.Common;
 
 namespace Vigig.Common.Helpers;
@@ -30,4 +29,5 @@ public class SearchHelper
         }
         return src;
     }
+    
 }
