@@ -81,7 +81,7 @@ public class BookingsController : BaseApiController
     }
 
     [HttpGet("own-bookings")]
-    [Authorize(Roles = UserRoleConstant.Provider)]
+    // [Authorize(Roles = UserRoleConstant.Provider)]
     public async Task<IActionResult> GetOwnBooking()
     {
         return await ExecuteServiceLogic(async () =>

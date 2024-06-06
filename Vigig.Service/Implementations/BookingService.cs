@@ -238,8 +238,15 @@ public class BookingService : IBookingService
 
     public async Task<ServiceActionResult> LoadAllBookingsAsync(string token)
     {
-        var provider = _jwtService.GetAuthModel(token);
-        var bookings = await _bookingRepository.FindAsync(x => x.ProviderService.ProviderId == provider.UserId);
+        var user = _jwtService.GetAuthModel(token);
+        var bookings = user.Role switch
+        {
+            UserRoleConstant.Client => (await _bookingRepository.FindAsync(
+                    x => x.IsActive && x.CustomerId==user.UserId)) ?? throw new UserNotFoundException(user.UserId, nameof(VigigUser.Id)),
+            UserRoleConstant.Provider => (await _bookingRepository.FindAsync(
+                x => x.IsActive && x.ProviderService.ProviderId == user.UserId ))?? throw new UserNotFoundException(user.UserId, nameof(VigigUser.Id)),
+            _ => new List<Booking>().AsQueryable(),
+        };
         return new ServiceActionResult(true)
         {
             Data = _mapper.ProjectTo<DtoBooking>(bookings)
