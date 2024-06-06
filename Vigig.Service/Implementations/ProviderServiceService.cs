@@ -44,6 +44,7 @@ public class ProviderServiceService : IProviderServiceService
             (await _providerServiceRepository.FindAsync(x => x.IsActive && x.Id == id && x.IsVisible))
             .Include(x => x.Provider)
             .Include(x => x.Service)
+            .Include(x => x.ServiceImages)
             .FirstOrDefault() ?? throw new ProviderServiceNotFoundException(id,nameof(ProviderService.Id));
         return new ServiceActionResult(true)
         {
