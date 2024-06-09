@@ -1,19 +1,59 @@
-﻿namespace Vigig.Common.Helpers;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Reflection;
 
+namespace Vigig.Common.Helpers;
 public class EnumHelper
 {
+    private static readonly Dictionary<Type, Dictionary<string, string>> EnumTranslations =
+        new Dictionary<Type, Dictionary<string, string>>();
+
     public static T GetEnumValueFromString<T>(string valueName) where T : struct, Enum
     {
-        var values = Enum.GetValues<T>();
-        
-        foreach (var value in values)
+        if (Enum.TryParse<T>(valueName, out T result))
         {
-            if (Equals(value.ToString(), valueName))
-            {
-                return value;
-            }
+            return result;
+        }
+        else
+        {
+            throw new ArgumentException($"Enum does not contain value {valueName}");
+        }
+    }
+
+    public static string TranslateEnum(Enum enumValue)
+    {
+        Type enumType = enumValue.GetType();
+
+        if (!EnumTranslations.ContainsKey(enumType))
+        {
+            InitializeEnumTranslations(enumType);
         }
 
-        throw new Exception($"Enum does not contain value {valueName}");
+        Dictionary<string, string> translations = EnumTranslations[enumType];
+        string enumName = enumValue.ToString();
+
+        if (translations.ContainsKey(enumName))
+        {
+            return translations[enumName];
+        }
+
+        return enumName;
+    }
+
+    private static void InitializeEnumTranslations(Type enumType)
+    {
+        var translations = new Dictionary<string, string>();
+
+        foreach (FieldInfo field in enumType.GetFields(BindingFlags.Public | BindingFlags.Static))
+        {
+            DescriptionAttribute? descriptionAttribute = field.GetCustomAttribute<DescriptionAttribute>();
+            string enumName = field.Name;
+            string description = descriptionAttribute?.Description ?? enumName;
+
+            translations.Add(enumName, description);
+        }
+
+        EnumTranslations[enumType] = translations;
     }
 }

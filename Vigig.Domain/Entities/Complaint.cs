@@ -5,7 +5,6 @@ namespace Vigig.Domain.Entities;
 
 public class Complaint : BaseEntity<Guid>
 {
-
     public string Content { get; set; } = string.Empty;
     public ComplaintStatus Status { get; set; } = ComplaintStatus.Pending;
     public Guid BookingId { get; set; }

@@ -15,6 +15,7 @@
         <PackageReference Include="swashbuckle.aspnetcore" Version="6.5.0" />
     </ItemGroup>
     <ItemGroup>
+      <Folder Include="Constants\Status\" />
       <Folder Include="Enums\" />
       <Folder Include="Extensions\" />
     </ItemGroup>
