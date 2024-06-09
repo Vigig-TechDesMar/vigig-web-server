@@ -10,4 +10,5 @@ public class PopUp : BaseEntity<Guid>
     public DateTime EndDate { get; set; }
     public Guid EventId { get; set; }
     public virtual required Event Event { get; set; }
+    public ICollection<EventImage> EventImages { get; set; } = new List<EventImage>();
 }

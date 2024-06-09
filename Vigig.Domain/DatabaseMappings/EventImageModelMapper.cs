@@ -14,16 +14,20 @@ public class EventImageModelMapper : IDatabaseModelMapper
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Id)
                 .ValueGeneratedOnAdd();
-            entity.Property(e => e.EventId);
             entity.Property(e => e.ImageUrl)
                 .IsRequired();
             entity.Property(e => e.StartDate)
                 .IsRequired();
             entity.Property(e => e.EndDate)
                 .IsRequired();
-            entity.HasOne(e => e.Event)
+            entity.HasOne(e => e.Banner)
                 .WithMany(e => e.EventImages)
-                .HasForeignKey(e => e.EventId);
-        });
+                .HasForeignKey(e => e.BannerId)
+                .OnDelete(DeleteBehavior.ClientSetNull);
+            entity.HasOne(e => e.PopUp)
+                .WithMany(e => e.EventImages)
+                .HasForeignKey(e => e.PopUpId)
+                .OnDelete(DeleteBehavior.ClientSetNull);
+        }); 
     }
 }

@@ -3,7 +3,7 @@ using Vigig.Domain.Models.BaseEntities;
 
 namespace Vigig.Domain.Entities;
 
-public class ClaimedVoucher : BaseEntity<Guid>
+public class ClaimedVoucher
 {
     public required string EventTitle { get; set; }
     public DateTime StartDate { get; set; }
