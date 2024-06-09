@@ -7,13 +7,13 @@ namespace Vigig.Domain.Entities;
 
 public partial class VigigUser : IdentityEntity
 {
-    public Guid BuildingId { get; set; }
+    public Guid? BuildingId { get; set; }
     
     public Guid? BadgeId { get; set; }
 
     public virtual ICollection<Booking> Bookings { get; set; } = new List<Booking>();
 
-    public virtual required Building Building { get; set; } 
+    public virtual Building? Building { get; set; } = null!;
 
     public virtual Badge? Badge { get; set; } 
 
