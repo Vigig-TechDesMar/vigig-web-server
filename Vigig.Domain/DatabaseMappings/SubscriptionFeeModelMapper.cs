@@ -13,8 +13,9 @@ public class SubscriptionFeeModelMapper : IDatabaseModelMapper
             entity.ToTable("SubscriptionFee");
 
             entity.Property(e => e.Id).ValueGeneratedOnAdd();
-            entity.Property(e => e.Amount).HasDefaultValueSql("((0))");
+            entity.Property(e => e.Amount).HasDefaultValueSql("((0))").IsRequired();
             entity.Property(e => e.CreatedDate).HasColumnType("datetime");
+            entity.Property(e => e.Status).HasColumnType("int");
 
             entity.HasOne(d => d.Provider).WithMany(p => p.SubscriptionFees)
                 .HasForeignKey(d => d.ProviderId)

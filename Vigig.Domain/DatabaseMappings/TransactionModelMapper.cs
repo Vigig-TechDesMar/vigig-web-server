@@ -13,7 +13,7 @@ public class TransactionModelMapper : IDatabaseModelMapper
             entity.ToTable("Transaction");
 
             entity.Property(e => e.Id).ValueGeneratedOnAdd();
-            entity.Property(e => e.Amount).HasDefaultValueSql("((0))");
+            entity.Property(e => e.Amount).HasDefaultValueSql("((0))").IsRequired();
             entity.Property(e => e.CreatedDate).HasColumnType("datetime");
 
             entity.HasOne(d => d.BookingFee).WithMany(p => p.Transactions)

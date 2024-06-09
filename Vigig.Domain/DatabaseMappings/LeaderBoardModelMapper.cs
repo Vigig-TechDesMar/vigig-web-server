@@ -18,6 +18,8 @@ public class LeaderBoardModelMapper : IDatabaseModelMapper
                 .IsRequired();
             entity.Property(e => e.StartDate);
             entity.Property(e => e.EndDate);
+            entity.Property(e => e.IsActive).HasDefaultValueSql("((1))");
+            entity.Property(e => e.Description).HasMaxLength(int.MaxValue);
             entity.HasOne(e => e.Event)
                 .WithMany(e => e.LeaderBoards)
                 .HasForeignKey(e => e.EventId);

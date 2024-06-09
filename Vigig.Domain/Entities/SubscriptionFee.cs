@@ -1,12 +1,9 @@
-﻿namespace Vigig.Domain.Entities;
+﻿using Vigig.Domain.Entities.BaseEntities;
 
-public partial class SubscriptionFee
+namespace Vigig.Domain.Entities;
+
+public partial class SubscriptionFee : CashEntity
 {
-    public Guid Id { get; set; }
-
-    public double? Amount { get; set; }
-
-    public DateTime CreatedDate { get; set; }
 
     public Guid ProviderId { get; set; }
 

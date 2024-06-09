@@ -95,6 +95,4 @@ public class BookingsController : BaseApiController
         return await ExecuteServiceLogic(async () =>
             await _bookingService.RatingBookingAsync(GetJwtToken(),id,request)).ConfigureAwait(false);
     }
-
-
 }

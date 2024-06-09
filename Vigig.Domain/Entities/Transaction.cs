@@ -7,7 +7,7 @@ public partial class Transaction
 {
     public Guid Id { get; set; }
 
-    public double? Amount { get; set; }
+    public required double Amount { get; set; }
 
     public string? Description { get; set; }
 

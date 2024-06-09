@@ -53,9 +53,7 @@
         <EmbeddedResource Include="Scripts\12.Ensure_Data.sql" />
         <EmbeddedResource Include="Scripts\13.Update_Booking.sql" />
         <EmbeddedResource Include="Scripts\14.Update_Booking.sql" />
-        <None Remove="Scripts\15.Update_ProviderService.sql" />
         <EmbeddedResource Include="Scripts\15.Update_ProviderService.sql" />
-        <None Remove="Scripts\16.Update_booking.sql" />
         <EmbeddedResource Include="Scripts\16.Update_booking.sql" />
         <None Remove="Scripts\17.Update_VigigUser.sql" />
         <EmbeddedResource Include="Scripts\17.Update_VigigUser.sql" />
@@ -63,6 +61,10 @@
         <EmbeddedResource Include="Scripts\18.Drop_FK_VigigUser.sql" />
         <None Remove="Scripts\19.Drop_FK_Complaint.sql" />
         <EmbeddedResource Include="Scripts\19.Drop_FK_Complaint.sql" />
+        <EmbeddedResource Include="Scripts\20.Big_Update.sql" />
+        <EmbeddedResource Include="Scripts\21.Update_Banner.sql" />
+        <EmbeddedResource Include="Scripts\22.Update_Complain_Deposit_EventImg.sql" />
+        <EmbeddedResource Include="Scripts\23.Update_LeaderBoard_Notification_PopUp.sql" />
     </ItemGroup>
 
 </Project>

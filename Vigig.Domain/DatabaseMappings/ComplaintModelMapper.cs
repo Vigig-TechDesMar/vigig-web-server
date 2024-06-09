@@ -11,7 +11,8 @@ public class ComplaintModelMapper : IDatabaseModelMapper
         modelBuilder.Entity<Complaint>(entity =>
         {
             entity.Property(e => e.Id).ValueGeneratedOnAdd();
-            entity.Property(e => e.IsActive).HasDefaultValueSql("((1))");
+            entity.Property(e => e.Content).HasMaxLength(int.MaxValue).IsRequired();
+            entity.Property(e => e.Status).HasColumnType("int");
 
             entity.HasOne(e => e.Booking)
                 .WithMany(e => e.Complaints)

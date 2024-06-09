@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Vigig.Domain.Enums;
 
 namespace Vigig.Domain.Entities;
 
@@ -16,7 +17,7 @@ public partial class Booking
     public required string BookerName { get; set; }
     
     public required string BookerPhone { get; set; } 
-    public int Status { get; set; }
+    public BookingStatus Status { get; set; }
 
     public DateTime CreatedDate { get; set; }
 

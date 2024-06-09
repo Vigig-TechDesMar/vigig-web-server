@@ -1,16 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using Vigig.Domain.Entities.BaseEntities;
 
 namespace Vigig.Domain.Entities;
 
-public partial class BookingFee
+public partial class BookingFee : CashEntity
 {
-    public Guid Id { get; set; }
-
-    public double? Amount { get; set; }
-
-    public DateTime CreatedDate { get; set; }
-
     public Guid BookingId { get; set; }
 
     public virtual required Booking Booking { get; set; }

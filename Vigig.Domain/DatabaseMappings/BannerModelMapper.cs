@@ -18,6 +18,7 @@ public class BannerModelMapper : IDatabaseModelMapper
             entity.Property(e => e.StartDate);
             entity.Property(e => e.EndDate);
             entity.Property(e => e.EventId);
+            entity.Property(e => e.IsActive).HasDefaultValueSql("((1))");
             entity.HasOne(e => e.Event)
                 .WithMany(e => e.Banners)
                 .HasForeignKey(e => e.EventId);

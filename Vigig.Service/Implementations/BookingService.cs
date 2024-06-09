@@ -7,6 +7,7 @@ using Vigig.Common.Helpers;
 using Vigig.DAL.Interfaces;
 using Vigig.Domain.Dtos.Booking;
 using Vigig.Domain.Entities;
+using Vigig.Domain.Enums;
 using Vigig.Service.Constants;
 using Vigig.Service.Enums;
 using Vigig.Service.Exceptions.NotFound;
@@ -110,7 +111,7 @@ public class BookingService : IBookingService
                                                                && x.Status == (int) BookingStatus.Pending
                                                                && x.IsActive))
             .FirstOrDefault() ?? throw new BuildingNotFoundException(id,nameof(Building.Id));
-        booking.Status = (int)BookingStatus.Accepted;
+        booking.Status = BookingStatus.Accepted;
         await _bookingRepository.UpdateAsync(booking);
         await _unitOfWork.CommitAsync();
         return new ServiceActionResult(true)
@@ -125,11 +126,11 @@ public class BookingService : IBookingService
         if (!(await isValidProvider))
             throw new Exception($"provider do not have booking id:{id}");
         var booking = (await _bookingRepository.FindAsync(x => x.Id == id 
-                                                               && x.Status == (int) BookingStatus.Pending
+                                                               && x.Status ==  BookingStatus.Pending
                                                                && x.IsActive))
             .FirstOrDefault() ?? throw new BuildingNotFoundException(id,nameof(Building.Id));
 
-        booking.Status = (int)BookingStatus.Declined;
+        booking.Status = BookingStatus.Declined;
         await _bookingRepository.UpdateAsync(booking);
         await _unitOfWork.CommitAsync();
         return new ServiceActionResult(true)
@@ -144,11 +145,11 @@ public class BookingService : IBookingService
         if (!(await isValidProvider))
             throw new Exception($"provider do not have booking id:{id}");
         var booking = (await _bookingRepository.FindAsync(x => x.Id == id 
-                                                               && x.Status == (int) BookingStatus.Accepted 
+                                                               && x.Status ==  BookingStatus.Accepted 
                                                                && x.IsActive))
             .FirstOrDefault() ?? throw new BuildingNotFoundException(id,nameof(Building.Id));
 
-        booking.Status = (int)BookingStatus.CancelledByClient;
+        booking.Status = BookingStatus.CancelledByClient;
         await _bookingRepository.UpdateAsync(booking);
         await _unitOfWork.CommitAsync();
         return new ServiceActionResult(true)
@@ -163,11 +164,11 @@ public class BookingService : IBookingService
         if (!(await isValidProvider))
             throw new Exception($"provider do not have booking id:{id}");
         var booking = (await _bookingRepository.FindAsync(x => x.Id == id
-                                                               && x.Status == (int) BookingStatus.Accepted
+                                                               && x.Status ==  BookingStatus.Accepted
                                                                && x.IsActive))
             .FirstOrDefault() ?? throw new BuildingNotFoundException(id,nameof(Building.Id));
 
-        booking.Status = (int)BookingStatus.CancelledByProvider;
+        booking.Status = BookingStatus.CancelledByProvider;
         await _bookingRepository.UpdateAsync(booking);
         await _unitOfWork.CommitAsync();
         return new ServiceActionResult(true)
@@ -182,11 +183,11 @@ public class BookingService : IBookingService
         if (!(await isValidProvider))
             throw new Exception($"provider do not have booking id:{id}");
         var booking = (await _bookingRepository.FindAsync(x => x.Id == id 
-                                                               && x.Status == (int)BookingStatus.Accepted
+                                                               && x.Status == BookingStatus.Accepted
                                                                && x.IsActive))
             .Include( x => x.ProviderService)
             .FirstOrDefault() ?? throw new BookingNotFoundException(id,nameof(Building.Id));
-        booking.Status = (int)BookingStatus.Completed;
+        booking.Status = BookingStatus.Completed;
         booking.ProviderService.TotalBooking++;
         await _bookingRepository.UpdateAsync(booking);
         await _unitOfWork.CommitAsync();
@@ -203,11 +204,11 @@ public class BookingService : IBookingService
         var bookings = userRole switch
         {
             UserRoleConstant.Client => (await _bookingRepository.FindAsync(x =>
-                                             x.IsActive && x.CustomerId.ToString() == userId && x.Status ==(int) BookingStatus.Accepted))
+                                             x.IsActive && x.CustomerId.ToString() == userId && x.Status ==BookingStatus.Accepted))
                                          .Include(x => x.BookingMessages)
                                          ?? throw new UserNotFoundException(userId, nameof(VigigUser.Id)),
             UserRoleConstant.Provider => (await _bookingRepository.FindAsync(x =>
-                                             x.IsActive && x.ProviderService.ProviderId.ToString() == userId && x.Status == (int)BookingStatus.Accepted))
+                                             x.IsActive && x.ProviderService.ProviderId.ToString() == userId && x.Status ==BookingStatus.Accepted))
                                          .Include(x => x.BookingMessages)
                                          ?? throw new UserNotFoundException(userId, nameof(VigigUser.Id)),
             _ => new List<Booking>().AsQueryable(),
@@ -268,7 +269,7 @@ public class BookingService : IBookingService
             x.IsActive &&
             x.CustomerId == userId &&
             x.Id == bookingId &&
-            x.Status == (int)BookingStatus.Completed))
+            x.Status == BookingStatus.Completed))
             .Include(x => x.ProviderService).FirstOrDefault();
 
         if (booking == null)

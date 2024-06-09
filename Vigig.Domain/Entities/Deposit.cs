@@ -1,15 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using Vigig.Domain.Entities.BaseEntities;
 
 namespace Vigig.Domain.Entities;
 
-public partial class Deposit
+public partial class Deposit : CashEntity
 {
-    public Guid Id { get; set; }
-
-    public double? Amount { get; set; }
-
-    public DateTime MadeDate { get; set; }
 
     public required string PaymentMethod { get; set; } 
 

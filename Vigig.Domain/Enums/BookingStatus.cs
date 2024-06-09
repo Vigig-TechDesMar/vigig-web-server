@@ -1,4 +1,4 @@
-﻿namespace Vigig.Service.Enums;
+﻿namespace Vigig.Domain.Enums;
 
 public enum BookingStatus
 {

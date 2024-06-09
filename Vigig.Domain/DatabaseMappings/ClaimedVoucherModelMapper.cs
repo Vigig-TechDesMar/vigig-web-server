@@ -11,9 +11,7 @@ public class ClaimedVoucherModelMapper : IDatabaseModelMapper
         modelBuilder.Entity<ClaimedVoucher>(entity =>
         {
             entity.ToTable(nameof(ClaimedVoucher));
-            entity.HasKey(e => e.Id);
-            entity.Property(e => e.Id)
-                .ValueGeneratedOnAdd();
+            entity.HasKey(e => new{e.VoucherId,e.CustomerId});
             entity.Property(e => e.EventTitle);
             entity.Property(e => e.StartDate);
             entity.Property(e => e.EndDate);

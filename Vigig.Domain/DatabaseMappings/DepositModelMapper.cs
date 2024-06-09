@@ -13,9 +13,10 @@ public class DepositModelMapper :IDatabaseModelMapper
             entity.ToTable("Deposit");
 
             entity.Property(e => e.Id).ValueGeneratedOnAdd();
-            entity.Property(e => e.Amount).HasDefaultValueSql("((0))");
-            entity.Property(e => e.MadeDate).HasColumnType("datetime");
+            entity.Property(e => e.Amount).HasDefaultValueSql("((0))").IsRequired();
+            entity.Property(e => e.CreatedDate).HasColumnType("datetime");
             entity.Property(e => e.PaymentMethod).HasMaxLength(255);
+            entity.Property(e => e.Status).HasColumnType("int");
 
             entity.HasOne(d => d.Provider).WithMany(p => p.Deposits)
                 .HasForeignKey(d => d.ProviderId)

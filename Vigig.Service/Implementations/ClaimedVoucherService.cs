@@ -40,12 +40,13 @@ public class ClaimedVoucherService : IClaimedVoucherService
 
     public async Task<ServiceActionResult> GetById(Guid id)
     {
-        var claimedVoucher = (await _claimedVoucherRepository.FindAsync(sc => sc.Id == id)).FirstOrDefault() ??
-                              throw new ClaimedVoucherNotFoundException(id.ToString(),nameof(ClaimedVoucher.Id));
-        return new ServiceActionResult(true)
-        {
-            Data = _mapper.Map<DtoClaimedVoucher>(claimedVoucher)
-        };
+        // var claimedVoucher = (await _claimedVoucherRepository.FindAsync(sc => sc.Id == id)).FirstOrDefault() ??
+        //                       throw new ClaimedVoucherNotFoundException(id.ToString(),nameof(ClaimedVoucher.Id));
+        // return new ServiceActionResult(true)
+        // {
+        //     Data = _mapper.Map<DtoClaimedVoucher>(claimedVoucher)
+        // };
+        throw new NotImplementedException();
     }
     
     public async Task<ServiceActionResult> GetPaginatedResultAsync(BasePaginatedRequest request)
@@ -96,25 +97,26 @@ public class ClaimedVoucherService : IClaimedVoucherService
 
     public async Task<ServiceActionResult> UpdateAsync(UpdateClaimedVoucherRequest request)
     {
-        //Check Voucher
-        if (!await _voucherRepository.ExistsAsync(sc => sc.Id == request.VoucherId && sc.IsActive))
-            throw new VoucherNotFoundException(request.VoucherId,nameof(Voucher.Id));
-
-        //Check User
-        if (!await _vigigUserRepository.ExistsAsync(sc => sc.Id == request.CustomerId && sc.IsActive))
-            throw new UserNotFoundException(request.CustomerId,nameof(VigigUser.Id));
-
-        var claimedVoucher = (await _claimedVoucherRepository.FindAsync(sc => sc.Id == request.Id)).FirstOrDefault()
-                             ?? throw new ClaimedVoucherNotFoundException(request.Id,nameof(ClaimedVoucher.Id));
-
-        _mapper.Map(request, claimedVoucher);
-        await _claimedVoucherRepository.UpdateAsync(claimedVoucher);
-        await _unitOfWork.CommitAsync();
-        return new ServiceActionResult(true)
-        {
-            Data = _mapper.Map<DtoClaimedVoucher>(claimedVoucher),
-            StatusCode = StatusCodes.Status204NoContent
-        };
+        // //Check Voucher
+        // if (!await _voucherRepository.ExistsAsync(sc => sc.Id == request.VoucherId && sc.IsActive))
+        //     throw new VoucherNotFoundException(request.VoucherId,nameof(Voucher.Id));
+        //
+        // //Check User
+        // if (!await _vigigUserRepository.ExistsAsync(sc => sc.Id == request.CustomerId && sc.IsActive))
+        //     throw new UserNotFoundException(request.CustomerId,nameof(VigigUser.Id));
+        //
+        // var claimedVoucher = (await _claimedVoucherRepository.FindAsync(sc => sc.Id == request.Id)).FirstOrDefault()
+        //                      ?? throw new ClaimedVoucherNotFoundException(request.Id,nameof(ClaimedVoucher.Id));
+        //
+        // _mapper.Map(request, claimedVoucher);
+        // await _claimedVoucherRepository.UpdateAsync(claimedVoucher);
+        // await _unitOfWork.CommitAsync();
+        // return new ServiceActionResult(true)
+        // {
+        //     Data = _mapper.Map<DtoClaimedVoucher>(claimedVoucher),
+        //     StatusCode = StatusCodes.Status204NoContent
+        // };
+        throw new NotImplementedException();
     }
 
     public async Task<ServiceActionResult> DeleteAsync(Guid id)

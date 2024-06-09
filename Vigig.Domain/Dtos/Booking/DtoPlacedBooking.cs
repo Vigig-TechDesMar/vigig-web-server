@@ -1,4 +1,6 @@
-﻿namespace Vigig.Domain.Dtos.Booking;
+﻿using Vigig.Domain.Enums;
+
+namespace Vigig.Domain.Dtos.Booking;
 
 public class DtoPlacedBooking
 {
@@ -9,6 +11,6 @@ public class DtoPlacedBooking
     public required string ProviderName { get; set; }
     public required string ProviderServiceName { get; set; }
     public DateTime CreatedDate { get; set; }
-    public int Status { get; set; }
+    public string? Status { get; set; }
     
 }
