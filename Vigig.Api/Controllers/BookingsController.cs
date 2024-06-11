@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Vigig.Api.Controllers.Base;
+using Vigig.Common.Helpers;
 using Vigig.Service.Constants;
 using Vigig.Service.Interfaces;
 using Vigig.Service.Models.Request.Booking;
@@ -48,7 +49,7 @@ public class BookingsController : BaseApiController
             await _bookingService.DeclineBookingAsync(id,GetJwtToken())).ConfigureAwait(false);
     }
     
-    [HttpPut("{id:guid}/canceled-by-client")]
+    [HttpPut("{id:guid}/cancelled-by-client")]
     [Authorize(Roles = UserRoleConstant.Client)]
     public async Task<IActionResult> CancelBookingByClient(Guid id)
     {
@@ -56,7 +57,7 @@ public class BookingsController : BaseApiController
             await _bookingService.CancelBookingByClientAsync(id,GetJwtToken())).ConfigureAwait(false);
     }
     
-    [HttpPut("{id:guid}/canceled-by-provider")]
+    [HttpPut("{id:guid}/cancelled-by-provider")]
     [Authorize(Roles = UserRoleConstant.Provider)]
     public async Task<IActionResult> CancelBookingByProvider(Guid id)
     {
@@ -82,10 +83,10 @@ public class BookingsController : BaseApiController
 
     [HttpGet("own-bookings")]
     // [Authorize(Roles = UserRoleConstant.Provider)]
-    public async Task<IActionResult> GetOwnBooking()
+    public async Task<IActionResult> GetOwnBooking([FromQuery] IReadOnlyCollection<string>? status)
     {
         return await ExecuteServiceLogic(async () =>
-            await _bookingService.LoadAllBookingsAsync(GetJwtToken()).ConfigureAwait(false)).ConfigureAwait(false);
+            await _bookingService.LoadAllBookingsAsync(GetJwtToken(), status).ConfigureAwait(false)).ConfigureAwait(false);
     }
 
     [HttpPut("{id:guid}/rating")]

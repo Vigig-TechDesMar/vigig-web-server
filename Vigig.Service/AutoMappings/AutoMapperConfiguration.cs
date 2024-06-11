@@ -13,6 +13,7 @@ using Vigig.Domain.Dtos.Voucher;
 using Vigig.Domain.Dtos.Wallet;
 using Vigig.Domain.Dtos.VigigUser;
 using Vigig.Domain.Entities;
+using Vigig.Domain.Enums;
 using Vigig.Service.Models.Request.Authentication;
 using Vigig.Service.Models.Request.Badge;
 using Vigig.Service.Models.Request.Building;
@@ -218,7 +219,10 @@ public static class AutoMapperConfiguration
             .ForMember(dto => dto.ProviderName, opt => opt.MapFrom(x => x.ProviderService.Provider.UserName))
             .ForMember(dto => dto.ProviderServiceName, opt => opt.MapFrom(x => x.ProviderService.Service.ServiceName))
             .ForMember(dto => dto.BuildingName, opt => opt.MapFrom(x => x.Building.BuildingName))
-            .ForMember(dto => dto.Status, opt => opt.MapFrom(x => EnumHelper.TranslateEnum(x.Status)));
+            .ForMember(dto => dto.Status, opt => opt.MapFrom(x => EnumHelper.TranslateEnum(x.Status)))
+            .ForMember(dto => dto.IsCancellable, opt => opt.MapFrom(x => x.Status == BookingStatus.Pending))
+            .ForMember(dto => dto.ProviderProfileImage, opt => opt.MapFrom(x => x.ProviderService.Provider.ProfileImage))
+            .ForMember(dto => dto.BookerProfileImage, opt => opt.MapFrom(x => x.VigigUser.ProfileImage));
         mapper.CreateMap<Booking, DtoBookChat>()
             .ForMember(dto => dto.ProviderName, opt => opt.MapFrom(x => x.ProviderService.Provider.UserName))
             .ForMember(dto => dto.ProviderProfileImage,

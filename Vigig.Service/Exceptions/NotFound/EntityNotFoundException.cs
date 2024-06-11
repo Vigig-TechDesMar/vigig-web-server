@@ -18,6 +18,4 @@ public abstract class EntityNotFoundException<T> : ArgumentException,INotFoundEx
         
         _customeMessage = $"'{typeof(T).Name}' với {validateProperty} '{validateValue}' không tồn tại.";
     }
-
-    
 }
