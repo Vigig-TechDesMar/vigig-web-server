@@ -68,10 +68,17 @@ public class SwaggerSetting
             Name = securityScheme.Name,
             Description = securityScheme.Description,
             Type = securityScheme.GetSecuritySchemeType(),
-            In = securityScheme.GetParameterLocation()
+            In = securityScheme.GetParameterLocation(),
+            BearerFormat = "JWT",
+            Scheme = "Bearer"
         };
     }
-
+    // In = ParameterLocation.Header,
+    // Description = "Please enter a valid token",
+    // Name = "Authorization",
+    // Type = SecuritySchemeType.Http,
+    // BearerFormat = "JWT",
+    // Scheme = "Bearer"
     public OpenApiSecurityRequirement GetSecurityRequirement()
     {
         var securityRequirement = Options.SecurityRequirement;

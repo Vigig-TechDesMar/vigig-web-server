@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization;
 using NLog;
+using Swashbuckle.AspNetCore.SwaggerUI;
 using Vigig.Api.Extensions;
 using Vigig.Api.Hubs;
 using Vigig.Api.Hubs.Models;
@@ -28,7 +29,7 @@ builder.Services.AddSingleton<ChatConnectionPool>();
 var app = builder.Build();
 
 app.UseSwagger();
-app.UseSwaggerUI();
+app.UseSwaggerUI(opt => opt.DocExpansion(DocExpansion.None));
 
 app.UseCors(CorsConstant.APP_CORS_POLICY);
 
