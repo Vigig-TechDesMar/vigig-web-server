@@ -69,6 +69,18 @@ public class PopUpService : IPopUpService
             Data = paginatedResults
         };
     }
+    
+    public async Task<ServiceActionResult> GetActivePopUp()
+    {
+        Guid defaultPopUpId = new Guid();
+        var popUp = (await _popUpRepository.FindAsync(sc=> sc.IsActive == true && sc.EndDate <= DateTime.Today))
+            .FirstOrDefault() ?? (await _popUpRepository.FindAsync(sc=> sc.Id == defaultPopUpId))
+            .FirstOrDefault();
+        return new ServiceActionResult(true)
+        {
+            Data = popUp
+        };
+    }
 
     public async Task<ServiceActionResult> AddAsync(CreatePopUpRequest request)
     {

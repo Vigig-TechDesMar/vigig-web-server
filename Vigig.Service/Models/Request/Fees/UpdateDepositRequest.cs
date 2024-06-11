@@ -7,13 +7,9 @@ namespace Vigig.Service.Models.Request.Fees;
 public class UpdateDepositRequest
 {
     public Guid Id { get; set; }
-
-    [Required]
-    [MinValue(FeeConstant.MinFee)]
-    public double? Amount { get; set; }
     
     [Required]
-    public DateTime MadeDate { get; set; }
+    public DateTime CreateDate { get; set; }
 
     [Required] 
     public string PaymentMethod { get; set; } = null!; 

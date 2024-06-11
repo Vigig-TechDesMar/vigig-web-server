@@ -4,6 +4,7 @@ using Vigig.Common.Helpers;
 using Vigig.DAL.Interfaces;
 using Vigig.Domain.Dtos.Event;
 using Vigig.Domain.Entities;
+using Vigig.Service.Enums;
 using Vigig.Service.Exceptions.NotFound;
 using Vigig.Service.Interfaces;
 using Vigig.Service.Models.Common;
@@ -17,13 +18,17 @@ public class LeaderBoardService : ILeaderBoardService
     private readonly IEventRepository _eventRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
+    private readonly IEmailService _emailService;
+    private readonly IVigigUserRepository _vigigUserRepository;
 
-    public LeaderBoardService(ILeaderBoardRepository leaderBoardRepository, IEventRepository eventRepository, IUnitOfWork unitOfWork, IMapper mapper)
+    public LeaderBoardService(ILeaderBoardRepository leaderBoardRepository, IEventRepository eventRepository, IUnitOfWork unitOfWork, IMapper mapper, IEmailService emailService, IVigigUserRepository vigigUserRepository)
     {
         _leaderBoardRepository = leaderBoardRepository;
         _eventRepository = eventRepository;
         _unitOfWork = unitOfWork;
         _mapper = mapper;
+        _emailService = emailService;
+        _vigigUserRepository = vigigUserRepository;
     }
 
     public async Task<ServiceActionResult> GetAllAsync()
@@ -80,6 +85,10 @@ public class LeaderBoardService : ILeaderBoardService
         var leaderboard = _mapper.Map<LeaderBoard>(request);
         await _leaderBoardRepository.AddAsync(leaderboard);
         await _unitOfWork.CommitAsync();
+
+        if (request.EmailUser)
+            await EmailProviderAboutNewLeaderBoard(request,leaderboard);
+        
         return new ServiceActionResult(true)
         {
             Data = _mapper.Map<DtoLeaderBoard>(leaderboard),
@@ -110,5 +119,13 @@ public class LeaderBoardService : ILeaderBoardService
     public async Task<ServiceActionResult> DeleteAsync(Guid id)
     {
         throw new NotImplementedException();
+    }
+    
+    private async Task EmailProviderAboutNewLeaderBoard(CreateLeaderBoardRequest request, LeaderBoard leaderBoard)
+    {
+        var users = (await _vigigUserRepository.FindAsync(sc =>
+            sc.IsActive && sc.Roles.Contains<>(UserRole.Provider))).ToList();
+        await _emailService.SendEmailToUsersAsync(users, leaderBoard.Name,
+            leaderBoard.Description + request.Body);
     }
 }

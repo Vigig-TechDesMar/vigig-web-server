@@ -15,10 +15,10 @@ public interface IDepositService
     
     Task<ServiceActionResult> SearchDeposit(SearchUsingGet request);
     
-    Task<ServiceActionResult> AddAsync(CreateDepositRequest request);
+    Task<ServiceActionResult> AddAsync(CreateDepositRequest request, string token);
 
     //Admin
-    Task<ServiceActionResult> UpdateAsync(UpdateDepositRequest request);
+    Task<ServiceActionResult> UpdateAsync(UpdateDepositRequest request, string token);
 
     Task<ServiceActionResult> DeleteAsync(Guid id);
     

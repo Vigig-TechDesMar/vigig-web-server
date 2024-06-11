@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Formats.Asn1;
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
@@ -5,6 +6,8 @@ using Vigig.Common.Helpers;
 using Vigig.DAL.Interfaces;
 using Vigig.Domain.Dtos.Voucher;
 using Vigig.Domain.Entities;
+using Vigig.Service.Constants;
+using Vigig.Service.Enums;
 using Vigig.Service.Exceptions.NotFound;
 using Vigig.Service.Interfaces;
 using Vigig.Service.Models.Common;
@@ -78,19 +81,59 @@ public class ClaimedVoucherService : IClaimedVoucherService
     public async Task<ServiceActionResult> AddAsync(CreateClaimedVoucherRequest request)
     {
         //Check Voucher
-        if (!await _voucherRepository.ExistsAsync(sc => sc.Id == request.VoucherId && sc.IsActive))
+        var voucher = (await _voucherRepository.FindAsync(sc => sc.Id == request.VoucherId && sc.IsActive)).FirstOrDefault()??
             throw new VoucherNotFoundException(request.VoucherId,nameof(Voucher.Id));
 
-        //Check User
-        if (!await _vigigUserRepository.ExistsAsync(sc => sc.Id == request.CustomerId && sc.IsActive))
-            throw new UserNotFoundException(request.CustomerId,nameof(VigigUser.Id));
+        //Single User Voucher
+        if (request.CustomerId != null)
+        {
+            if (!await _vigigUserRepository.ExistsAsync(sc => sc.Id == request.CustomerId && sc.IsActive))
+                throw new UserNotFoundException(request.CustomerId, nameof(VigigUser.Id));
+            var customerId = request.CustomerId??new Guid();
+            var claimedVoucher = new ClaimedVoucher
+            {
+                CustomerId = customerId,
+                VoucherId = request.VoucherId,
+                Voucher = voucher,
+                Status = true
+            };
+            await _claimedVoucherRepository.AddAsync(claimedVoucher);
+        }
 
-        var claimedVoucher = _mapper.Map<ClaimedVoucher>(request);
-        await _claimedVoucherRepository.AddAsync(claimedVoucher);
+        //Voucher for all Customers
+        if (request.IsForAll)
+        {
+            var customerList = await _vigigUserRepository.FindAsync(sc =>
+                sc.IsActive && sc.Roles.Contains<>(UserRole.Client));
+            var claimedVoucherList = new List<ClaimedVoucher>();
+            
+            foreach (var x in customerList)
+            {
+                var claimedVoucher = new ClaimedVoucher
+                {
+                    CustomerId = x.Id,
+                    Customer = x,
+                    VoucherId = request.VoucherId,
+                    Voucher = voucher,
+                    Status = true
+                };
+                claimedVoucherList.Add(claimedVoucher);
+                await _claimedVoucherRepository.AddManyAsync(claimedVoucherList);
+            }
+        }
+        
+        //Vouchers for a group of Users
+        if (request.Badges != null && request.Badges.Length > 0)
+        {
+            foreach (var x in request.Badges)
+            {
+                
+            }
+        }
+      
         await _unitOfWork.CommitAsync();
         return new ServiceActionResult(true)
         {
-            Data = _mapper.Map<DtoClaimedVoucher>(claimedVoucher),
             StatusCode = StatusCodes.Status201Created
         };
     }

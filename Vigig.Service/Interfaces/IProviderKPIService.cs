@@ -15,9 +15,9 @@ public interface IProviderKPIService
     
     Task<ServiceActionResult> SearchProviderKPI(SearchUsingGet request);
 
-    Task<ServiceActionResult> AddAsync(CreateProviderKPIRequest request);
+    Task<ServiceActionResult> AddAsync(CreateProviderKPIRequest request, string token);
 
-    Task<ServiceActionResult> UpdateAsync(UpdateProviderKPIRequest request);
+    Task<ServiceActionResult> UpdateAsync(UpdateProviderKPIRequest request, string token);
 
     Task<ServiceActionResult> DeleteAsync(Guid id);
 }

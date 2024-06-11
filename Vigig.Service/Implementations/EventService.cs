@@ -4,6 +4,8 @@ using Vigig.Common.Helpers;
 using Vigig.DAL.Interfaces;
 using Vigig.Domain.Dtos.Event;
 using Vigig.Domain.Entities;
+using Vigig.Service.Constants;
+using Vigig.Service.Enums;
 using Vigig.Service.Exceptions.NotFound;
 using Vigig.Service.Interfaces;
 using Vigig.Service.Models.Common;
@@ -16,13 +18,16 @@ public class EventService : IEventService
     private readonly IEventRepository _eventRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
-
-
-    public EventService(IEventRepository eventRepository, IUnitOfWork unitOfWork, IMapper mapper)
+    private readonly IEmailService _emailService;
+    private readonly IVigigUserRepository _vigigUserRepository;
+    
+    public EventService(IEventRepository eventRepository, IUnitOfWork unitOfWork, IMapper mapper, IEmailService emailService, IVigigUserRepository vigigUserRepository)
     {
         _eventRepository = eventRepository;
         _unitOfWork = unitOfWork;
         _mapper = mapper;
+        _emailService = emailService;
+        _vigigUserRepository = vigigUserRepository;
     }
 
     public async Task<ServiceActionResult> GetAllAsync()
@@ -73,6 +78,10 @@ public class EventService : IEventService
         var ev = _mapper.Map<Event>(request);
         await _eventRepository.AddAsync(ev);
         await _unitOfWork.CommitAsync();
+
+        if (request.EmailUser)
+            await EmailUserAboutNewEvent(request, ev);
+        
         return new ServiceActionResult(true)
         {
             Data = _mapper.Map<DtoEvent>(ev),
@@ -98,5 +107,24 @@ public class EventService : IEventService
     public async Task<ServiceActionResult> DeleteAsync(Guid id)
     {
         throw new NotImplementedException();
+    }
+
+    private async Task EmailUserAboutNewEvent(CreateEventRequest request, Event evnt)
+    {
+        if (request.IsForAll)
+        {
+            await _emailService.SendEmailToUsersAsync((await _vigigUserRepository.GetAllAsync()).ToList(), evnt.EventTitle,
+                evnt.EventDescription??EventConstant.DefaultEventDescription);
+        }
+        else if(request.Targets is not null)
+        {
+            foreach (var x in request.Targets)
+            {
+                var users =(await _vigigUserRepository.FindAsync(sc =>
+                    sc.IsActive && sc.Roles.Contains<>(x))).ToList();
+                await _emailService.SendEmailToUsersAsync(users, evnt.EventTitle,
+                    evnt.EventDescription + request.Body);
+            }
+        }
     }
 }

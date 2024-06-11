@@ -11,8 +11,6 @@ public interface IComplaintService
 
     Task<ServiceActionResult> GetById(Guid id);
     
-    Task<ServiceActionResult> GetPaginatedResultAsync(BasePaginatedRequest request);
-    
     Task<ServiceActionResult> SearchComplaint(SearchUsingGet request);
 
     Task<ServiceActionResult> AddAsync(CreateComplaintRequest request);

@@ -6,6 +6,7 @@ using Vigig.DAL.Interfaces;
 using Vigig.Domain.Dtos.Event;
 using Vigig.Domain.Dtos.Fees;
 using Vigig.Domain.Entities;
+using Vigig.Service.Constants;
 using Vigig.Service.Exceptions.NotFound;
 using Vigig.Service.Interfaces;
 using Vigig.Service.Models.Common;
@@ -18,17 +19,19 @@ public class ProviderKPIService : IProviderKPIService
     private readonly IProviderKPIRepository _providerKpiRepository;
     private readonly IVigigUserRepository _vigigUserRepository;
     private readonly ILeaderBoardRepository _leaderBoardRepository;
+    private readonly IJwtService _jwtService;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
 
 
-    public ProviderKPIService(IVigigUserRepository vigigUserRepository, ILeaderBoardRepository leaderBoardRepository, IUnitOfWork unitOfWork, IMapper mapper, IProviderKPIRepository providerKpiRepository)
+    public ProviderKPIService(IVigigUserRepository vigigUserRepository, ILeaderBoardRepository leaderBoardRepository, IUnitOfWork unitOfWork, IMapper mapper, IProviderKPIRepository providerKpiRepository, IJwtService jwtService)
     {
         _vigigUserRepository = vigigUserRepository;
         _leaderBoardRepository = leaderBoardRepository;
         _unitOfWork = unitOfWork;
         _mapper = mapper;
         _providerKpiRepository = providerKpiRepository;
+        _jwtService = jwtService;
     }
 
     public async Task<ServiceActionResult> GetAllAsync()
@@ -75,8 +78,17 @@ public class ProviderKPIService : IProviderKPIService
         };
     }
 
-    public async Task<ServiceActionResult> AddAsync(CreateProviderKPIRequest request)
+    public async Task<ServiceActionResult> AddAsync(CreateProviderKPIRequest request, string token)
     {
+        //Provider join in a LeaderBoard
+        var role = _jwtService.GetAuthModel(token).Role;
+        if (role == UserRoleConstant.Client)
+            throw new UnauthorizedAccessException("Customers are not allowed!");
+
+        var userId = _jwtService.GetSubjectClaim(token).ToString();
+        if (role == UserRoleConstant.Provider && request.ProviderId.ToString() != userId)
+            throw new UnauthorizedAccessException("Provider with ID " + userId  + " is not allowed to proceed with this action!");
+        
         //Check Provider
         if (!await _vigigUserRepository.ExistsAsync(sc => sc.Id == request.ProviderId && sc.IsActive))
             throw new UserNotFoundException(request.ProviderId,nameof(VigigUser.Id));
@@ -95,8 +107,14 @@ public class ProviderKPIService : IProviderKPIService
         };
     }
 
-    public async Task<ServiceActionResult> UpdateAsync(UpdateProviderKPIRequest request)
+    public async Task<ServiceActionResult> UpdateAsync(UpdateProviderKPIRequest request, string token)
     {
+        //Admin only
+        var role = _jwtService.GetAuthModel(token).Role;
+        if (role == UserRoleConstant.InternalUser)
+            throw new UnauthorizedAccessException("Users are not allowed!");
+
+        
         //Check Provider
         if (!await _vigigUserRepository.ExistsAsync(sc => sc.Id == request.ProviderId && sc.IsActive))
             throw new UserNotFoundException(request.ProviderId,nameof(VigigUser.Id));

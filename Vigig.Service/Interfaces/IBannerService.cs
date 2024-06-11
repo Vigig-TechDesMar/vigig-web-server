@@ -14,6 +14,8 @@ public interface IBannerService
     Task<ServiceActionResult> GetPaginatedResultAsync(BasePaginatedRequest request);
     
     Task<ServiceActionResult> SearchBanner(SearchUsingGet request);
+    
+    Task<ServiceActionResult> GetActiveBanner();
 
     Task<ServiceActionResult> AddAsync(CreateBannerRequest request);
 

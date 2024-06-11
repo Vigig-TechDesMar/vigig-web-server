@@ -16,7 +16,7 @@ public interface ISubscriptionFeeService
     Task<ServiceActionResult> SearchSubscriptionFee(SearchUsingGet request);
 
     //Admin
-    Task<ServiceActionResult> AddAsync(CreateSubscriptionFeeRequest request);
+    Task<ServiceActionResult> AddAsync(CreateSubscriptionFeeRequest request, string token);
 
     Task<ServiceActionResult> UpdateAsync(UpdateSubscriptionFeeRequest request);
 

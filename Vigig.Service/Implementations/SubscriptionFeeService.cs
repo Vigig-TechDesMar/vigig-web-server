@@ -1,9 +1,12 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
+using NLog.Fluent;
 using Vigig.Common.Helpers;
 using Vigig.DAL.Interfaces;
 using Vigig.Domain.Dtos.Fees;
 using Vigig.Domain.Entities;
+using Vigig.Service.Constants;
 using Vigig.Service.Exceptions.NotFound;
 using Vigig.Service.Interfaces;
 using Vigig.Service.Models.Common;
@@ -15,16 +18,22 @@ public class SubscriptionFeeService : ISubscriptionFeeService
 {
     private readonly ISubscriptionFeeRepository _subscriptionFeeRepository;
     private readonly ISubscriptionPlanRepository _subscriptionPlanRepository;
+    private readonly IJwtService _jwtService;
+    private readonly IVigigUserRepository _vigigUserRepository;
+    private readonly ITransactionService _transactionService;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
 
     public SubscriptionFeeService(ISubscriptionFeeRepository subscriptionFeeRepository, ISubscriptionPlanRepository subscriptionPlanRepository, IUnitOfWork unitOfWork,
-        IMapper mapper)
+        IMapper mapper, IJwtService jwtService, IVigigUserRepository vigigUserRepository, ITransactionService transactionService)
     {
         _subscriptionFeeRepository = subscriptionFeeRepository;
         _subscriptionPlanRepository = subscriptionPlanRepository;
         _unitOfWork = unitOfWork;
         _mapper = mapper;
+        _jwtService = jwtService;
+        _vigigUserRepository = vigigUserRepository;
+        _transactionService = transactionService;
     }
         
     public async Task<ServiceActionResult> GetAllAsync()
@@ -71,18 +80,40 @@ public class SubscriptionFeeService : ISubscriptionFeeService
         };
     }
 
-    public async Task<ServiceActionResult> AddAsync(CreateSubscriptionFeeRequest request)
+    public async Task<ServiceActionResult> AddAsync(CreateSubscriptionFeeRequest request, string token)
     {
         if (!await _subscriptionPlanRepository.ExistsAsync(sc => sc.Id == request.SubscriptionPlanId && sc.IsActive))
             throw new SubscriptionPlanNotFoundException(request.SubscriptionPlanId,nameof(SubscriptionFee.Id));
         
-        //Validation
-        if (request.CreatedDate is null)
-            request.CreatedDate = DateTime.Now;
+        //Validate provider
+        var userId = _jwtService.GetSubjectClaim(token);
+        var provider = (await _vigigUserRepository.FindAsync(x => x.IsActive && x.Id.ToString() == (string)userId))
+            .Include(x => x.Wallets)
+            .FirstOrDefault() ?? throw new UserNotFoundException(userId,nameof(VigigUser.Id));
+
+        if (_jwtService.GetAuthModel(token).Role == UserRoleConstant.Client)
+            throw new UnauthorizedAccessException("Customers are not allowed!");
+        
+        //Get the wallet
+        var wallet = provider.Wallets.FirstOrDefault() ?? throw new WalletNotFoundException(userId, nameof(userId));
         
         var subscriptionFee = _mapper.Map<SubscriptionFee>(request);
+        // subscriptionFee.Status = TransactionStatusConstant.Pending;
         await _subscriptionFeeRepository.AddAsync(subscriptionFee);
+        
+        // Process the transaction
+        try
+        {
+            await _transactionService.ProcessTransactionAsync(subscriptionFee,wallet);
+        }
+        catch (Exception ex)
+        {
+            //Log error
+            // subscriptionFee.Status = TransactionStatusConstant.Error;
+        }
+
         await _unitOfWork.CommitAsync();
+        
         return new ServiceActionResult(true)
         {
             Data = _mapper.Map<DtoSubscriptionFee>(subscriptionFee),
