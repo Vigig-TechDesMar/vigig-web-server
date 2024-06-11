@@ -2,6 +2,7 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query.Internal;
 using Microsoft.VisualBasic;
 using Vigig.Common.Helpers;
 using Vigig.DAL.Interfaces;
@@ -128,7 +129,7 @@ public class BookingService : IBookingService
         var booking = (await _bookingRepository.FindAsync(x => x.Id == id 
                                                                && x.Status ==  BookingStatus.Pending
                                                                && x.IsActive))
-            .FirstOrDefault() ?? throw new BuildingNotFoundException(id,nameof(Building.Id));
+            .FirstOrDefault() ?? throw new BookingNotFoundException(id,nameof(Building.Id));
 
         booking.Status = BookingStatus.Declined;
         await _bookingRepository.UpdateAsync(booking);
@@ -143,12 +144,13 @@ public class BookingService : IBookingService
     {
         var isValidProvider = EnsureHasBookingAsync(token, id);
         if (!(await isValidProvider))
-            throw new Exception($"provider do not have booking id:{id}");
-        var booking = (await _bookingRepository.FindAsync(x => x.Id == id 
-                                                               && x.Status ==  BookingStatus.Accepted 
-                                                               && x.IsActive))
-            .FirstOrDefault() ?? throw new BuildingNotFoundException(id,nameof(Building.Id));
-
+            throw new Exception($"client does not have booking id:{id}");
+        var booking = (await _bookingRepository.FindAsync(x=> 
+                x.Id == id 
+                && x.IsActive))
+            .FirstOrDefault() ?? throw new BookingNotFoundException(id,nameof(Building.Id));
+        if (booking.Status is not BookingStatus.Pending)
+            throw new Exception("Booking can not be cancelled due to being accepted");
         booking.Status = BookingStatus.CancelledByClient;
         await _bookingRepository.UpdateAsync(booking);
         await _unitOfWork.CommitAsync();
@@ -162,12 +164,13 @@ public class BookingService : IBookingService
     {
         var isValidProvider = EnsureHasBookingAsync(token, id);
         if (!(await isValidProvider))
-            throw new Exception($"provider do not have booking id:{id}");
-        var booking = (await _bookingRepository.FindAsync(x => x.Id == id
-                                                               && x.Status ==  BookingStatus.Accepted
-                                                               && x.IsActive))
+            throw new Exception($"provider does not have booking id:{id}");
+        var booking = (await _bookingRepository.FindAsync(x => 
+                x.Id == id
+                && x.IsActive))
             .FirstOrDefault() ?? throw new BuildingNotFoundException(id,nameof(Building.Id));
-
+        if (booking.Status is not BookingStatus.Pending)
+            throw new Exception("Booking can not be cancelled due to being accepted");
         booking.Status = BookingStatus.CancelledByProvider;
         await _bookingRepository.UpdateAsync(booking);
         await _unitOfWork.CommitAsync();
@@ -182,9 +185,10 @@ public class BookingService : IBookingService
         var isValidProvider = EnsureHasBookingAsync(token, id);
         if (!(await isValidProvider))
             throw new Exception($"provider do not have booking id:{id}");
-        var booking = (await _bookingRepository.FindAsync(x => x.Id == id 
-                                                               && x.Status == BookingStatus.Accepted
-                                                               && x.IsActive))
+        var booking = (await _bookingRepository.FindAsync(x => 
+                x.Id == id 
+                && x.Status == BookingStatus.Accepted
+                && x.IsActive))
             .Include( x => x.ProviderService)
             .FirstOrDefault() ?? throw new BookingNotFoundException(id,nameof(Building.Id));
         booking.Status = BookingStatus.Completed;
@@ -199,14 +203,14 @@ public class BookingService : IBookingService
 
     public async Task<ServiceActionResult> LoadOwnChatBookingAsync(string token)
     {
-        var userId = _jwtService.GetSubjectClaim(token).ToString();
+        var userId = _jwtService.GetSubjectClaim(token);
         var userRole = _jwtService.GetRoleClaim(token);
         var bookings = userRole switch
         {
             UserRoleConstant.Client => (await _bookingRepository.FindAsync(x =>
-                                             x.IsActive && x.CustomerId.ToString() == userId && x.Status ==BookingStatus.Accepted))
-                                         .Include(x => x.BookingMessages)
-                                         ?? throw new UserNotFoundException(userId, nameof(VigigUser.Id)),
+                                           x.IsActive && x.CustomerId.ToString() == userId && x.Status ==BookingStatus.Accepted))
+                                       .Include(x => x.BookingMessages)
+                                       ?? throw new UserNotFoundException(userId, nameof(VigigUser.Id)),
             UserRoleConstant.Provider => (await _bookingRepository.FindAsync(x =>
                                              x.IsActive && x.ProviderService.ProviderId.ToString() == userId && x.Status ==BookingStatus.Accepted))
                                          .Include(x => x.BookingMessages)
@@ -237,17 +241,16 @@ public class BookingService : IBookingService
         };
     }
 
-    public async Task<ServiceActionResult> LoadAllBookingsAsync(string token)
+    public async Task<ServiceActionResult> LoadAllBookingsAsync(string token, string status)
     {
         var user = _jwtService.GetAuthModel(token);
-        var bookings = user.Role switch
+        IQueryable<Booking> bookings = user.Role switch
         {
-            UserRoleConstant.Client => (await _bookingRepository.FindAsync(
-                    x => x.IsActive && x.CustomerId==user.UserId)) ?? throw new UserNotFoundException(user.UserId, nameof(VigigUser.Id)),
-            UserRoleConstant.Provider => (await _bookingRepository.FindAsync(
-                x => x.IsActive && x.ProviderService.ProviderId == user.UserId ))?? throw new UserNotFoundException(user.UserId, nameof(VigigUser.Id)),
-            _ => new List<Booking>().AsQueryable(),
+            UserRoleConstant.Client => await GetBookingsByClientAsync(user.UserId, status),
+            UserRoleConstant.Provider => await GetBookingsByProviderAsync(user.UserId, status),
+            _ => new List<Booking>().AsQueryable()
         };
+
         return new ServiceActionResult(true)
         {
             Data = _mapper.ProjectTo<DtoBooking>(bookings)
@@ -256,12 +259,16 @@ public class BookingService : IBookingService
 
     private async Task<bool> EnsureHasBookingAsync(string token, Guid bookingId)
     {
-        var providerId = _jwtService.GetSubjectClaim(token);
-        var hasBooking = await _bookingRepository.ExistsAsync(x =>
-            x.Id == bookingId && x.ProviderService.ProviderId == Guid.Parse(providerId.ToString()));
-        if (hasBooking)
-            return true;
-        return false;
+        var authModel = _jwtService.GetAuthModel(token);
+        var hasBooking = authModel.Role switch
+        {
+            UserRoleConstant.Provider => await _bookingRepository.ExistsAsync(x =>
+                x.Id == bookingId && x.ProviderService.ProviderId == Guid.Parse(authModel.UserId.ToString())),
+            UserRoleConstant.Client => await _bookingRepository.ExistsAsync(x =>
+                x.Id == bookingId && x.CustomerId == Guid.Parse(authModel.UserId.ToString())),
+            _ => false
+        };
+        return hasBooking;
     }
     private async Task<Booking> GetBookingForClientAsync(Guid userId, Guid bookingId, string userName)
     {
@@ -278,5 +285,21 @@ public class BookingService : IBookingService
         }
 
         return booking;
+    }
+    private async Task<IQueryable<Booking>> GetBookingsByClientAsync(Guid userId, string status)
+    {
+        if (string.IsNullOrEmpty(status))
+            return await _bookingRepository.FindAsync(x => x.IsActive && x.CustomerId == userId);
+        var bookingStatus = EnumHelper.GetEnumValueFromString<BookingStatus>(status);
+        return await _bookingRepository.FindAsync(x => x.IsActive && x.CustomerId == userId && x.Status == bookingStatus);
+    }
+
+    private async Task<IQueryable<Booking>> GetBookingsByProviderAsync(Guid userId, string status)
+    {
+        if (string.IsNullOrEmpty(status))
+            return await _bookingRepository.FindAsync(x => x.IsActive && x.ProviderService.ProviderId == userId);
+
+        var bookingStatus = EnumHelper.GetEnumValueFromString<BookingStatus>(status);
+        return await _bookingRepository.FindAsync(x => x.IsActive && x.ProviderService.ProviderId == userId && x.Status == bookingStatus);
     }
 }

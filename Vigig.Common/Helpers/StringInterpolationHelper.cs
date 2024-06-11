@@ -50,6 +50,15 @@ public static class StringInterpolationHelper
         return content.Replace(" ", "");
     }
 
+    public static string ToCapitalized(this string content)
+    {
+        if (string.IsNullOrEmpty(content))
+        {
+            return content; 
+        }
+        return char.ToUpper(content[0]) + content[1..].ToLower();
+    }
+
     public static string GenerateUniqueFileName(string fileName,int length)
     {
         if (length <= 0) throw new Exception("Invalid Length");

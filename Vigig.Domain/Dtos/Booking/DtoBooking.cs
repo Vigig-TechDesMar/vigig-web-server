@@ -8,4 +8,6 @@ public class DtoBooking : DtoPlacedBooking
     public double? CustomerRating { get; set; }
 
     public string? CustomerReview { get; set; }
+    
+    public bool IsCancellable { get; set; }
 }
