@@ -7,6 +7,7 @@ public class Voucher : BaseEntity<Guid>
     public required string VoucherTitle { get; set; }
     public string? IconUrl { get; set; }
     public int? Amount { get; set; }
+    public int? MaxAmount { get; set; }
     public required string Content { get; set; }
     public float Percentage { get; set; }
     public uint Limit { get; set; }

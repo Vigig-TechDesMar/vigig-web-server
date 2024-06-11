@@ -19,22 +19,22 @@ public class TransactionModelMapper : IDatabaseModelMapper
             entity.HasOne(d => d.BookingFee).WithMany(p => p.Transactions)
                 .HasForeignKey(d => d.BookingFeeId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Transacti__Booki__72C60C4A");
+                .IsRequired(false);
 
             entity.HasOne(d => d.Deposit).WithMany(p => p.Transactions)
                 .HasForeignKey(d => d.DepositId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Transacti__Depos__71D1E811");
+                .IsRequired(false);
 
             entity.HasOne(d => d.SubscriptionFee).WithMany(p => p.Transactions)
                 .HasForeignKey(d => d.SubscriptionFeeId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Transacti__Subsc__73BA3083");
+                .IsRequired(false);
 
             entity.HasOne(d => d.Wallet).WithMany(p => p.Transactions)
                 .HasForeignKey(d => d.WalletId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Transacti__Walle__70DDC3D8");
+                .IsRequired();
         });
     }
 }

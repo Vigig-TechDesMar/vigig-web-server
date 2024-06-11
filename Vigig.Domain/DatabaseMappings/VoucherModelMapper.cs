@@ -22,6 +22,7 @@ public class VoucherModelMapper : IDatabaseModelMapper
             entity.Property(e => e.Amount);
             entity.Property(e => e.StartDate);
             entity.Property(e => e.EndDate);
+            entity.Property(e => e.MaxAmount);
             entity.Property(e => e.IsActive)
                 .HasDefaultValueSql("((1))");
             entity.HasOne(e => e.Event)

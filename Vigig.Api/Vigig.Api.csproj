@@ -55,20 +55,24 @@
         <EmbeddedResource Include="Scripts\14.Update_Booking.sql" />
         <EmbeddedResource Include="Scripts\15.Update_ProviderService.sql" />
         <EmbeddedResource Include="Scripts\16.Update_booking.sql" />
-        <None Remove="Scripts\17.Update_VigigUser.sql" />
         <EmbeddedResource Include="Scripts\17.Update_VigigUser.sql" />
-        <None Remove="Scripts\18.Drop_FK_VigigUser.sql" />
         <EmbeddedResource Include="Scripts\18.Drop_FK_VigigUser.sql" />
-        <None Remove="Scripts\19.Drop_FK_Complaint.sql" />
         <EmbeddedResource Include="Scripts\19.Drop_FK_Complaint.sql" />
         <EmbeddedResource Include="Scripts\20.Big_Update.sql" />
         <EmbeddedResource Include="Scripts\21.Update_Banner.sql" />
         <EmbeddedResource Include="Scripts\22.Update_Complain_Deposit_EventImg.sql" />
         <EmbeddedResource Include="Scripts\23.Update_LeaderBoard_Notification_PopUp.sql" />
-        <None Remove="Scripts\24.Update_ClaimedVoucher.sql" />
         <EmbeddedResource Include="Scripts\24.Update_ClaimedVoucher.sql" />
-        <None Remove="Scripts\25.Update_Voucher.sql" />
         <EmbeddedResource Include="Scripts\25.Update_Voucher.sql" />
+        <EmbeddedResource Include="Scripts\26.Update_Voucher.sql" />
+        <None Remove="Scripts\27.Update_Transaction.sql" />
+        <EmbeddedResource Include="Scripts\27.Update_Transaction.sql" />
+        <None Remove="Scripts\28.Create_SP_SetNullFK.sql" />
+        <EmbeddedResource Include="Scripts\28.Create_SP_SetNullFK.sql" />
+        <None Remove="Scripts\29.Update_Transaction.sql" />
+        <EmbeddedResource Include="Scripts\29.Update_Transaction.sql" />
+        <None Remove="Scripts\30.Update_Wallet.sql" />
+        <EmbeddedResource Include="Scripts\30.Update_Wallet.sql" />
     </ItemGroup>
 
 </Project>
