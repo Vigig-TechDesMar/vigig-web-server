@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Vigig.Service.Implementations;
+using Vigig.Service.Interfaces;
 using Vigig.Service.Models.Email;
 
 namespace Vigig.Api.Controllers;
@@ -11,14 +12,15 @@ namespace Vigig.Api.Controllers;
 [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 public class TestController : BaseApiController
 {
-    private readonly EmailService _emailService;
+    private readonly IEmailService _emailService;
 
-    public TestController(EmailService emailService)
+    public TestController(IEmailService emailService)
     {
         _emailService = emailService;
     }
 
     [HttpPost("send")]
+    [AllowAnonymous]
     public async Task<IActionResult> SendEmail([FromBody] EmailRequest request)
     {
         try
