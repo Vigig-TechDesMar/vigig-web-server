@@ -20,7 +20,28 @@ public class EnumHelper
             throw new ArgumentException($"Enum does not contain value {valueName}");
         }
     }
+    public static List<T> GetEnumValuesFromStrings<T>(IEnumerable<string> valueNames) where T : struct, Enum
+    {
+        List<T> enumValues = new List<T>();
 
+        foreach (var valueName in valueNames)
+        {
+            if(string.IsNullOrWhiteSpace(valueName))
+                continue;
+            var capitalizedValue = valueName.ToCapitalized();
+
+            if (Enum.TryParse<T>(capitalizedValue, out T result))
+            {
+                enumValues.Add(result);
+            }
+            else
+            {
+                throw new ArgumentException($"Enum does not contain value {capitalizedValue}");
+            }
+        }
+
+        return enumValues;
+    }
     public static string TranslateEnum(Enum enumValue)
     {
         Type enumType = enumValue.GetType();

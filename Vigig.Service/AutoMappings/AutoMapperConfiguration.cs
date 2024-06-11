@@ -220,7 +220,9 @@ public static class AutoMapperConfiguration
             .ForMember(dto => dto.ProviderServiceName, opt => opt.MapFrom(x => x.ProviderService.Service.ServiceName))
             .ForMember(dto => dto.BuildingName, opt => opt.MapFrom(x => x.Building.BuildingName))
             .ForMember(dto => dto.Status, opt => opt.MapFrom(x => EnumHelper.TranslateEnum(x.Status)))
-            .ForMember(dto => dto.IsCancellable, opt => opt.MapFrom(x => x.Status == BookingStatus.Pending));
+            .ForMember(dto => dto.IsCancellable, opt => opt.MapFrom(x => x.Status == BookingStatus.Pending))
+            .ForMember(dto => dto.ProviderProfileImage, opt => opt.MapFrom(x => x.ProviderService.Provider.ProfileImage))
+            .ForMember(dto => dto.BookerProfileImage, opt => opt.MapFrom(x => x.VigigUser.ProfileImage));
         mapper.CreateMap<Booking, DtoBookChat>()
             .ForMember(dto => dto.ProviderName, opt => opt.MapFrom(x => x.ProviderService.Provider.UserName))
             .ForMember(dto => dto.ProviderProfileImage,

@@ -83,10 +83,10 @@ public class BookingsController : BaseApiController
 
     [HttpGet("own-bookings")]
     // [Authorize(Roles = UserRoleConstant.Provider)]
-    public async Task<IActionResult> GetOwnBooking([FromQuery] string? status)
+    public async Task<IActionResult> GetOwnBooking([FromQuery] IReadOnlyCollection<string>? status)
     {
         return await ExecuteServiceLogic(async () =>
-            await _bookingService.LoadAllBookingsAsync(GetJwtToken(), status.ToCapitalized()).ConfigureAwait(false)).ConfigureAwait(false);
+            await _bookingService.LoadAllBookingsAsync(GetJwtToken(), status).ConfigureAwait(false)).ConfigureAwait(false);
     }
 
     [HttpPut("{id:guid}/rating")]

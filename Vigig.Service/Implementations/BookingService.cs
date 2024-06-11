@@ -241,10 +241,10 @@ public class BookingService : IBookingService
         };
     }
 
-    public async Task<ServiceActionResult> LoadAllBookingsAsync(string token, string status)
+    public async Task<ServiceActionResult> LoadAllBookingsAsync(string token, IReadOnlyCollection<string> status)
     {
         var user = _jwtService.GetAuthModel(token);
-        IQueryable<Booking> bookings = user.Role switch
+        var bookings = user.Role switch
         {
             UserRoleConstant.Client => await GetBookingsByClientAsync(user.UserId, status),
             UserRoleConstant.Provider => await GetBookingsByProviderAsync(user.UserId, status),
@@ -286,20 +286,21 @@ public class BookingService : IBookingService
 
         return booking;
     }
-    private async Task<IQueryable<Booking>> GetBookingsByClientAsync(Guid userId, string status)
+    private async Task<IQueryable<Booking>> GetBookingsByClientAsync(Guid userId, IReadOnlyCollection<string> status)
     {
-        if (string.IsNullOrEmpty(status))
+        if (!status.Any())
             return await _bookingRepository.FindAsync(x => x.IsActive && x.CustomerId == userId);
-        var bookingStatus = EnumHelper.GetEnumValueFromString<BookingStatus>(status);
-        return await _bookingRepository.FindAsync(x => x.IsActive && x.CustomerId == userId && x.Status == bookingStatus);
+        var bookingStatus = EnumHelper.GetEnumValuesFromStrings<BookingStatus>(status);
+        var x = await _bookingRepository.FindAsync(x => x.IsActive && x.CustomerId == userId && bookingStatus.Contains(x.Status));
+        return x;
     }
 
-    private async Task<IQueryable<Booking>> GetBookingsByProviderAsync(Guid userId, string status)
+    private async Task<IQueryable<Booking>> GetBookingsByProviderAsync(Guid userId, IReadOnlyCollection<string> status)
     {
-        if (string.IsNullOrEmpty(status))
+        if (!status.Any())
             return await _bookingRepository.FindAsync(x => x.IsActive && x.ProviderService.ProviderId == userId);
 
-        var bookingStatus = EnumHelper.GetEnumValueFromString<BookingStatus>(status);
-        return await _bookingRepository.FindAsync(x => x.IsActive && x.ProviderService.ProviderId == userId && x.Status == bookingStatus);
+        var bookingStatus =  EnumHelper.GetEnumValuesFromStrings<BookingStatus>(status);
+        return await _bookingRepository.FindAsync(x => x.IsActive && x.ProviderService.ProviderId == userId && bookingStatus.Contains(x.Status));
     }
 }
