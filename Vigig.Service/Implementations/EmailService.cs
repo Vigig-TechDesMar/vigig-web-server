@@ -22,6 +22,8 @@ public class EmailService : IEmailService
     {
         if (_smtpSettings is null)
             throw new Exception("No STMP Settings");
+
+        Console.Write("Sending to " + toEmail);
         
         var smtpClient = new SmtpClient(_smtpSettings.Server)
         {
