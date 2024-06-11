@@ -8,9 +8,6 @@ namespace Vigig.Service.Interfaces;
 public interface IClaimedVoucherService
 {
     Task<ServiceActionResult> GetAllAsync();
-
-    Task<ServiceActionResult> GetById(Guid id);
-    
     Task<ServiceActionResult> GetPaginatedResultAsync(BasePaginatedRequest request);
     Task<ServiceActionResult> SearchClaimedVoucher(SearchUsingGet request);
 

@@ -27,14 +27,6 @@ public class ComplaintController : BaseApiController
             await _complaintService.GetAllAsync().ConfigureAwait(false)).ConfigureAwait(false);
     }
     
-    [HttpGet]
-    [AllowAnonymous]
-    public async Task<IActionResult> GetComplaints([FromQuery]BasePaginatedRequest request)
-    {
-        return await ExecuteServiceLogic(async () 
-            => await _complaintService.GetPaginatedResultAsync(request).ConfigureAwait(false)).ConfigureAwait(false);
-    }
-    
     [HttpGet("{id:guid}")]
     [AllowAnonymous]
     public async Task<IActionResult> GetComplaintById(Guid id)

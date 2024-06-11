@@ -22,5 +22,8 @@
     <ItemGroup>
       <ProjectReference Include="..\Vigig.Common\Vigig.Common.csproj" />
     </ItemGroup>
+    <ItemGroup>
+      <Compile Remove="Interfaces\ICash.cs" />
+    </ItemGroup>
 
 </Project>

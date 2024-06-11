@@ -15,6 +15,8 @@ public interface IPopUpService
     
     Task<ServiceActionResult> SearchPopUp(SearchUsingGet request);
 
+    Task<ServiceActionResult> GetActivePopUp();
+
     Task<ServiceActionResult> AddAsync(CreatePopUpRequest request);
 
     Task<ServiceActionResult> UpdateAsync(UpdatePopUpRequest request);

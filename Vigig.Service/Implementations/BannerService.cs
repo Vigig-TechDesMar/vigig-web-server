@@ -72,6 +72,18 @@ public class BannerService : IBannerService
         };
     }
 
+    public async Task<ServiceActionResult> GetActiveBanner()
+    {
+        Guid defaultBannerId = new Guid();
+        var banner = (await _bannerRepository.FindAsync(sc=> sc.IsActive == true && sc.EndDate <= DateTime.Today))
+            .FirstOrDefault() ?? (await _bannerRepository.FindAsync(sc=> sc.Id == defaultBannerId))
+            .FirstOrDefault();
+        return new ServiceActionResult(true)
+        {
+            Data = banner
+        };
+    }
+
     public async Task<ServiceActionResult> AddAsync(CreateBannerRequest request)
     {
         //Check Event

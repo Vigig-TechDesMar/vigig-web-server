@@ -1,11 +1,14 @@
 using System.Drawing.Printing;
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Org.BouncyCastle.Asn1.IsisMtt.X509;
 using Vigig.Common.Helpers;
 using Vigig.DAL.Interfaces;
 using Vigig.Domain.Dtos.Fees;
 using Vigig.Domain.Entities;
+using Vigig.Domain.Enums;
+using Vigig.Service.Constants;
 using Vigig.Service.Exceptions.NotFound;
 using Vigig.Service.Interfaces;
 using Vigig.Service.Models.Common;
@@ -17,15 +20,19 @@ public class DepositService : IDepositService
 {
     private readonly IDepositRepository _depositRepository;
     private readonly IVigigUserRepository _vigigUserRepository;
+    private readonly IJwtService _jwtService;
+    private readonly ITransactionService _transactionService;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
 
-    public DepositService(IDepositRepository depositRepository, IVigigUserRepository vigigUserRepository, IUnitOfWork unitOfWork, IMapper mapper)
+    public DepositService(IDepositRepository depositRepository, IVigigUserRepository vigigUserRepository, IUnitOfWork unitOfWork, IMapper mapper, IJwtService jwtService, ITransactionService transactionService)
     {
         _depositRepository = depositRepository;
         _vigigUserRepository = vigigUserRepository;
         _unitOfWork = unitOfWork;
         _mapper = mapper;
+        _jwtService = jwtService;
+        _transactionService = transactionService;
     }
 
     public async Task<ServiceActionResult> GetAllAsync()
@@ -72,28 +79,55 @@ public class DepositService : IDepositService
         };
     }
 
-    public async Task<ServiceActionResult> AddAsync(CreateDepositRequest request)
+    public async Task<ServiceActionResult> AddAsync(CreateDepositRequest request, string token)
     {
-        if (!await _vigigUserRepository.ExistsAsync(sc => sc.Id == request.ProviderId && sc.IsActive))
-            throw new UserNotFoundException(request.ProviderId,nameof(VigigUser.Id));
-        var deposit = _mapper.Map<Deposit>(request);
+        //Validate provider
+        var userId = _jwtService.GetSubjectClaim(token).ToString();
+        var provider = (await _vigigUserRepository.FindAsync(x => x.IsActive && x.Id.ToString() == userId))
+            .Include(x => x.Wallets)
+            .FirstOrDefault() ?? throw new UserNotFoundException(userId,nameof(VigigUser.Id));
+
+        if (_jwtService.GetAuthModel(token).Role == UserRoleConstant.Client)
+            throw new UnauthorizedAccessException("Customers are not allowed!");
+
+        //Get the wallet
+        var wallet = provider.Wallets.FirstOrDefault() ?? throw new WalletNotFoundException(userId, nameof(userId));
+
+        var deposit = _mapper.Map<Deposit>(request); 
+            deposit.Status = CashStatus.Pending;
         await _depositRepository.AddAsync(deposit);
+        
+        // Process the transaction
+        try
+        {
+            await _transactionService.ProcessTransactionAsync(deposit,wallet);
+        }
+        catch (Exception ex)
+        {
+            //Log error
+            // subscriptionFee.Status = TransactionStatusConstant.Error;
+        }
+        
         await _unitOfWork.CommitAsync();
         return new ServiceActionResult(true)
         {
             Data = _mapper.Map<DtoDeposit>(deposit),
             StatusCode = StatusCodes.Status201Created
         };
-
     }
 
     //Admin
-    public async Task<ServiceActionResult> UpdateAsync(UpdateDepositRequest request)
+    public async Task<ServiceActionResult> UpdateAsync(UpdateDepositRequest request, string token)
     {
+        if (_jwtService.GetAuthModel(token).Role != UserRoleConstant.InternalUser)
+            throw new UnauthorizedAccessException("Users are not allowed!");
+
         if (!await _vigigUserRepository.ExistsAsync(sc => sc.Id == request.ProviderId && sc.IsActive))
             throw new UserNotFoundException(request.ProviderId,nameof(VigigUser.Id));
+        
         var deposit = (await _depositRepository.FindAsync(sc => sc.Id == request.Id)).FirstOrDefault() ??
                       throw new DepositNotFoundException(request.Id,nameof(Deposit.Id));
+        
         _mapper.Map(request,deposit);
         await _depositRepository.UpdateAsync(deposit);
         await _unitOfWork.CommitAsync();

@@ -9,7 +9,7 @@ public class UpdateProviderKPIRequest
     
     [Required]
     [MinValue(0)]
-    [MaxValue(100)]
+    [MaxValue(1000)]
     public float Progress { get; set; }
     
     public Guid ProviderId { get; set; }

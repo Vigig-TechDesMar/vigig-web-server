@@ -5,10 +5,7 @@ namespace Vigig.Service.Models.Request.Event;
 
 public class CreateProviderKPIRequest
 {
-    [Required]
-    [MinValue(0)]
-    [MaxValue(100)]
-    public float Progress { get; set; }
+    public float Progress { get; set; } = 0;
     
     public Guid ProviderId { get; set; }
     

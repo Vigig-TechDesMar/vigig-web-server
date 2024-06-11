@@ -1,4 +1,7 @@
 using Vigig.Common.Attribute;
+using Vigig.Domain.Entities;
+using Vigig.Domain.Entities.BaseEntities;
+using Vigig.Domain.Interfaces;
 using Vigig.Service.Models.Common;
 using Vigig.Service.Models.Request.Wallet;
 
@@ -14,11 +17,6 @@ public interface ITransactionService
     Task<ServiceActionResult> SearchTransaction(SearchUsingGet request);
     
     Task<ServiceActionResult> GetPaginatedResultAsync(BasePaginatedRequest request);
-    //
-    // Task<ServiceActionResult> AddAsync(CreateTransactionRequest request);
-    //
-    // Task<ServiceActionResult> UpdateAsync(UpdateTransactionRequest request);
-    //
-    // Task<ServiceActionResult> DeleteAsync(Guid id);
-    
+
+    Task ProcessTransactionAsync(CashEntity fee, Wallet wallet);
 }

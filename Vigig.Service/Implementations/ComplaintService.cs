@@ -40,25 +40,12 @@ public class ComplaintService : IComplaintService
 
     public async Task<ServiceActionResult> GetById(Guid id)
     {
-        // var complaint = (await _complaintRepository.FindAsync(sc => sc.Id == id && sc.IsActive)).FirstOrDefault()
-        //                 ?? throw new ComplaintNotFoundException(id.ToString(),nameof(Complaint.Id));
-        // return new ServiceActionResult(true)
-        // {
-        //     Data = _mapper.Map<DtoComplaint>(complaint)
-        // };
-        throw new NotImplementedException();
-    }
-    
-    public async Task<ServiceActionResult> GetPaginatedResultAsync(BasePaginatedRequest request)
-    {
-        // var complaints = _mapper.ProjectTo<DtoComplaint>(
-        //     await _complaintRepository.FindAsync(s => s.IsActive));
-        // var paginatedResult =
-        //     PaginationHelper.BuildPaginatedResult<DtoComplaint>(complaints, request.PageSize, request.PageIndex);
-        // return new ServiceActionResult(true)
-        // {
-        //     Data = paginatedResult
-        // };
+        var complaint = (await _complaintRepository.FindAsync(sc => sc.Id == id)).FirstOrDefault()
+                        ?? throw new ComplaintNotFoundException(id.ToString(),nameof(Complaint.Id));
+        return new ServiceActionResult(true)
+        {
+            Data = _mapper.Map<DtoComplaint>(complaint)
+        };
         throw new NotImplementedException();
     }
 
@@ -98,28 +85,28 @@ public class ComplaintService : IComplaintService
 
     public async Task<ServiceActionResult> UpdateAsync(UpdateComplaintRequest request)
     {
-        // //Check Complaint Type
-        // if (!await _complaintTypeRepository.ExistsAsync(sc => sc.IsActive && sc.Id == request.ComplaintTypeId))
-        //     throw new ComplaintTypeNotFoundException(request.ComplaintTypeId,nameof(ComplaintType.Id));
-        //
-        // //Check Booking
-        // if(request.BookingId != null)
-        //     if (!await _bookingRepository.ExistsAsync(sc => sc.Id == request.BookingId))
-        //         throw new BookingNotFoundException(request.BookingId,nameof(Booking.Id));
-        //
-        // //Check Complaint
-        // var complaint =
-        //     (await _complaintRepository.FindAsync(sc => sc.Id == request.Id && sc.IsActive)).FirstOrDefault()
-        //     ?? throw new ComplaintNotFoundException(request.Id,nameof(Complaint.Id));
-        //
-        // _mapper.Map(request, complaint);
-        // await _complaintRepository.AddAsync(complaint);
-        // await _unitOfWork.CommitAsync();
-        // return new ServiceActionResult(true)
-        // {
-        //     Data = _mapper.Map<DtoComplaint>(complaint),
-        //     StatusCode = StatusCodes.Status204NoContent
-        // };
+        //Check Complaint Type
+        if (!await _complaintTypeRepository.ExistsAsync(sc => sc.IsActive && sc.Id == request.ComplaintTypeId))
+            throw new ComplaintTypeNotFoundException(request.ComplaintTypeId,nameof(ComplaintType.Id));
+        
+        //Check Booking
+        if(request.BookingId != null)
+            if (!await _bookingRepository.ExistsAsync(sc => sc.Id == request.BookingId))
+                throw new BookingNotFoundException(request.BookingId,nameof(Booking.Id));
+        
+        //Check Complaint
+        var complaint =
+            (await _complaintRepository.FindAsync(sc => sc.Id == request.Id)).FirstOrDefault()
+            ?? throw new ComplaintNotFoundException(request.Id,nameof(Complaint.Id));
+        
+        _mapper.Map(request, complaint);
+        await _complaintRepository.AddAsync(complaint);
+        await _unitOfWork.CommitAsync();
+        return new ServiceActionResult(true)
+        {
+            Data = _mapper.Map<DtoComplaint>(complaint),
+            StatusCode = StatusCodes.Status204NoContent
+        };
         throw new NotImplementedException();
     }
 

@@ -1,8 +1,15 @@
 using System.Transactions;
 using AutoMapper;
+using Net.payOS;
+using Net.payOS.Types;
+using Org.BouncyCastle.Security;
 using Vigig.Common.Helpers;
 using Vigig.DAL.Interfaces;
 using Vigig.Domain.Dtos.Wallet;
+using Vigig.Domain.Entities;
+using Vigig.Domain.Entities.BaseEntities;
+using Vigig.Domain.Enums;
+using Vigig.Domain.Interfaces;
 using Vigig.Service.Constants;
 using Vigig.Service.Exceptions.NotFound;
 using Vigig.Service.Interfaces;
@@ -82,47 +89,126 @@ public class TransactionService : ITransactionService
     }
     
     //BUSINESS
-    public async Task<ServiceActionResult> ProcessTransactionAsync(Domain.Entities.Transaction transaction)
+   public async Task ProcessTransactionAsync(CashEntity fee, Wallet wallet)
     {
-        var userWallet = (await _walletRepository.FindAsync(w => w.Id == transaction.WalletId)).FirstOrDefault();
-        if (userWallet == null)
+        var feeType = fee.GetType().Name;
+        var transaction = new Transaction
         {
-            transaction.Status = TransactionStatusConstant.Pending;
+            Amount = fee.Amount,
+            CreatedDate = DateTime.UtcNow,
+            Description = GetTransactionDescription(feeType),
+            Status = TransactionStatusConstant.Pending,
+            Wallet = wallet,
+            WalletId = wallet.Id
+        };
+
+        AssignFeeIdToTransaction(fee, transaction);
+
+        await _transactionRepository.AddAsync(transaction);
+        await _unitOfWork.CommitAsync();
+
+        try
+        {
+            await PerformTransactionAsync(transaction, fee);
+        }
+        catch (Exception ex)
+        {
+            fee.Status = CashStatus.Fail;
+            // Log the exception (consider using a logging framework)
+            // Example: _logger.LogError(ex, "Error performing transaction");
+            throw;
+        }
+    }
+
+    private void AssignFeeIdToTransaction(CashEntity fee, Transaction transaction)
+    {
+        switch (fee.GetType().Name)
+        {
+            case nameof(SubscriptionFee):
+                transaction.SubscriptionFeeId = fee.Id;
+                break;
+
+            case nameof(BookingFee):
+                transaction.BookingFeeId = fee.Id;
+                break;
+
+            case nameof(Deposit):
+                transaction.DepositId = fee.Id;
+                break;
+        }
+    }
+
+    private string GetTransactionDescription(string feeType)
+    {
+        return feeType switch
+        {
+            CashTypeConstant.SubscriptionFee => "Subscription Fee Transaction",
+            CashTypeConstant.BookingFee => "Booking Fee Transaction",
+            CashTypeConstant.Deposit => "Deposit Transaction",
+            _ => "Transaction"
+        };
+    }
+
+    private async Task PerformTransactionAsync(Transaction transaction, CashEntity fee)
+    {
+        var wallet = transaction.Wallet;
+        
+        if (wallet == null)
+        {
+            transaction.Status = TransactionStatusConstant.Failed;
             throw new InvalidOperationException("User wallet not found.");
         }
 
-        if (userWallet.Balance < transaction.Amount)
+        if (fee.GetType().Name == CashTypeConstant.Deposit)
         {
-            transaction.Status = TransactionStatusConstant.Pending;
-            throw new InvalidOperationException("Insufficient balance.");
+            //PayOS Business Logic
+            await PayOSProcess(transaction);
+            
+            //Update the Wallet
+            wallet.Balance += transaction.Amount;
+            transaction.Status = TransactionStatusConstant.Completed;
+            fee.Status = CashStatus.Success;
+        }
+        else
+        {
+            if (wallet.Balance < transaction.Amount)
+            {
+                transaction.Status = TransactionStatusConstant.Failed;
+                fee.Status = CashStatus.Fail;
+                throw new InvalidOperationException("Insufficient balance.");
+            }
+
+            wallet.Balance -= transaction.Amount;
+            transaction.Status = TransactionStatusConstant.Completed;
+            fee.Status = CashStatus.Success;
         }
 
-        userWallet.Balance -= transaction.Amount;
-        transaction.Status = TransactionStatusConstant.Completed;
-        
-        
-
-        return null;
+        await _walletRepository.UpdateAsync(wallet);
+        await _unitOfWork.CommitAsync();
     }
 
-    // public async Task<ServiceActionResult> AddAsync(CreateTransactionRequest request)
-    // {
-    //     return new ServiceActionResult(true)
-    //     {
-    //
-    //     };
-    // }
-    //
-    // public async Task<ServiceActionResult> UpdateAsync(UpdateTransactionRequest request)
-    // {
-    //     return new ServiceActionResult(true)
-    //     {
-    //
-    //     };
-    // }
-    //
-    // public async Task<ServiceActionResult> DeleteAsync(Guid id)
-    // {
-    //     throw new NotImplementedException();
-    // }
+    private async Task PayOSProcess(Transaction transaction)
+    {
+        //VALIDATION
+        if (transaction.Amount < 0)
+            throw new InvalidParameterException("Amount cannot be negative");
+        
+        const string clientId = "23209feb-3f68-4c93-9d2d-8b43957b210f";
+        const string apiKey = "ad1f123e-10cb-4ebd-b478-6a583a4ac095";
+        const string checksumKey = "5fde396e4e45303c1fee7781b6ba36bf22e5a96979b9a5b1bf76dc1bc75c1980";
+        const string cancelUrl = "https://localhost:3002";
+        const string returnUrl = "https://localhost:3002";
+        
+        PayOS payOS = new PayOS(clientId, apiKey, checksumKey);
+        
+        ItemData item = new ItemData("Vigig Wallet Deposition", 1, Convert.ToInt32(transaction.Amount));
+        List<ItemData> items = new List<ItemData>();
+        items.Add(item);
+    
+        PaymentData paymentData = new PaymentData(Convert.ToInt32(transaction.Id), Convert.ToInt32(transaction.Amount), "Nap vi Vigig",
+            items, cancelUrl, returnUrl);
+
+        CreatePaymentResult createPayment = await payOS.createPaymentLink(paymentData);
+        Console.WriteLine(createPayment);
+    }
 }
