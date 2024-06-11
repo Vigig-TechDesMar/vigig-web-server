@@ -17,7 +17,9 @@ public class VoucherModelMapper : IDatabaseModelMapper
             entity.Property(e => e.Content);
             entity.Property(e => e.Percentage);
             entity.Property(e => e.Limit);
-            entity.Property(e => e.Quantity);
+            entity.Property(e => e.VoucherTitle);
+            entity.Property(e => e.IconUrl);
+            entity.Property(e => e.Amount);
             entity.Property(e => e.StartDate);
             entity.Property(e => e.EndDate);
             entity.Property(e => e.IsActive)

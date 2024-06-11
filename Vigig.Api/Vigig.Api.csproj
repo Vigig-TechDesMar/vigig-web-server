@@ -67,6 +67,8 @@
         <EmbeddedResource Include="Scripts\23.Update_LeaderBoard_Notification_PopUp.sql" />
         <None Remove="Scripts\24.Update_ClaimedVoucher.sql" />
         <EmbeddedResource Include="Scripts\24.Update_ClaimedVoucher.sql" />
+        <None Remove="Scripts\25.Update_Voucher.sql" />
+        <EmbeddedResource Include="Scripts\25.Update_Voucher.sql" />
     </ItemGroup>
 
 </Project>
