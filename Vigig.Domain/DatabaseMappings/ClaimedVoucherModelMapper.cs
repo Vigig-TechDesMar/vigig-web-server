@@ -13,8 +13,8 @@ public class ClaimedVoucherModelMapper : IDatabaseModelMapper
             entity.ToTable(nameof(ClaimedVoucher));
             entity.HasKey(e => new{e.VoucherId,e.CustomerId});
             entity.Property(e => e.EventTitle);
-            entity.Property(e => e.StartDate);
-            entity.Property(e => e.EndDate);
+            entity.Property(e => e.UsedDate);
+            entity.Property(e => e.IsUsed).HasDefaultValueSql("((0))");
             entity.HasOne(e => e.Voucher)
                 .WithMany(v => v.ClaimedVouchers)
                 .HasForeignKey(e => e.VoucherId);

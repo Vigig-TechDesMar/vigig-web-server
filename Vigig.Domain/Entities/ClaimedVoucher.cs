@@ -6,8 +6,9 @@ namespace Vigig.Domain.Entities;
 public class ClaimedVoucher
 {
     public required string EventTitle { get; set; }
-    public DateTime StartDate { get; set; }
-    public DateTime EndDate { get; set; }
+
+    public DateTime? UsedDate { get; set; }
+    public bool IsUsed { get; set; } = false;
     public Guid VoucherId { get; set; }
     public Guid CustomerId { get; set; }
     public virtual required Voucher Voucher { get; set; }

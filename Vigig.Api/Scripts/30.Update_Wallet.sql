@@ -1,0 +1,2 @@
+﻿ALTER TABLE [Wallet]
+ADD CreatedDate DATETIME 
