@@ -11,7 +11,7 @@ using Microsoft.Extensions.Configuration;
 
 public class EmailService : IEmailService
 {
-    private readonly SmtpSettings _smtpSettings;
+    private readonly SmtpSettings? _smtpSettings;
 
     public EmailService(IConfiguration configuration)
     {
@@ -20,6 +20,9 @@ public class EmailService : IEmailService
 
     public async Task SendEmailAsync(string toEmail, string subject, string body)
     {
+        if (_smtpSettings is null)
+            throw new Exception("No STMP Settings");
+        
         var smtpClient = new SmtpClient(_smtpSettings.Server)
         {
             Port = _smtpSettings.Port,
@@ -42,6 +45,9 @@ public class EmailService : IEmailService
 
     public async Task SendEmailToUsersAsync(List<VigigUser> users, string subject, string body)
     {
+        if (_smtpSettings is null)
+            throw new Exception("No STMP Settings");
+        
         var smtpClient = new SmtpClient(_smtpSettings.Server)
         {
             Port = _smtpSettings.Port,

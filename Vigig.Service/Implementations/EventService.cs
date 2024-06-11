@@ -116,12 +116,12 @@ public class EventService : IEventService
             await _emailService.SendEmailToUsersAsync((await _vigigUserRepository.GetAllAsync()).ToList(), evnt.EventTitle,
                 evnt.EventDescription??EventConstant.DefaultEventDescription);
         }
-        else if(request.Targets is not null)
+        else if(request.Targets.Count > 0)
         {
             foreach (var x in request.Targets)
             {
                 var users =(await _vigigUserRepository.FindAsync(sc =>
-                    sc.IsActive && sc.Roles.Contains<>(x))).ToList();
+                    sc.IsActive && sc.Roles.Any(y=> y.Name == x))).ToList();
                 await _emailService.SendEmailToUsersAsync(users, evnt.EventTitle,
                     evnt.EventDescription + request.Body);
             }

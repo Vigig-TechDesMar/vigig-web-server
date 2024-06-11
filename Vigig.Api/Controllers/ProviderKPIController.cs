@@ -13,6 +13,12 @@ namespace Vigig.Api.Controllers;
 public class ProviderKPIController : BaseApiController
 {
     private readonly IProviderKPIService _providerKPIService;
+    private string GetJwtToken()
+    {
+        var authorizationHeader = HttpContext.Request.Headers["Authorization"].ToString();
+        var token = authorizationHeader.Replace("bearer", "", StringComparison.OrdinalIgnoreCase).Trim();
+        return token;
+    }
 
     public ProviderKPIController(IProviderKPIService providerKPIService)
     {
@@ -53,10 +59,10 @@ public class ProviderKPIController : BaseApiController
     
     [HttpPost]
     [Authorize(Roles = UserRoleConstant.InternalUser)]
-    public async Task<IActionResult> AddProviderKPI(CreateProviderKPIRequest  request)
+    public async Task<IActionResult> AddProviderKPI(CreateProviderKPIRequest request)
     {
         return await ExecuteServiceLogic(async () 
-            => await _providerKPIService.AddAsync(request)).ConfigureAwait(false);
+            => await _providerKPIService.AddAsync(request, GetJwtToken())).ConfigureAwait(false);
     }
 
     [HttpPut]
@@ -64,7 +70,7 @@ public class ProviderKPIController : BaseApiController
     public async Task<IActionResult> UpdateServiceCategory([FromBody] UpdateProviderKPIRequest request)
     {
         return await ExecuteServiceLogic(async ()
-            => await _providerKPIService.UpdateAsync(request).ConfigureAwait(false)).ConfigureAwait(false);
+            => await _providerKPIService.UpdateAsync(request, GetJwtToken()).ConfigureAwait(false)).ConfigureAwait(false);
     }
 
     [HttpDelete]

@@ -4,6 +4,7 @@ using Vigig.Common.Helpers;
 using Vigig.DAL.Interfaces;
 using Vigig.Domain.Dtos.Event;
 using Vigig.Domain.Entities;
+using Vigig.Service.Constants;
 using Vigig.Service.Enums;
 using Vigig.Service.Exceptions.NotFound;
 using Vigig.Service.Interfaces;
@@ -123,8 +124,8 @@ public class LeaderBoardService : ILeaderBoardService
     
     private async Task EmailProviderAboutNewLeaderBoard(CreateLeaderBoardRequest request, LeaderBoard leaderBoard)
     {
-        var users = (await _vigigUserRepository.FindAsync(sc =>
-            sc.IsActive && sc.Roles.Contains<>(UserRole.Provider))).ToList();
+        var users =(await _vigigUserRepository.FindAsync(sc =>
+            sc.IsActive && sc.Roles.Any(y=> y.Name == UserRoleConstant.Provider))).ToList();
         await _emailService.SendEmailToUsersAsync(users, leaderBoard.Name,
             leaderBoard.Description + request.Body);
     }

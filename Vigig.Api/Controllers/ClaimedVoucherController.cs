@@ -36,14 +36,6 @@ public class ClaimedVoucherController : BaseApiController
             => await _claimedVoucherService.GetPaginatedResultAsync(request).ConfigureAwait(false)).ConfigureAwait(false);
     }
     
-    [HttpGet("{id:guid}")]
-    [AllowAnonymous]
-    public async Task<IActionResult> GetClaimedVoucherById(Guid id)
-    {
-        return await ExecuteServiceLogic(async () => 
-            await _claimedVoucherService.GetById(id).ConfigureAwait(false)).ConfigureAwait(false);
-    }
-    
     [HttpGet("search")]
     [AllowAnonymous]
     public async Task<IActionResult> SearchUsingGet(SearchUsingGet request)

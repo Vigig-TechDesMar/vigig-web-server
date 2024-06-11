@@ -14,6 +14,12 @@ public class DepositController : BaseApiController
 {
     
     private readonly IDepositService _depositService;
+    private string GetJwtToken()
+    {
+        var authorizationHeader = HttpContext.Request.Headers["Authorization"].ToString();
+        var token = authorizationHeader.Replace("bearer", "", StringComparison.OrdinalIgnoreCase).Trim();
+        return token;
+    }
 
     public DepositController(IDepositService depositService)
     {
@@ -57,7 +63,7 @@ public class DepositController : BaseApiController
     public async Task<IActionResult> AddDeposit(CreateDepositRequest  request)
     {
         return await ExecuteServiceLogic(async () 
-            => await _depositService.AddAsync(request)).ConfigureAwait(false);
+            => await _depositService.AddAsync(request,GetJwtToken())).ConfigureAwait(false);
     }
 
     [HttpPut]
@@ -65,7 +71,7 @@ public class DepositController : BaseApiController
     public async Task<IActionResult> UpdateServiceCategory([FromBody] UpdateDepositRequest request)
     {
         return await ExecuteServiceLogic(async ()
-            => await _depositService.UpdateAsync(request).ConfigureAwait(false)).ConfigureAwait(false);
+            => await _depositService.UpdateAsync(request, GetJwtToken()).ConfigureAwait(false)).ConfigureAwait(false);
     }
 
     [HttpDelete]

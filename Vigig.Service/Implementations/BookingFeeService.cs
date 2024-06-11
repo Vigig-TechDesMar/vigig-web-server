@@ -86,7 +86,7 @@ public class BookingFeeService : IBookingFeeService
     public async Task<ServiceActionResult> AddAsyncFromBooking(Booking booking, string token)
     {
         //Validate provider
-        var userId = _jwtService.GetSubjectClaim(token);
+        var userId = _jwtService.GetSubjectClaim(token).ToString();
         var provider = (await _vigigUserRepository.FindAsync(x => x.IsActive && x.Id.ToString() == userId))
             .Include(x => x.Wallets)
             .FirstOrDefault() ?? throw new UserNotFoundException(userId,nameof(VigigUser.Id));

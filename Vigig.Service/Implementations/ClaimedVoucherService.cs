@@ -40,17 +40,6 @@ public class ClaimedVoucherService : IClaimedVoucherService
             Data = claimedVoucher
         };
     }
-
-    public async Task<ServiceActionResult> GetById(Guid id)
-    {
-        // var claimedVoucher = (await _claimedVoucherRepository.FindAsync(sc => sc.Id == id)).FirstOrDefault() ??
-        //                       throw new ClaimedVoucherNotFoundException(id.ToString(),nameof(ClaimedVoucher.Id));
-        // return new ServiceActionResult(true)
-        // {
-        //     Data = _mapper.Map<DtoClaimedVoucher>(claimedVoucher)
-        // };
-        throw new NotImplementedException();
-    }
     
     public async Task<ServiceActionResult> GetPaginatedResultAsync(BasePaginatedRequest request)
     {
@@ -90,34 +79,35 @@ public class ClaimedVoucherService : IClaimedVoucherService
             if (!await _vigigUserRepository.ExistsAsync(sc => sc.Id == request.CustomerId && sc.IsActive))
                 throw new UserNotFoundException(request.CustomerId, nameof(VigigUser.Id));
             var customerId = request.CustomerId??new Guid();
-            var claimedVoucher = new ClaimedVoucher
-            {
-                CustomerId = customerId,
-                VoucherId = request.VoucherId,
-                Voucher = voucher,
-                Status = true
-            };
-            await _claimedVoucherRepository.AddAsync(claimedVoucher);
+            // var claimedVoucher = new ClaimedVoucher
+            // {
+            //     CustomerId = customerId,
+            //     VoucherId = request.VoucherId,
+            //     Voucher = voucher,
+            //     Status = true
+            // };
+            // await _claimedVoucherRepository.AddAsync(claimedVoucher);
         }
 
         //Voucher for all Customers
         if (request.IsForAll)
         {
             var customerList = await _vigigUserRepository.FindAsync(sc =>
-                sc.IsActive && sc.Roles.Contains<>(UserRole.Client));
+                sc.IsActive && sc.Roles.Any(y=> y.Name == UserRoleConstant.Client));
+
             var claimedVoucherList = new List<ClaimedVoucher>();
             
             foreach (var x in customerList)
             {
-                var claimedVoucher = new ClaimedVoucher
-                {
-                    CustomerId = x.Id,
-                    Customer = x,
-                    VoucherId = request.VoucherId,
-                    Voucher = voucher,
-                    Status = true
-                };
-                claimedVoucherList.Add(claimedVoucher);
+                // var claimedVoucher = new ClaimedVoucher
+                // {
+                //     CustomerId = x.Id,
+                //     Customer = x,
+                //     VoucherId = request.VoucherId,
+                //     Voucher = voucher,
+                //     Status = true
+                // };
+                // claimedVoucherList.Add(claimedVoucher);
                 await _claimedVoucherRepository.AddManyAsync(claimedVoucherList);
             }
         }

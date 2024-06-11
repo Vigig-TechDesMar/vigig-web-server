@@ -14,6 +14,13 @@ namespace Vigig.Api.Controllers;
 public class BookingFeeController : BaseApiController
 {
     private readonly IBookingFeeService _bookingFeeService;
+    
+    private string GetJwtToken()
+    {
+        var authorizationHeader = HttpContext.Request.Headers["Authorization"].ToString();
+        var token = authorizationHeader.Replace("bearer", "", StringComparison.OrdinalIgnoreCase).Trim();
+        return token;
+    }
 
     public BookingFeeController(IBookingFeeService bookingFeeService)
     {
@@ -57,16 +64,16 @@ public class BookingFeeController : BaseApiController
     public async Task<IActionResult> AddBookingFee(CreateBookingFeeRequest  request)
     {
         return await ExecuteServiceLogic(async () 
-            => await _bookingFeeService.AddAsync(request)).ConfigureAwait(false);
+            => await _bookingFeeService.AddAsync(request, GetJwtToken())).ConfigureAwait(false);
     }
 
-    [HttpPut]
-    [Authorize(Roles = UserRoleConstant.InternalUser)]
-    public async Task<IActionResult> UpdateServiceCategory([FromBody] UpdateBookingFeeRequest request)
-    {
-        return await ExecuteServiceLogic(async ()
-            => await _bookingFeeService.UpdateAsync(request).ConfigureAwait(false)).ConfigureAwait(false);
-    }
+    // [HttpPut]
+    // [Authorize(Roles = UserRoleConstant.InternalUser)]
+    // public async Task<IActionResult> UpdateServiceCategory([FromBody] UpdateBookingFeeRequest request)
+    // {
+    //     return await ExecuteServiceLogic(async ()
+    //         => await _bookingFeeService.UpdateAsync(request).ConfigureAwait(false)).ConfigureAwait(false);
+    // }
 
     [HttpDelete]
     [Authorize(Roles = UserRoleConstant.InternalUser)]
