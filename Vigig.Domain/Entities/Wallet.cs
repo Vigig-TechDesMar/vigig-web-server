@@ -7,11 +7,13 @@ public partial class Wallet
 {
     public Guid Id { get; set; }
 
-    public double? Balance { get; set; }
+    public required double Balance { get; set; }
 
-    public bool? IsActive { get; set; }
+    public bool IsActive { get; set; } = true;
 
     public string? ConcurrencyStamp { get; set; }
+    
+    public DateTime CreatedDate { get; set; }
 
     public Guid ProviderId { get; set; }
 

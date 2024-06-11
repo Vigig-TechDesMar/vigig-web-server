@@ -13,8 +13,9 @@ public class WalletModelMapper : IDatabaseModelMapper
             entity.ToTable("Wallet");
 
             entity.Property(e => e.Id).ValueGeneratedOnAdd();
-            entity.Property(e => e.Balance).HasDefaultValueSql("((0))");
+            entity.Property(e => e.Balance).HasDefaultValueSql("((0))").IsRequired();
             entity.Property(e => e.IsActive).HasDefaultValueSql("((1))");
+            entity.Property(e => e.CreatedDate);
 
             entity.HasOne(d => d.Provider).WithMany(p => p.Wallets)
                 .HasForeignKey(d => d.ProviderId)

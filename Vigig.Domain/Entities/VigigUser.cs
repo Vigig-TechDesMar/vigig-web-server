@@ -32,4 +32,6 @@ public partial class VigigUser : IdentityEntity
     public virtual ICollection<Deposit> Deposits { get; set; } = new List<Deposit>();
 
     public virtual ICollection<UserToken> Tokens { get; set; } = new List<UserToken>();
+
+    public virtual ICollection<Notification> Notifications { get; set; } = new List<Notification>();
 }

@@ -8,9 +8,9 @@ public class EventImage : BaseEntity<Guid>
     public DateTime EndDate { get; set; }
     public required string ImageUrl { get; set; }
     
-    public Guid PopUpId { get; set; }
+    public Guid? PopUpId { get; set; }
     public PopUp PopUp { get; set; } = null!;
     
-    public Guid BannerId { get; set; }
+    public Guid? BannerId { get; set; }
     public Banner Banner { get; set; } = null!;
 }
