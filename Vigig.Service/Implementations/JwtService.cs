@@ -138,9 +138,9 @@ public class JwtService : IJwtService
         }
     }
 
-    public object? GetSubjectClaim(string token)
+    public string GetSubjectClaim(string token)
     {
-        return GetTokenClaim(token, TokenClaimConstant.Subject);
+        return GetTokenClaim(token, TokenClaimConstant.Subject).ToString() ?? throw new InvalidTokenException();
     }
 
     public object? GetRoleClaim(string token)
