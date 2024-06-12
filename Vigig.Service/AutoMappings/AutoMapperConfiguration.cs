@@ -235,7 +235,7 @@ public static class AutoMapperConfiguration
                 opt.Condition(x => x.BookingMessages.Any());
                 opt.MapFrom(x => x.BookingMessages.OrderByDescending(x => x.SentAt).FirstOrDefault().Content);
             });
-        mapper.CreateMap<BookingMessage, DtoBookingMessage>()
+        mapper.CreateMap<BookingMessage, DtoBookingMessage>() 
             .ForMember(dto => dto.SenderName, opt => opt.MapFrom(x => x.SenderName));
     }
 }

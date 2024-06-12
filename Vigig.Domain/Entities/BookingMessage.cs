@@ -6,6 +6,8 @@ namespace Vigig.Domain.Entities;
 public partial class BookingMessage
 {
     public Guid Id { get; set; }
+    
+    public required Guid SenderId { get; set; }
 
     public required string SenderName { get; set; }
 

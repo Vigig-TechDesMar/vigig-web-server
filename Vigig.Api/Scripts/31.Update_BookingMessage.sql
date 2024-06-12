@@ -1,0 +1,2 @@
+﻿ALTER TABLE [BookingMessage]
+ADD SenderId UNIQUEIDENTIFIER 

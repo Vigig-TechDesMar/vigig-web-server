@@ -73,6 +73,8 @@
         <EmbeddedResource Include="Scripts\29.Update_Transaction.sql" />
         <None Remove="Scripts\30.Update_Wallet.sql" />
         <EmbeddedResource Include="Scripts\30.Update_Wallet.sql" />
+        <None Remove="Scripts\31.Update_BookingMessage.sql" />
+        <EmbeddedResource Include="Scripts\31.Update_BookingMessage.sql" />
     </ItemGroup>
 
 </Project>

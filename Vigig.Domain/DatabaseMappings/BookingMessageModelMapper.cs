@@ -15,6 +15,7 @@ public class BookingMessageModelMapper : IDatabaseModelMapper
             entity.Property(e => e.Id).ValueGeneratedOnAdd();
             entity.Property(e => e.SenderName).HasMaxLength(450);
             entity.Property(e => e.SentAt).HasColumnType("datetime");
+            entity.Property(e => e.SenderId);
             
 
             entity.HasOne(d => d.Booking).WithMany(p => p.BookingMessages)

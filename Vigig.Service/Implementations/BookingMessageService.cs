@@ -39,6 +39,7 @@ public class BookingMessageService : IBookingMessageService
         var bookingMessage = new BookingMessage
         {
             SenderName = authModel.UserName,
+            SenderId = authModel.UserId,
             Content = message.Trim(),
             Booking = booking,
             SentAt = DateTime.Now
