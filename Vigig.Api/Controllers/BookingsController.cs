@@ -5,6 +5,7 @@ using Vigig.Api.Controllers.Base;
 using Vigig.Common.Helpers;
 using Vigig.Service.Constants;
 using Vigig.Service.Interfaces;
+using Vigig.Service.Models.Common;
 using Vigig.Service.Models.Request.Booking;
 
 namespace Vigig.Api.Controllers;
@@ -74,11 +75,18 @@ public class BookingsController : BaseApiController
     }
 
     [HttpGet("own-bookings/chat")]
-    [AllowAnonymous]
     public async Task<IActionResult> GetOwnChatBooking()
     {
         return await ExecuteServiceLogic(async () => 
             await _bookingService.LoadOwnChatBookingAsync(GetJwtToken()).ConfigureAwait(false)).ConfigureAwait(false);
+    }
+
+    [HttpGet("own-bookings/chat/{id:guid}")]
+    public async Task<IActionResult> GetOwnChatBookingDetail(Guid id)
+    {
+        return await ExecuteServiceLogic(async () =>
+                await _bookingService.LoadOwnChatBookingDetailAsync(id, GetJwtToken()).ConfigureAwait(false))
+            .ConfigureAwait(false);
     }
 
     [HttpGet("own-bookings")]

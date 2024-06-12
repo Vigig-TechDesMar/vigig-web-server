@@ -257,6 +257,16 @@ public class BookingService : IBookingService
         };
     }
 
+    public async Task<ServiceActionResult> LoadOwnChatBookingDetailAsync(Guid id, string token)
+    {
+        var hasBooking = await EnsureHasBookingAsync(token, id);
+        return new ServiceActionResult()
+        {
+            Data = _mapper.Map<DtoBookChat>((await _bookingRepository.GetAsync(x => x.Id == id) ?? throw new BookingNotFoundException(id, nameof(Booking.Id))))
+        };
+
+    }
+
     private async Task<bool> EnsureHasBookingAsync(string token, Guid bookingId)
     {
         var authModel = _jwtService.GetAuthModel(token);
