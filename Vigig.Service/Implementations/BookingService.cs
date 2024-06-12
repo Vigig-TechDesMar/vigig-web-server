@@ -262,7 +262,8 @@ public class BookingService : IBookingService
         var hasBooking = await EnsureHasBookingAsync(token, id);
         return new ServiceActionResult()
         {
-            Data = _mapper.Map<DtoBookChat>((await _bookingRepository.GetAsync(x => x.Id == id) ?? throw new BookingNotFoundException(id, nameof(Booking.Id))))
+            Data = (_mapper.ProjectTo<DtoBookChat>(await _bookingRepository.FindAsync(x => x.Id == id)))
+                .FirstOrDefault() ?? throw new BookingNotFoundException(id, nameof(Booking.Id))
         };
 
     }
