@@ -239,7 +239,7 @@ public static class AutoMapperConfiguration
             .ForMember(dto => dto.LastMessageSentAt, opt =>
             {
                 opt.Condition(x => x.BookingMessages.Any());
-                opt.MapFrom(x => x.BookingMessages.OrderByDescending(x => x.SentAt).FirstOrDefault().SentAt.ToString());
+                opt.MapFrom(x => x.BookingMessages.OrderByDescending(x => x.SentAt).FirstOrDefault().SentAt.ToString("s"));
             });
         mapper.CreateMap<BookingMessage, DtoBookingMessage>() 
             .ForMember(dto => dto.SenderName, opt => opt.MapFrom(x => x.SenderName));
