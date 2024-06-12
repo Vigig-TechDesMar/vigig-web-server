@@ -11,7 +11,7 @@ public class UpdateSubscriptionPlanRequest
 
     [Required]
     [MinValue(1)]
-    public int? DurationType { get; set; }
+    public double? DurationType { get; set; }
 
     [Required]
     [MinValue(0)]
