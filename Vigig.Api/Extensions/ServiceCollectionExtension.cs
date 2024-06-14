@@ -2,6 +2,7 @@
 using System.Reflection;
 using System.Text;
 using AutoMapper;
+using Hangfire;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -135,6 +136,18 @@ public static class ServiceCollectionExtension
                 builder.Build();
             });
         });
+        return services;
+    }
+
+    public static IServiceCollection AddHangfire(this IServiceCollection services, IConfiguration configuration)
+    {
+        //client
+        services.AddHangfire(opt => opt.SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+            .UseSimpleAssemblyNameTypeSerializer()
+            .UseRecommendedSerializerSettings()
+            .UseSqlServerStorage(configuration.GetConnectionString("HangfireConnection")));
+        //server
+        services.AddHangfireServer();
         return services;
     }
 }

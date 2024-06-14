@@ -9,11 +9,14 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="Hangfire.Core" Version="1.8.14" />
+        <PackageReference Include="Hangfire.Dashboard.Basic.Authentication" Version="7.0.1" />
+        <PackageReference Include="Hangfire.SqlServer" Version="1.8.14" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.15" />
         <PackageReference Include="Microsoft.AspNet.SignalR" Version="2.4.3" />
-        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.1"/>
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.1" />
         <PackageReference Include="NLog" Version="5.2.5" />
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0"/>
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
     </ItemGroup>
 
     <ItemGroup>
@@ -27,8 +30,6 @@
 
     <ItemGroup>
       <Folder Include="Exceptions\" />
-      <Folder Include="Middlewares\" />
-      <Folder Include="Settings\" />
     </ItemGroup>
 
     <ItemGroup>
