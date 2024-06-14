@@ -1,6 +1,8 @@
-﻿namespace Vigig.Service.BackgroundJobs.Interfaces;
+﻿using Vigig.Common.Attribute;
 
-public class IExpirationService
+namespace Vigig.Service.BackgroundJobs.Interfaces;
+[ServiceRegister]
+public interface IExpirationService
 {
-    
+    Task ValidateEventExpiration();
 }

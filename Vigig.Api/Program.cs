@@ -1,6 +1,5 @@
 using System.Text.Json.Serialization;
 using Hangfire;
-using Hangfire.Server;
 using NLog;
 using Swashbuckle.AspNetCore.SwaggerUI;
 using Vigig.Api.Extensions;

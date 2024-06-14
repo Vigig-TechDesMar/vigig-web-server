@@ -31,6 +31,6 @@ public class IdentityEntity : BaseEntity<Guid>
     public string? Address { get; set; }
     
     public DateTime CreatedDate { get; set; }
-    
-    public bool IsActive { get; set; }
+
+    public bool IsActive { get; set; } = true;
 }
