@@ -15,8 +15,12 @@ public class EventModelMapper : IDatabaseModelMapper
             entity.Property(e => e.Id)
                 .ValueGeneratedOnAdd();
             entity.Property(e => e.EventTitle)
+                .HasColumnName("Title")
                 .IsRequired();
-            entity.Property(e => e.EventDescription);
+            entity.Property(e => e.EventDescription)
+                .HasColumnName("Description")
+                ;
+            
             entity.Property(e => e.StartDate)
                 .IsRequired();
             entity.Property(e => e.EndDate)

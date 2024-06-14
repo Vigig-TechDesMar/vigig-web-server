@@ -5,7 +5,7 @@ namespace Vigig.Domain.Entities;
 public class Event : BaseEntity<Guid>
 {
     public required string EventTitle { get; set; }
-    public string? EventDescription { get; set; }
+    public  required string EventDescription { get; set; }
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
     public bool IsActive { get; set; }
