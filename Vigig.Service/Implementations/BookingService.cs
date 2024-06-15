@@ -275,11 +275,12 @@ public class BookingService : IBookingService
     public async Task<ServiceActionResult> LoadOwnChatBookingDetailAsync(Guid id, string token)
     {
         var hasBooking = await EnsureHasBookingAsync(token, id);
+        if (!hasBooking)
+            throw new Exception($"User do not have the booking Id {id}");
         return new ServiceActionResult()
         {
             Data = (_mapper.ProjectTo<DtoBookChat>(await _bookingRepository.FindAsync(x => x.Id == id 
-                    && x.Status == BookingStatus.Accepted
-                    && x.Status == BookingStatus.Completed)))
+                    && x.Status == BookingStatus.Accepted)))
                 .FirstOrDefault() ?? throw new BookingNotFoundException(id, nameof(Booking.Id))
         };
 
