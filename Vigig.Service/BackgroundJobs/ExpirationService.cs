@@ -11,9 +11,12 @@ public class ExpirationService : IExpirationService
     private readonly IBannerRepository _bannerRepository;
     private readonly ILeaderBoardRepository _leaderBoardRepository;
     private readonly IVoucherRepository _voucherRepository;
+    private readonly ISubscriptionFeeRepository _subscriptionFeeRepository;
+    private readonly IEmailService _emailService;
+    private readonly IVigigUserRepository _userRepository;
     private readonly IUnitOfWork _unitOfWork;
 
-    public ExpirationService(IEventRepository eventRepository, IUnitOfWork unitOfWork, IPopUpRepository popUpRepository, IBannerRepository bannerRepository, ILeaderBoardRepository leaderBoardRepository, IVoucherRepository voucherRepository)
+    public ExpirationService(IEventRepository eventRepository, IUnitOfWork unitOfWork, IPopUpRepository popUpRepository, IBannerRepository bannerRepository, ILeaderBoardRepository leaderBoardRepository, IVoucherRepository voucherRepository, ISubscriptionFeeRepository subscriptionFeeRepository, IVigigUserRepository userRepository, IEmailService emailService)
     {
         _eventRepository = eventRepository;
         _unitOfWork = unitOfWork;
@@ -21,6 +24,9 @@ public class ExpirationService : IExpirationService
         _bannerRepository = bannerRepository;
         _leaderBoardRepository = leaderBoardRepository;
         _voucherRepository = voucherRepository;
+        _subscriptionFeeRepository = subscriptionFeeRepository;
+        _userRepository = userRepository;
+        _emailService = emailService;
     }
     public async Task ValidateEventExpiration()
     {
@@ -30,7 +36,17 @@ public class ExpirationService : IExpirationService
         await ValidatePopUp();
         await ValidateLeaderBoard();
     }
-    
+
+    public async Task ValidateSubscriptionFee()
+    {
+        var users = (await _userRepository.FindAsync(u => DateTime.Now <= u.PlanExpirationDate && u.PlanExpirationDate <= DateTime.Now.AddDays(3))).ToList();
+        foreach (var @user in users)
+        {
+            await _emailService.SendEmailAsync(user.Email, "EXTEND YOUR SUBSCRIPTION",
+                $"Your plan expired date is {user.PlanExpirationDate}");
+        }
+    }
+
     #region ValidateEvent
     private async Task ValidateEvent()
     {

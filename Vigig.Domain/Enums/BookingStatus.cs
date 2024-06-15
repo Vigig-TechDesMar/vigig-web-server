@@ -17,7 +17,9 @@ public enum BookingStatus
     [Description(BookingStatusConstant.CancelledByClient)]
     CancelledByClient = 5,
     [Description(BookingStatusConstant.Timeout)]
-    Timeout = 6
+    Timeout = 6,
+    [Description(BookingStatusConstant.Closed)]
+    Closed = 7
 }
 
 public static class BookingStatusConstant
@@ -29,4 +31,5 @@ public static class BookingStatusConstant
     public const string CancelledByProvider = "Hủy bởi nhà cung cấp";
     public const string CancelledByClient = "Hủy bởi khách hàng";
     public const string Timeout = "Hết thời gian";
+    public const string Closed = "Đã kết thúc";
 }

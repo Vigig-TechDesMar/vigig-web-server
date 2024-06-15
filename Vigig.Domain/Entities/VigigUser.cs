@@ -10,6 +10,8 @@ public partial class VigigUser : IdentityEntity
     public Guid? BuildingId { get; set; }
     
     public Guid? BadgeId { get; set; }
+    
+    public DateTime? PlanExpirationDate { get; set; }
 
     public virtual ICollection<Booking> Bookings { get; set; } = new List<Booking>();
 

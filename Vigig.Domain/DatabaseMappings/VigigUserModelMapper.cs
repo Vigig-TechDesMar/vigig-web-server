@@ -25,6 +25,7 @@ public class VigigUserModelMapper : IDatabaseModelMapper
             entity.Property(e => e.NormalizedEmail).HasMaxLength(255);
             entity.Property(e => e.NormalizedUserName).HasMaxLength(255);
             entity.Property(e => e.EmailConfirmed).HasDefaultValueSql("((0))");
+            entity.Property(e => e.PlanExpirationDate).IsRequired(false);
             entity.Property(e => e.ConcurrencyStamp).IsConcurrencyToken().HasValueGenerator<StringValueGenerator>();
 
             entity.HasOne(d => d.Building).WithMany(p => p.Users)

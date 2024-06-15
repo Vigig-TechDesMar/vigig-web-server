@@ -81,16 +81,11 @@ public abstract class GenericRepository<T> : IGenericRepository<T> where T:class
         await entities.ForEachAsync(c => _dbContext.Update<T>(c));
     }
 
-    public void DeleteMany(Expression<Func<T, bool>> predicate)
-    {
-        var entities = _dbSet.Where(predicate);
-        entities.ForEachAsync(c => _dbContext.SetDeleted<T>(c));
-    }
+  
 
-    public async Task DeleteManyAsync(Expression<Func<T, bool>> predicate)
+    public void DeleteMany(IEnumerable<T> entities)
     {
-        var entities = _dbSet.Where(predicate);
-        await entities.ForEachAsync(c => _dbContext.SetDeleted<T>(c));
+        _dbSet.RemoveRange(entities);
     }
 
     public IQueryable<T> GetAll()

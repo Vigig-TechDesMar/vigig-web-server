@@ -82,8 +82,11 @@ public class SubscriptionFeeService : ISubscriptionFeeService
 
     public async Task<ServiceActionResult> AddAsync(CreateSubscriptionFeeRequest request, string token)
     {
-        if (!await _subscriptionPlanRepository.ExistsAsync(sc => sc.Id == request.SubscriptionPlanId && sc.IsActive))
-            throw new SubscriptionPlanNotFoundException(request.SubscriptionPlanId,nameof(SubscriptionFee.Id));
+        // if (!await _subscriptionPlanRepository.ExistsAsync(sc => sc.Id == request.SubscriptionPlanId && sc.IsActive))
+        //     throw new SubscriptionPlanNotFoundException(request.SubscriptionPlanId,nameof(SubscriptionFee.Id));
+        
+        var subscriptionPlan = (await _subscriptionPlanRepository.FindAsync(sc => sc.Id == request.SubscriptionPlanId && sc.IsActive))
+            .FirstOrDefault()  ?? throw new SubscriptionPlanNotFoundException(request.SubscriptionPlanId,nameof(SubscriptionFee.Id));
         
         //Validate provider
         var userId = _jwtService.GetSubjectClaim(token);
@@ -91,6 +94,9 @@ public class SubscriptionFeeService : ISubscriptionFeeService
             .Include(x => x.Wallets)
             .FirstOrDefault() ?? throw new UserNotFoundException(userId,nameof(VigigUser.Id));
 
+        provider.PlanExpirationDate = DateTime.Now.AddHours(subscriptionPlan.DurationType);
+        await _vigigUserRepository.UpdateAsync(provider);
+        
         if (_jwtService.GetAuthModel(token).Role == UserRoleConstant.Client)
             throw new UnauthorizedAccessException("Customers are not allowed!");
         
