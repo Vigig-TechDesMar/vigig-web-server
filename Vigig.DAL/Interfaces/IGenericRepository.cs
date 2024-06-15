@@ -17,8 +17,7 @@ public interface IGenericRepository<T>  where T:class
     Task UpdateManyAsync(IEnumerable<T> entities);
     Task UpdateManyAsync(Expression<Func<T, bool>> predicate);
     
-    void DeleteMany(Expression<Func<T, bool>> predicate);
-    Task DeleteManyAsync(Expression<Func<T, bool>> predicate);
+    void DeleteMany(IEnumerable<T> entities);
     
     IQueryable<T> GetAll();
     Task<IQueryable<T>> GetAllAsync();

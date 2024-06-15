@@ -1,16 +1,13 @@
-﻿using System.Security.Claims;
-using AutoMapper;
+﻿using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Query.Internal;
-using Microsoft.VisualBasic;
 using Vigig.Common.Helpers;
 using Vigig.DAL.Interfaces;
 using Vigig.Domain.Dtos.Booking;
 using Vigig.Domain.Entities;
 using Vigig.Domain.Enums;
+using Vigig.Service.BackgroundJobs.Interfaces;
 using Vigig.Service.Constants;
-using Vigig.Service.Enums;
 using Vigig.Service.Exceptions.NotFound;
 using Vigig.Service.Interfaces;
 using Vigig.Service.Models.Common;
@@ -24,11 +21,21 @@ public class BookingService : IBookingService
     private readonly IVigigUserRepository _vigigUserRepository;
     private readonly IBuildingRepository _buildingRepository;
     private readonly IProviderServiceRepository _proServiceRepository;
+    private readonly IBookingMessageRepository _bookingMessageRepository;
+    private readonly IBackgroundJobService _backgroundJobService;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IJwtService _jwtService;
     private readonly IMapper _mapper;
 
-    public BookingService(IBookingRepository bookingRepository, IUnitOfWork unitOfWork, IJwtService jwtService, IMapper mapper, IBuildingRepository buildingRepository, IProviderServiceRepository proServiceRepository, IVigigUserRepository vigigUserRepository)
+    public BookingService(IBookingRepository bookingRepository, 
+        IUnitOfWork unitOfWork, 
+        IJwtService jwtService, 
+        IMapper mapper, 
+        IBuildingRepository buildingRepository, 
+        IProviderServiceRepository proServiceRepository, 
+        IVigigUserRepository vigigUserRepository, 
+        IBackgroundJobService backgroundJobService, 
+        IBookingMessageRepository bookingMessageRepository)
     {
         _bookingRepository = bookingRepository;
         _unitOfWork = unitOfWork;
@@ -37,6 +44,8 @@ public class BookingService : IBookingService
         _buildingRepository = buildingRepository;
         _proServiceRepository = proServiceRepository;
         _vigigUserRepository = vigigUserRepository;
+        _backgroundJobService = backgroundJobService;
+        _bookingMessageRepository = bookingMessageRepository;
     }
 
     public async Task<ServiceActionResult> PlaceBookingAsync(string token, BookingPlaceRequest request)
@@ -115,6 +124,7 @@ public class BookingService : IBookingService
         booking.Status = BookingStatus.Accepted;
         await _bookingRepository.UpdateAsync(booking);
         await _unitOfWork.CommitAsync();
+        
         return new ServiceActionResult(true)
         {
             StatusCode = StatusCodes.Status204NoContent
@@ -174,6 +184,9 @@ public class BookingService : IBookingService
         booking.Status = BookingStatus.CancelledByProvider;
         await _bookingRepository.UpdateAsync(booking);
         await _unitOfWork.CommitAsync();
+        
+        _backgroundJobService.ScheduleDelayedJob(() => DeleteBookingMessage(id), TimeSpan.FromDays(30));
+        
         return new ServiceActionResult(true)
         {
             StatusCode = StatusCodes.Status204NoContent
@@ -208,11 +221,13 @@ public class BookingService : IBookingService
         var bookings = userRole switch
         {
             UserRoleConstant.Client => (await _bookingRepository.FindAsync(x =>
-                                           x.IsActive && x.CustomerId.ToString() == userId && x.Status ==BookingStatus.Accepted))
+                                           x.IsActive && x.CustomerId.ToString() == userId 
+                                                      && x.Status == BookingStatus.Accepted))
                                        .Include(x => x.BookingMessages)
                                        ?? throw new UserNotFoundException(userId, nameof(VigigUser.Id)),
             UserRoleConstant.Provider => (await _bookingRepository.FindAsync(x =>
-                                             x.IsActive && x.ProviderService.ProviderId.ToString() == userId && x.Status ==BookingStatus.Accepted))
+                                             x.IsActive && x.ProviderService.ProviderId.ToString() == userId 
+                                                        && x.Status == BookingStatus.Accepted))
                                          .Include(x => x.BookingMessages)
                                          ?? throw new UserNotFoundException(userId, nameof(VigigUser.Id)),
             _ => new List<Booking>().AsQueryable(),
@@ -262,7 +277,9 @@ public class BookingService : IBookingService
         var hasBooking = await EnsureHasBookingAsync(token, id);
         return new ServiceActionResult()
         {
-            Data = (_mapper.ProjectTo<DtoBookChat>(await _bookingRepository.FindAsync(x => x.Id == id)))
+            Data = (_mapper.ProjectTo<DtoBookChat>(await _bookingRepository.FindAsync(x => x.Id == id 
+                    && x.Status == BookingStatus.Accepted
+                    && x.Status == BookingStatus.Completed)))
                 .FirstOrDefault() ?? throw new BookingNotFoundException(id, nameof(Booking.Id))
         };
 
@@ -281,6 +298,7 @@ public class BookingService : IBookingService
         };
         return hasBooking;
     }
+    
     private async Task<Booking> GetBookingForClientAsync(Guid userId, Guid bookingId, string userName)
     {
         var booking = (await _bookingRepository.FindAsync(x =>
@@ -297,6 +315,7 @@ public class BookingService : IBookingService
 
         return booking;
     }
+    
     private async Task<IQueryable<Booking>> GetBookingsByClientAsync(Guid userId, IReadOnlyCollection<string> status)
     {
         if (!status.Any())
@@ -313,5 +332,12 @@ public class BookingService : IBookingService
 
         var bookingStatus =  EnumHelper.GetEnumValuesFromStrings<BookingStatus>(status);
         return await _bookingRepository.FindAsync(x => x.IsActive && x.ProviderService.ProviderId == userId && bookingStatus.Contains(x.Status));
+    }
+    
+    private void DeleteBookingMessage(Guid bookingId)
+    {
+        var messages =   _bookingMessageRepository.Find(x => x.BookingId == bookingId);
+        _bookingMessageRepository.DeleteMany(messages);
+        _unitOfWork.Commit();
     }
 }
