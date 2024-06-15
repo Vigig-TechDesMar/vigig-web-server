@@ -11,9 +11,10 @@ public class ExpirationService : IExpirationService
     private readonly IBannerRepository _bannerRepository;
     private readonly ILeaderBoardRepository _leaderBoardRepository;
     private readonly IVoucherRepository _voucherRepository;
+    private readonly ISubscriptionFeeRepository _subscriptionFeeRepository;
     private readonly IUnitOfWork _unitOfWork;
 
-    public ExpirationService(IEventRepository eventRepository, IUnitOfWork unitOfWork, IPopUpRepository popUpRepository, IBannerRepository bannerRepository, ILeaderBoardRepository leaderBoardRepository, IVoucherRepository voucherRepository)
+    public ExpirationService(IEventRepository eventRepository, IUnitOfWork unitOfWork, IPopUpRepository popUpRepository, IBannerRepository bannerRepository, ILeaderBoardRepository leaderBoardRepository, IVoucherRepository voucherRepository, ISubscriptionFeeRepository subscriptionFeeRepository)
     {
         _eventRepository = eventRepository;
         _unitOfWork = unitOfWork;
@@ -21,6 +22,7 @@ public class ExpirationService : IExpirationService
         _bannerRepository = bannerRepository;
         _leaderBoardRepository = leaderBoardRepository;
         _voucherRepository = voucherRepository;
+        _subscriptionFeeRepository = subscriptionFeeRepository;
     }
     public async Task ValidateEventExpiration()
     {
@@ -30,7 +32,12 @@ public class ExpirationService : IExpirationService
         await ValidatePopUp();
         await ValidateLeaderBoard();
     }
-    
+
+    public Task ValidateSubscriptionFee()
+    {
+        throw new NotImplementedException();
+    }
+
     #region ValidateEvent
     private async Task ValidateEvent()
     {

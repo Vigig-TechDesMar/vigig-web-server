@@ -9,7 +9,7 @@ public partial class SubscriptionPlan
 
     public string? Description { get; set; }
 
-    public int? DurationType { get; set; }
+    public int DurationType { get; set; }
 
     public double? Price { get; set; }
 

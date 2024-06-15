@@ -5,4 +5,5 @@ namespace Vigig.Service.BackgroundJobs.Interfaces;
 public interface IExpirationService
 {
     Task ValidateEventExpiration();
+    Task ValidateSubscriptionFee();
 }
