@@ -240,5 +240,6 @@ public class TransactionService : ITransactionService
         wallet.Balance += Math.Round(transaction.Amount/1000);
         transaction.Status = TransactionStatusConstant.Completed;
         deposit.Status = CashStatus.Success;
+        await _unitOfWork.CommitAsync();
     }
 }
