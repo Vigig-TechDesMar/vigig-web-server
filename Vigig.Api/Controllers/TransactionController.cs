@@ -7,6 +7,7 @@ using Vigig.Service.Constants;
 using Vigig.Service.Interfaces;
 using Vigig.Service.Models.Common;
 using Vigig.Service.Models.PayOS;
+using Vigig.Service.Models.Response;
 
 namespace Vigig.Api.Controllers;
 
@@ -54,9 +55,8 @@ public class TransactionController : BaseApiController
     
     [HttpPost("/payos/returnUrl")]
     [AllowAnonymous]
-    public async Task<IActionResult> ConfirmPayment([FromBody] WebhookType request)
+    public async Task<Response> ConfirmPayment([FromBody] WebhookType request)
     {
-        return await ExecuteServiceLogic(async () =>
-            await _transactionService.ProcessPayOSReturnResult(request)).ConfigureAwait(false);
+        return await _transactionService.ProcessPayOSReturnResult(request);
     }
 }
