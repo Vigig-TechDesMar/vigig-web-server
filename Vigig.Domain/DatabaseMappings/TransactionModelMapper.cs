@@ -1,4 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ValueGeneration;
+using Microsoft.Extensions.Primitives;
 using Vigig.Domain.Entities;
 using Vigig.Domain.Interfaces;
 
@@ -15,7 +17,7 @@ public class TransactionModelMapper : IDatabaseModelMapper
             entity.Property(e => e.Id).ValueGeneratedOnAdd();
             entity.Property(e => e.Amount).HasDefaultValueSql("((0))").IsRequired();
             entity.Property(e => e.CreatedDate).HasColumnType("datetime");
-
+            entity.Property(e => e.ConcurrencyStamp).IsConcurrencyToken().HasValueGenerator<StringValueGenerator>();
             entity.HasOne(d => d.BookingFee).WithMany(p => p.Transactions)
                 .HasForeignKey(d => d.BookingFeeId)
                 .OnDelete(DeleteBehavior.ClientSetNull)

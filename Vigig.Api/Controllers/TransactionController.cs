@@ -1,10 +1,12 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Net.payOS.Types;
 using Vigig.Api.Controllers.Base;
 using Vigig.Service.Constants;
 using Vigig.Service.Interfaces;
 using Vigig.Service.Models.Common;
+using Vigig.Service.Models.PayOS;
 
 namespace Vigig.Api.Controllers;
 
@@ -50,4 +52,11 @@ public class TransactionController : BaseApiController
             await _transactionService.SearchTransaction(request).ConfigureAwait(false)).ConfigureAwait(false);
     }
     
+    [HttpPost("/payos/returnUrl")]
+    [AllowAnonymous]
+    public async Task<IActionResult> ConfirmPayment([FromBody] WebhookType request)
+    {
+        return await ExecuteServiceLogic(async () =>
+            await _transactionService.ProcessPayOSReturnResult(request)).ConfigureAwait(false);
+    }
 }

@@ -1,3 +1,4 @@
+using Net.payOS.Types;
 using Vigig.Common.Attribute;
 using Vigig.Domain.Entities;
 using Vigig.Domain.Entities.BaseEntities;
@@ -19,4 +20,6 @@ public interface ITransactionService
     Task<ServiceActionResult> GetPaginatedResultAsync(BasePaginatedRequest request);
 
     Task ProcessTransactionAsync(CashEntity fee, Wallet wallet);
+
+    Task<ServiceActionResult> ProcessPayOSReturnResult(WebhookType request);
 }

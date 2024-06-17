@@ -6,14 +6,7 @@ namespace Vigig.Service.Models.Request.Fees;
 
 public class CreateSubscriptionFeeRequest
 {
-    [Required]
-    [MinValue(FeeConstant.MinFee)]
-    public double? Amount { get; set; }
-    
-    [Required]
-    public DateTime? CreatedDate { get; set; }
 
-    public Guid ProviderId { get; set; }
-
+    [Required]
     public Guid SubscriptionPlanId { get; set; }
 }
