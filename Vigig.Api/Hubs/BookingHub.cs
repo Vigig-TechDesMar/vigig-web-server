@@ -72,8 +72,8 @@ public class BookingHub : Hub
         
         if (providerConnectionIds is null) return dtoPlacedBooking;
         var providerConnectionId = providerConnectionIds.LastOrDefault();
-        var notifications = await _notificationService.RetrieveProviderNotification(provider.Id);
         if (providerConnectionId is null) return dtoPlacedBooking;
+        var notifications = await _notificationService.RetrieveUserNotification(provider.Id);
         Clients.Client(providerConnectionId)?.SendAsync("ReceiveBooking",dtoPlacedBooking);
         Clients.Client(providerConnectionId)?.SendAsync("ReceiveNotification",notifications);
 
@@ -90,7 +90,9 @@ public class BookingHub : Hub
         if (clientConnectionIds is null) return dtoAcceptedBooking;
         var clientConnectionId = clientConnectionIds.LastOrDefault();
         if (clientConnectionId is null) return dtoAcceptedBooking;
+        var notifications =await _notificationService.RetrieveUserNotification(dtoAcceptedBooking.ClientId);
         Clients.Client(clientConnectionId)?.SendAsync("BookingAccepted", dtoAcceptedBooking);
+        Clients.Client(clientConnectionId)?.SendAsync("ReceiveNotification",notifications);
         return dtoAcceptedBooking;
     }
 
