@@ -80,6 +80,21 @@ public class BookingHub : Hub
         return dtoPlacedBooking;    
     }
 
+    public async Task<DtoAcceptedBooking> AcceptBooking(Guid bookingId)
+    {
+        var accessToken= Context.GetHttpContext()?.Request.Query["access_token"].ToString();
+        var dtoAcceptedBooking = await _bookingService.RetrievedAcceptBookingAsync(bookingId, accessToken);
+
+        _pool.connectionPool.TryGetValue(dtoAcceptedBooking.ClientId.ToString(), out var clientConnectionIds);
+
+        if (clientConnectionIds is null) return dtoAcceptedBooking;
+        var clientConnectionId = clientConnectionIds.LastOrDefault();
+        if (clientConnectionId is null) return dtoAcceptedBooking;
+        Clients.Client(clientConnectionId)?.SendAsync("BookingAccepted", dtoAcceptedBooking);
+        return dtoAcceptedBooking;
+    }
+
+
     private void NotifyProvider(Guid bookingId, string bookerName, string serviceName)
     {
         var notificationRequest = new CreateBookingNotificationRequest()
@@ -91,4 +106,8 @@ public class BookingHub : Hub
         BackgroundJob.Schedule(() => _notificationService.CreateBookingNotification(notificationRequest),TimeSpan.Zero);
     }
 
+    private void NotifyClient(Guid bookingId, Guid clientId)
+    {
+        
+    }
 }
