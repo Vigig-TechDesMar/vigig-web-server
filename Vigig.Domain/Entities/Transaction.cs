@@ -5,7 +5,7 @@ namespace Vigig.Domain.Entities;
 
 public partial class Transaction
 {
-    public Guid Id { get; set; }
+    public int Id { get; set; }
 
     public required double Amount { get; set; }
 

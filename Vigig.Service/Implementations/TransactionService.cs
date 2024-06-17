@@ -50,7 +50,7 @@ public class TransactionService : ITransactionService
         };
     }
 
-    public async Task<ServiceActionResult> GetById(Guid id)
+    public async Task<ServiceActionResult> GetById(int id)
     {
         var transaction = (await _transactionRepository.FindAsync(sc => sc.Id == id)).FirstOrDefault();
         if (transaction is null)

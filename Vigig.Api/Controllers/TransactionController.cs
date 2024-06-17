@@ -34,9 +34,9 @@ public class TransactionController : BaseApiController
             => await _transactionService.GetPaginatedResultAsync(request).ConfigureAwait(false)).ConfigureAwait(false);
     }
     
-    [HttpGet("{id:guid}")]
+    [HttpGet("{id:int}")]
     [AllowAnonymous]
-    public async Task<IActionResult> GetTransactionById(Guid id)
+    public async Task<IActionResult> GetTransactionById(int id)
     {
         return await ExecuteServiceLogic(async () => 
             await _transactionService.GetById(id).ConfigureAwait(false)).ConfigureAwait(false);
