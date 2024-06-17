@@ -80,7 +80,7 @@ public class EventService : IEventService
         await _unitOfWork.CommitAsync();
 
         if (request.EmailUser)
-            await EmailUserAboutNewEvent(request, ev);
+            EmailUserAboutNewEvent(request, ev);
         
         return new ServiceActionResult(true)
         {

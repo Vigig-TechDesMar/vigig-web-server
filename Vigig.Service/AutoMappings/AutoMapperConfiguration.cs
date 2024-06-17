@@ -112,7 +112,7 @@ public static class AutoMapperConfiguration
         //BookingFee
         mapper.CreateMap<CreateBookingFeeRequest, BookingFee>();
         mapper.CreateMap<UpdateBookingFeeRequest, BookingFee>();
-        mapper.CreateMap<BookingFee, DtoSubscriptionFee>();
+        mapper.CreateMap<BookingFee, DtoBookingFee>();
 
         //Deposit
         mapper.CreateMap<CreateDepositRequest, Deposit>();
