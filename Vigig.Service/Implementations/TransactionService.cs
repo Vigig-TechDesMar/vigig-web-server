@@ -202,6 +202,7 @@ public class TransactionService : ITransactionService
             items, _payOsSetting.CancelUrl, _payOsSetting.ReturnUrl);
         
         CreatePaymentResult createPayment = await payOS.createPaymentLink(paymentData);
+        Console.WriteLine("\n *********************************************************** \n");
         Console.WriteLine(createPayment);
     }
 

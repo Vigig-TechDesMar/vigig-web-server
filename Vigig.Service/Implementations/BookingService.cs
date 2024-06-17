@@ -139,6 +139,10 @@ public class BookingService : IBookingService
         var booking = (await _bookingRepository.FindAsync(x => x.Id == id 
                                                                && x.Status == (int) BookingStatus.Pending
                                                                && x.IsActive))
+            .Include(x => x.ProviderService)
+            .ThenInclude(x => x.Provider)
+            .Include(x => x.ProviderService)
+            .ThenInclude(x => x.Service)
             .FirstOrDefault() ?? throw new BuildingNotFoundException(id,nameof(Building.Id));
         booking.Status = BookingStatus.Accepted;
         await _bookingRepository.UpdateAsync(booking);

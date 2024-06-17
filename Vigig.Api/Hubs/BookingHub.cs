@@ -58,7 +58,7 @@ public class BookingHub : Hub
     
     
     // /booking-hub?bookingid=...
-    public async Task<DtoPlacedBooking> PlaceBooking(BookingPlaceRequest request)
+    public async Task<DtoPlacedBooking> PlaceBooking(BookingPlaceRequest request , string redirectUrl)
     {
         var accessToken = Context.GetHttpContext()?.Request.Query["access_token"].ToString();
         var providerService = await _providerServiceService.RetrieveProviderServiceByIdAsync(request.ProviderServiceId);
@@ -68,7 +68,7 @@ public class BookingHub : Hub
         var dtoPlacedBooking = await _bookingService.RetrievedPlaceBookingAsync(accessToken, request);
         _pool.connectionPool.TryGetValue(provider.Id.ToString(), out var providerConnectionIds);
         
-        NotifyProvider(dtoPlacedBooking.Id, request.BookerName, dtoPlacedBooking.ProviderServiceName);
+        NotifyProvider(dtoPlacedBooking.Id, request.BookerName, dtoPlacedBooking.ProviderServiceName, redirectUrl);
         
         if (providerConnectionIds is null) return dtoPlacedBooking;
         var providerConnectionId = providerConnectionIds.LastOrDefault();
@@ -80,13 +80,13 @@ public class BookingHub : Hub
         return dtoPlacedBooking;    
     }
 
-    public async Task<DtoAcceptedBooking> AcceptBooking(Guid bookingId)
+    public async Task<DtoAcceptedBooking> AcceptBooking(Guid bookingId, string redirectUrl)
     {
         var accessToken= Context.GetHttpContext()?.Request.Query["access_token"].ToString();
         var dtoAcceptedBooking = await _bookingService.RetrievedAcceptBookingAsync(bookingId, accessToken);
 
         _pool.connectionPool.TryGetValue(dtoAcceptedBooking.ClientId.ToString(), out var clientConnectionIds);
-
+        NotifyClient(dtoAcceptedBooking.ClientId, dtoAcceptedBooking.ProviderName, dtoAcceptedBooking.ServiceName, redirectUrl);
         if (clientConnectionIds is null) return dtoAcceptedBooking;
         var clientConnectionId = clientConnectionIds.LastOrDefault();
         if (clientConnectionId is null) return dtoAcceptedBooking;
@@ -95,19 +95,20 @@ public class BookingHub : Hub
     }
 
 
-    private void NotifyProvider(Guid bookingId, string bookerName, string serviceName)
+    private void NotifyProvider(Guid bookingId, string bookerName, string serviceName, string redirectUrl)
     {
         var notificationRequest = new CreateBookingNotificationRequest()
         {
             Content = $"{bookerName} vừa đặt dịch vụ {serviceName} của bạn",
             BookingId = bookingId,
-            RedirectUrl = "" //TODO: redirect url
+            RedirectUrl = redirectUrl
         };
         BackgroundJob.Schedule(() => _notificationService.CreateBookingNotification(notificationRequest),TimeSpan.Zero);
     }
 
-    private void NotifyClient(Guid bookingId, Guid clientId)
+    private void NotifyClient(Guid clientId, string providerName, string serviceName, string redirectUrl)
     {
-        
+        var message = $"{providerName} vừa đồng ý dịch vụ {serviceName} của bạn.";
+        BackgroundJob.Schedule(() => _notificationService.CreateNotification(clientId, message, redirectUrl), TimeSpan.Zero);
     }
 }
