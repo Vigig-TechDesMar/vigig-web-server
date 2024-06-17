@@ -23,6 +23,7 @@ public class BookingService : IBookingService
     private readonly IProviderServiceRepository _proServiceRepository;
     private readonly IBookingMessageRepository _bookingMessageRepository;
     private readonly IBackgroundJobService _backgroundJobService;
+    private readonly IBookingFeeService _bookingFeeService;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IJwtService _jwtService;
     private readonly IMapper _mapper;
@@ -35,7 +36,8 @@ public class BookingService : IBookingService
         IProviderServiceRepository proServiceRepository, 
         IVigigUserRepository vigigUserRepository, 
         IBackgroundJobService backgroundJobService, 
-        IBookingMessageRepository bookingMessageRepository)
+        IBookingMessageRepository bookingMessageRepository, 
+        IBookingFeeService bookingFeeService)
     {
         _bookingRepository = bookingRepository;
         _unitOfWork = unitOfWork;
@@ -46,6 +48,7 @@ public class BookingService : IBookingService
         _vigigUserRepository = vigigUserRepository;
         _backgroundJobService = backgroundJobService;
         _bookingMessageRepository = bookingMessageRepository;
+        _bookingFeeService = bookingFeeService;
     }
 
     public async Task<ServiceActionResult> PlaceBookingAsync(string token, BookingPlaceRequest request)
@@ -228,6 +231,10 @@ public class BookingService : IBookingService
         booking.ProviderService.TotalBooking++;
         await _bookingRepository.UpdateAsync(booking);
         await _unitOfWork.CommitAsync();
+        
+        //Generate BookingFee
+        await _bookingFeeService.AddAsyncFromBooking(booking, token);
+
         return new ServiceActionResult(true)
         {
             StatusCode = StatusCodes.Status204NoContent

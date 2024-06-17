@@ -103,7 +103,7 @@ public class BookingFeeService : IBookingFeeService
         
         var bookingFee = new BookingFee
         {
-            Amount = stickerPrice*feePercentage,
+            Amount = Math.Round(stickerPrice*feePercentage/1000),
             CreatedDate = DateTime.Now,
             Status = CashStatus.Pending,
             BookingId = booking.Id,
@@ -113,17 +113,10 @@ public class BookingFeeService : IBookingFeeService
         await _bookingFeeRepository.AddAsync(bookingFee);
         
         // Process the transaction
-        try
-        {
-            await _transactionService.ProcessTransactionAsync(bookingFee,wallet);
-        }
-        catch (Exception ex)
-        {
-            //Log error
-            // subscriptionFee.Status = TransactionStatusConstant.Error;
-        }
+        await _transactionService.ProcessTransactionAsync(bookingFee,wallet);
         
         await _unitOfWork.CommitAsync();
+        
         return new ServiceActionResult(true)
         {
             Data = _mapper.Map<DtoBookingFee>(bookingFee),
@@ -140,6 +133,8 @@ public class BookingFeeService : IBookingFeeService
             throw new BookingNotFoundException(request.BookingId,nameof(Booking.Id));
         
         var bookingFee = _mapper.Map<BookingFee>(request);
+        bookingFee.CreatedDate = DateTime.Now;
+        
         await _bookingFeeRepository.AddAsync(bookingFee);
         await _unitOfWork.CommitAsync();
         return new ServiceActionResult(true)
