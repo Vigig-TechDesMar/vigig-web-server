@@ -5,6 +5,7 @@ using Vigig.Domain.Entities.BaseEntities;
 using Vigig.Domain.Interfaces;
 using Vigig.Service.Models.Common;
 using Vigig.Service.Models.Request.Wallet;
+using Vigig.Service.Models.Response;
 
 namespace Vigig.Service.Interfaces;
 
@@ -21,5 +22,5 @@ public interface ITransactionService
 
     Task ProcessTransactionAsync(CashEntity fee, Wallet wallet);
 
-    Task<ServiceActionResult> ProcessPayOSReturnResult(WebhookType request);
+    Task<Response> ProcessPayOSReturnResult(WebhookType request);
 }
