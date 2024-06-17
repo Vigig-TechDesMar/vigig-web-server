@@ -8,10 +8,7 @@ public class CreateBookingFeeRequest
 {
     [Required]
     [MinValue(FeeConstant.MinFee)]
-    public double? Amount { get; set; }
-    
-    [Required]
-    public DateTime CreatedDate { get; set; }
+    public double Amount { get; set; }
         
     public Guid BookingId { get; set; }
 }
