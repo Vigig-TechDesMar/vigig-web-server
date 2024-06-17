@@ -10,6 +10,6 @@ public interface INotificationService
 {
     Task<ServiceActionResult> GetOwnNotifications();
     Task CreateBookingNotification(CreateBookingNotificationRequest request);
-    Task<IQueryable<DtoNotification>> RetrieveProviderNotification(Guid providerId);
+    Task<IQueryable<DtoNotification>> RetrieveProviderNotification(Guid providerId); 
     Task<ServiceActionResult> CreateNotifications(CreateEventNotificationRequest request, string target);
 }

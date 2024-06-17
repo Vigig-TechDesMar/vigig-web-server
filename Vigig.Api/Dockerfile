@@ -3,6 +3,8 @@ WORKDIR /app
 EXPOSE 80
 EXPOSE 443
 
+ENV TZ=Asia/Bangkok
+
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 WORKDIR /src
 COPY ["Vigig.Api/Vigig.Api.csproj", "Vigig.Api/"]
