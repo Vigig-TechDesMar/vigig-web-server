@@ -17,6 +17,7 @@ using Vigig.Service.Constants;
 using Vigig.Service.Exceptions.NotFound;
 using Vigig.Service.Interfaces;
 using Vigig.Service.Models.Common;
+using Vigig.Service.Models.Response;
 using IWalletRepository = Vigig.DAL.Interfaces.IWalletRepository;
 using Transaction = Vigig.Domain.Entities.Transaction;
 
@@ -189,7 +190,6 @@ public class TransactionService : ITransactionService
         //VALIDATION
         if (transaction.Amount < 0)
             throw new InvalidParameterException("Amount cannot be negative");
-        
         PayOS payOS = new PayOS(_payOsSetting.ClientId, _payOsSetting.ApiKey, _payOsSetting.ChecksumKey); 
         
         //Confirm Webhook
@@ -206,12 +206,20 @@ public class TransactionService : ITransactionService
         Console.WriteLine(createPayment);
     }
 
-    public async Task<ServiceActionResult> ProcessPayOSReturnResult(WebhookType request)
+    public async Task<Response> ProcessPayOSReturnResult(WebhookType request)
     {
         PayOS payOS = new PayOS(_payOsSetting.ClientId, _payOsSetting.ApiKey, _payOsSetting.ChecksumKey); 
 
         WebhookData webhookData = payOS.verifyPaymentWebhookData(request);
-
+        Response returnObject = new Response();
+        if (webhookData.description == "Ma giao dich thu nghiem")
+            return new Response
+            {
+                Error = 0,
+                Data = null,
+                Message = "OK"
+            };
+                
         if (webhookData.code == "00") //Success
         {
             Transaction transaction = (await _transactionRepository.FindAsync(sc=> sc.Id == webhookData.orderCode)).FirstOrDefault()??
@@ -220,10 +228,7 @@ public class TransactionService : ITransactionService
             await UpdateUponSuccessfulDeposit(transaction);
         }
 
-        return new ServiceActionResult(true)
-        {
-    
-        };
+        return new Response();
     }
 
     private async Task UpdateUponSuccessfulDeposit(Transaction transaction)
@@ -241,6 +246,7 @@ public class TransactionService : ITransactionService
         wallet.Balance += Math.Round(transaction.Amount/1000);
         transaction.Status = TransactionStatusConstant.Completed;
         deposit.Status = CashStatus.Success;
+
         await _unitOfWork.CommitAsync();
     }
 }
