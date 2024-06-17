@@ -14,6 +14,7 @@ public class NotificationModelMapper : IDatabaseModelMapper
             entity.Property(e => e.Id).ValueGeneratedOnAdd();
             entity.Property(e => e.Content);
             entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+            entity.Property(e => e.RedirectUrl);
             entity.Property(e => e.IsActive).HasDefaultValueSql("((1))");
 
             entity.HasOne<NotificationType>(e => e.NotificationType)

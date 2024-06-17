@@ -4,6 +4,7 @@ namespace Vigig.Domain.Dtos.Booking;
 
 public class DtoPlacedBooking
 {
+    public Guid Id { get; set; }
     public required string BookerName { get; set; }
     public required string BookerPhone { get; set; }
     public required string Apartment { get; set; }

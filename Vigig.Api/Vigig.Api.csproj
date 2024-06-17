@@ -80,6 +80,8 @@
         <EmbeddedResource Include="Scripts\32.UpdateVoucher.sql" />
         <None Remove="Scripts\33.Update_VigigUser.sql" />
         <EmbeddedResource Include="Scripts\33.Update_VigigUser.sql" />
+        <None Remove="Scripts\34.Update_Notification.sql" />
+        <EmbeddedResource Include="Scripts\34.Update_Notification.sql" />
     </ItemGroup>
 
 </Project>
