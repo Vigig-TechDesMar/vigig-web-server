@@ -1,9 +1,12 @@
 using System.Transactions;
 using AutoMapper;
+using Microsoft.Extensions.Configuration;
 using Net.payOS;
 using Net.payOS.Types;
 using Org.BouncyCastle.Security;
+using Vigig.Common.Exceptions;
 using Vigig.Common.Helpers;
+using Vigig.Common.Settings;
 using Vigig.DAL.Interfaces;
 using Vigig.Domain.Dtos.Wallet;
 using Vigig.Domain.Entities;
@@ -14,7 +17,6 @@ using Vigig.Service.Constants;
 using Vigig.Service.Exceptions.NotFound;
 using Vigig.Service.Interfaces;
 using Vigig.Service.Models.Common;
-using Vigig.Service.Models.Request.Wallet;
 using IWalletRepository = Vigig.DAL.Interfaces.IWalletRepository;
 using Transaction = Vigig.Domain.Entities.Transaction;
 
@@ -29,8 +31,10 @@ public class TransactionService : ITransactionService
     private readonly IWalletRepository _walletRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
+    private readonly PayOSSetting _payOsSetting;
+    private readonly IConfiguration _configuration;
 
-    public TransactionService(ITransactionRepository transactionRepository, IBookingFeeRepository bookingFeeRepository, ISubscriptionFeeRepository subscriptionFeeRepository, IDepositRepository depositRepository, IWalletRepository walletRepository, IUnitOfWork unitOfWork, IMapper mapper)
+    public TransactionService(ITransactionRepository transactionRepository, IBookingFeeRepository bookingFeeRepository, ISubscriptionFeeRepository subscriptionFeeRepository, IDepositRepository depositRepository, IWalletRepository walletRepository, IUnitOfWork unitOfWork, IMapper mapper, IConfiguration configuration)
     {
         _transactionRepository = transactionRepository;
         _bookingFeeRepository = bookingFeeRepository;
@@ -39,6 +43,8 @@ public class TransactionService : ITransactionService
         _walletRepository = walletRepository;
         _unitOfWork = unitOfWork;
         _mapper = mapper;
+        _configuration = configuration;
+        _payOsSetting = _configuration.GetSection(nameof(PayOSSetting)).Get<PayOSSetting>() ?? throw new MissingPayOSSetting();
     }
 
     public async Task<ServiceActionResult> GetAllAsync()
@@ -95,10 +101,9 @@ public class TransactionService : ITransactionService
         var transaction = new Transaction
         {
             Amount = fee.Amount,
-            CreatedDate = DateTime.UtcNow,
+            CreatedDate = DateTime.Now,
             Description = GetTransactionDescription(feeType),
             Status = TransactionStatusConstant.Pending,
-            Wallet = wallet,
             WalletId = wallet.Id
         };
 
@@ -106,20 +111,8 @@ public class TransactionService : ITransactionService
 
         await _transactionRepository.AddAsync(transaction);
         await _unitOfWork.CommitAsync();
-
-        try
-        {
-            Console.WriteLine("Executing PerformTransactionAsync");
-            
-            await PerformTransactionAsync(transaction, fee);
-        }
-        catch (Exception ex)
-        {
-            fee.Status = CashStatus.Fail;
-            // Log the exception (consider using a logging framework)
-            // Example: _logger.LogError(ex, "Error performing transaction");
-            throw;
-        }
+        
+        await PerformTransactionAsync(transaction, fee);
     }
 
     private void AssignFeeIdToTransaction(CashEntity fee, Transaction transaction)
@@ -163,28 +156,28 @@ public class TransactionService : ITransactionService
 
         if (fee.GetType().Name == CashTypeConstant.Deposit)
         {
-            Console.WriteLine("Executing PayOSProcess for deposit");
-            
             //PayOS Business Logic
             await PayOSProcess(transaction);
-            
-            //Update the Wallet
-            wallet.Balance += transaction.Amount;
-            transaction.Status = TransactionStatusConstant.Completed;
-            fee.Status = CashStatus.Success;
         }
         else
         {
-            if (wallet.Balance < transaction.Amount)
+            try
             {
+                if (wallet.Balance < transaction.Amount)
+                    throw new InvalidOperationException("Insufficient balance.");
+                
+                wallet.Balance -= transaction.Amount;
+                transaction.Status = TransactionStatusConstant.Completed;
+                fee.Status = CashStatus.Success;
+            }
+            catch (InvalidOperationException e)
+            {
+               
                 transaction.Status = TransactionStatusConstant.Failed;
                 fee.Status = CashStatus.Fail;
-                throw new InvalidOperationException("Insufficient balance.");
+                await _unitOfWork.CommitAsync();
+                throw e;
             }
-            
-            wallet.Balance -= transaction.Amount;
-            transaction.Status = TransactionStatusConstant.Completed;
-            fee.Status = CashStatus.Success;
         }
 
         await _walletRepository.UpdateAsync(wallet);
@@ -193,36 +186,59 @@ public class TransactionService : ITransactionService
 
     private async Task PayOSProcess(Transaction transaction)
     {
-        Console.WriteLine("Entered PayOSProcess");
-        
         //VALIDATION
         if (transaction.Amount < 0)
             throw new InvalidParameterException("Amount cannot be negative");
         
-        const string clientId = "23209feb-3f68-4c93-9d2d-8b43957b210f";
-        const string apiKey = "ad1f123e-10cb-4ebd-b478-6a583a4ac095";
-        const string checksumKey = "5fde396e4e45303c1fee7781b6ba36bf22e5a96979b9a5b1bf76dc1bc75c1980";
-        const string cancelUrl = "https://localhost:3002";
-        const string returnUrl = "https://localhost:3003";
+        PayOS payOS = new PayOS(_payOsSetting.ClientId, _payOsSetting.ApiKey, _payOsSetting.ChecksumKey); 
         
-        Console.WriteLine("Prepare payos");
-        
-        PayOS payOS = new PayOS(clientId, apiKey, checksumKey);
-        
-        Console.WriteLine("Payos object: " + payOS);
-        
+        //Confirm Webhook
+        await payOS.confirmWebhook(_payOsSetting.Webhook);
+            
         ItemData item = new ItemData("Vigig Wallet Deposition", 1, Convert.ToInt32(transaction.Amount));
-        Console.WriteLine("Line 215");
         List<ItemData> items = new List<ItemData>();
         items.Add(item);
-        Console.WriteLine("Line 218");
         PaymentData paymentData = new PaymentData(Convert.ToInt32(transaction.Id), Convert.ToInt32(transaction.Amount), "Nap vi Vigig",
-            items, cancelUrl, returnUrl);
-
-        Console.WriteLine("paymentData: " + paymentData);
+            items, _payOsSetting.CancelUrl, _payOsSetting.ReturnUrl);
         
         CreatePaymentResult createPayment = await payOS.createPaymentLink(paymentData);
+        Console.WriteLine(createPayment);
+    }
+
+    public async Task<ServiceActionResult> ProcessPayOSReturnResult(WebhookType request)
+    {
+        PayOS payOS = new PayOS(_payOsSetting.ClientId, _payOsSetting.ApiKey, _payOsSetting.ChecksumKey); 
+
+        WebhookData webhookData = payOS.verifyPaymentWebhookData(request);
+
+        if (webhookData.code == "00") //Success
+        {
+            Transaction transaction = (await _transactionRepository.FindAsync(sc=> sc.Id == webhookData.orderCode)).FirstOrDefault()??
+                                      throw new TransactionNotFoundException(webhookData.orderCode.ToString(),nameof(Transaction));
+
+            await UpdateUponSuccessfulDeposit(transaction);
+        }
+
+        return new ServiceActionResult(true)
+        {
+    
+        };
+    }
+
+    private async Task UpdateUponSuccessfulDeposit(Transaction transaction)
+    {
+        if (transaction.DepositId is null) return;
         
-        Console.WriteLine("createPayment: " + createPayment);
+        //Deposit
+        var deposit = (await _depositRepository.FindAsync(sc => sc.Id == transaction.DepositId)).FirstOrDefault() ??
+                      throw new DepositNotFoundException(transaction.DepositId, nameof(Deposit));
+
+        var wallet = (await _walletRepository.FindAsync(sc => sc.Id == transaction.WalletId)).FirstOrDefault() ??
+                     throw new WalletNotFoundException(transaction.WalletId, nameof(Wallet));
+        
+        //Update the Wallet
+        wallet.Balance += Math.Round(transaction.Amount/1000);
+        transaction.Status = TransactionStatusConstant.Completed;
+        deposit.Status = CashStatus.Success;
     }
 }

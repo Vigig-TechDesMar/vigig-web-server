@@ -27,6 +27,6 @@ public partial class Transaction
 
     public virtual BookingFee? BookingFee { get; set; } 
     public virtual Deposit? Deposit { get; set; } 
-    public virtual SubscriptionFee? SubscriptionFee { get; set; } 
-    public virtual required Wallet Wallet { get; set; } 
+    public virtual SubscriptionFee? SubscriptionFee { get; set; }
+    public virtual Wallet Wallet { get; set; } = null!;
 }

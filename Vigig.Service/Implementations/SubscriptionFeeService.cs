@@ -6,6 +6,7 @@ using Vigig.Common.Helpers;
 using Vigig.DAL.Interfaces;
 using Vigig.Domain.Dtos.Fees;
 using Vigig.Domain.Entities;
+using Vigig.Domain.Enums;
 using Vigig.Service.Constants;
 using Vigig.Service.Exceptions.NotFound;
 using Vigig.Service.Interfaces;
@@ -102,21 +103,18 @@ public class SubscriptionFeeService : ISubscriptionFeeService
         
         //Get the wallet
         var wallet = provider.Wallets.FirstOrDefault() ?? throw new WalletNotFoundException(userId, nameof(userId));
-        
         var subscriptionFee = _mapper.Map<SubscriptionFee>(request);
-        // subscriptionFee.Status = TransactionStatusConstant.Pending;
+        
+        var price = subscriptionPlan.Price ?? 100000;
+        subscriptionFee.Status = CashStatus.Pending;
+        subscriptionFee.Amount = Math.Round(price/1000);
+        subscriptionFee.CreatedDate = DateTime.Now;
+        subscriptionFee.ProviderId = Guid.Parse(userId);
+        
         await _subscriptionFeeRepository.AddAsync(subscriptionFee);
         
         // Process the transaction
-        try
-        {
-            await _transactionService.ProcessTransactionAsync(subscriptionFee,wallet);
-        }
-        catch (Exception ex)
-        {
-            //Log error
-            // subscriptionFee.Status = TransactionStatusConstant.Error;
-        }
+        await _transactionService.ProcessTransactionAsync(subscriptionFee, wallet);
 
         await _unitOfWork.CommitAsync();
         

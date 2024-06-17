@@ -12,6 +12,8 @@ public static class ExceptionMessage
 
     public const string MissingAzureConfiguration = "Can not specified azure configuration.";
     
+    public const string MissingPayOSConfiguration = "Can not find the PayOS settings.";
+    
     
     public static class AuthenticationMessage
     { 
