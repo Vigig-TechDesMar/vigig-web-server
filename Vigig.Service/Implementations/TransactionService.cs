@@ -109,6 +109,8 @@ public class TransactionService : ITransactionService
 
         try
         {
+            Console.WriteLine("Executing PerformTransactionAsync");
+            
             await PerformTransactionAsync(transaction, fee);
         }
         catch (Exception ex)
@@ -161,6 +163,8 @@ public class TransactionService : ITransactionService
 
         if (fee.GetType().Name == CashTypeConstant.Deposit)
         {
+            Console.WriteLine("Executing PayOSProcess for deposit");
+            
             //PayOS Business Logic
             await PayOSProcess(transaction);
             
@@ -177,7 +181,7 @@ public class TransactionService : ITransactionService
                 fee.Status = CashStatus.Fail;
                 throw new InvalidOperationException("Insufficient balance.");
             }
-
+            
             wallet.Balance -= transaction.Amount;
             transaction.Status = TransactionStatusConstant.Completed;
             fee.Status = CashStatus.Success;
@@ -189,6 +193,8 @@ public class TransactionService : ITransactionService
 
     private async Task PayOSProcess(Transaction transaction)
     {
+        Console.WriteLine("Entered PayOSProcess");
+        
         //VALIDATION
         if (transaction.Amount < 0)
             throw new InvalidParameterException("Amount cannot be negative");
@@ -197,18 +203,26 @@ public class TransactionService : ITransactionService
         const string apiKey = "ad1f123e-10cb-4ebd-b478-6a583a4ac095";
         const string checksumKey = "5fde396e4e45303c1fee7781b6ba36bf22e5a96979b9a5b1bf76dc1bc75c1980";
         const string cancelUrl = "https://localhost:3002";
-        const string returnUrl = "https://localhost:3002";
+        const string returnUrl = "https://localhost:3003";
+        
+        Console.WriteLine("Prepare payos");
         
         PayOS payOS = new PayOS(clientId, apiKey, checksumKey);
         
+        Console.WriteLine("Payos object: " + payOS);
+        
         ItemData item = new ItemData("Vigig Wallet Deposition", 1, Convert.ToInt32(transaction.Amount));
+        Console.WriteLine("Line 215");
         List<ItemData> items = new List<ItemData>();
         items.Add(item);
-    
+        Console.WriteLine("Line 218");
         PaymentData paymentData = new PaymentData(Convert.ToInt32(transaction.Id), Convert.ToInt32(transaction.Amount), "Nap vi Vigig",
             items, cancelUrl, returnUrl);
 
+        Console.WriteLine("paymentData: " + paymentData);
+        
         CreatePaymentResult createPayment = await payOS.createPaymentLink(paymentData);
-        Console.WriteLine(createPayment);
+        
+        Console.WriteLine("createPayment: " + createPayment);
     }
 }

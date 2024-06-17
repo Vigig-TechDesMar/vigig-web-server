@@ -28,7 +28,7 @@ public class WalletService : IWalletService
 
     public async Task<ServiceActionResult> GetAllAsync()
     {
-        var wallets = _mapper.ProjectTo<Wallet>(await _walletRepository.GetAllAsync());
+        var wallets = _mapper.ProjectTo<DtoWallet>(await _walletRepository.GetAllAsync());
         return new ServiceActionResult(true)
         {
             Data = wallets
@@ -77,6 +77,7 @@ public class WalletService : IWalletService
         if (!await _vigigUserRepository.ExistsAsync(sc => sc.Id == request.ProviderId && sc.IsActive))
             throw new UserNotFoundException(request.ProviderId,nameof(VigigUser.Id));
         var wallet = _mapper.Map<Wallet>(request);
+        wallet.CreatedDate = DateTime.Now;
         await _walletRepository.AddAsync(wallet);
         await _unitOfWork.CommitAsync();
         return new ServiceActionResult(true)

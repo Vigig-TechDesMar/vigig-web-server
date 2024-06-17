@@ -37,7 +37,7 @@ public class DepositService : IDepositService
 
     public async Task<ServiceActionResult> GetAllAsync()
     {
-        var deposits = _mapper.ProjectTo<Deposit>(await _depositRepository.GetAllAsync());
+        var deposits = _mapper.ProjectTo<DtoDeposit>(await _depositRepository.GetAllAsync());
         return new ServiceActionResult(true)
         {
             Data = deposits
@@ -86,16 +86,24 @@ public class DepositService : IDepositService
         var provider = (await _vigigUserRepository.FindAsync(x => x.IsActive && x.Id.ToString() == userId))
             .Include(x => x.Wallets)
             .FirstOrDefault() ?? throw new UserNotFoundException(userId,nameof(VigigUser.Id));
-
+        
+        Console.WriteLine(userId + "user: line 90");
+        
         if (_jwtService.GetAuthModel(token).Role == UserRoleConstant.Client)
             throw new UnauthorizedAccessException("Customers are not allowed!");
 
         //Get the wallet
         var wallet = provider.Wallets.FirstOrDefault() ?? throw new WalletNotFoundException(userId, nameof(userId));
 
-        var deposit = _mapper.Map<Deposit>(request); 
+        Console.WriteLine(wallet.Id + "wallet: line 98");
+        
+        var deposit = _mapper.Map<Deposit>(request);
+            deposit.ProviderId = new Guid(userId);
+            deposit.CreatedDate = DateTime.Now;
             deposit.Status = CashStatus.Pending;
         await _depositRepository.AddAsync(deposit);
+        
+        Console.WriteLine(deposit.Id + "deposit: line 106");
         
         // Process the transaction
         try
@@ -106,6 +114,7 @@ public class DepositService : IDepositService
         {
             //Log error
             // subscriptionFee.Status = TransactionStatusConstant.Error;
+            Console.Write("Error processing the deposit");
         }
         
         await _unitOfWork.CommitAsync();
