@@ -8,6 +8,8 @@ public class Notification : BaseEntity<Guid>
     public DateTime CreatedAt { get; set; }
     public bool IsActive { get; set; } = true;
     
+    public string? RedirectUrl { get; set; }
+    
     public Guid NotificationTypeId { get; set; }
     public Guid? UserId { get; set; }
 

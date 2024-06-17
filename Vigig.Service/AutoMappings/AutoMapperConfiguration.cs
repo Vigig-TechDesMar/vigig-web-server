@@ -7,6 +7,7 @@ using Vigig.Domain.Dtos.Building;
 using Vigig.Domain.Dtos.Complaint;
 using Vigig.Domain.Dtos.Event;
 using Vigig.Domain.Dtos.Fees;
+using Vigig.Domain.Dtos.Notification;
 using Vigig.Domain.Dtos.Service;
 using Vigig.Domain.Dtos.SubscriptionPlan;
 using Vigig.Domain.Dtos.Voucher;
@@ -45,6 +46,7 @@ public static class AutoMapperConfiguration
         CreateVoucherMaps(mapper);
         CreateVigigUserMaps(mapper);
         CreateBookingMaps(mapper);
+        CreateNotificationMaps(mapper);
     }
 
     public static void CreateUserMaps(IMapperConfigurationExpression mapper)
@@ -243,5 +245,10 @@ public static class AutoMapperConfiguration
             });
         mapper.CreateMap<BookingMessage, DtoBookingMessage>() 
             .ForMember(dto => dto.SenderName, opt => opt.MapFrom(x => x.SenderName));
+    }
+
+    public static void CreateNotificationMaps(IMapperConfigurationExpression mapper)
+    {
+        mapper.CreateMap<Notification, DtoNotification>();
     }
 }
