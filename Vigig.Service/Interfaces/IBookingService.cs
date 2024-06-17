@@ -13,6 +13,8 @@ public interface IBookingService
 
     Task<ServiceActionResult> AcceptBookingAsync(Guid id, string token);
 
+    Task<DtoAcceptedBooking> RetrievedAcceptBookingAsync(Guid id, string token);
+
     Task<ServiceActionResult> DeclineBookingAsync(Guid id, string token);
 
     Task<ServiceActionResult> CancelBookingByClientAsync(Guid id, string token);
@@ -28,4 +30,5 @@ public interface IBookingService
     Task<ServiceActionResult> LoadAllBookingsAsync(string token, IReadOnlyCollection<string> status);
 
     Task<ServiceActionResult> LoadOwnChatBookingDetailAsync(Guid id, string token);
+    
 }

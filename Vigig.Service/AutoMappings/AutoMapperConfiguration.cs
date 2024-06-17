@@ -245,6 +245,12 @@ public static class AutoMapperConfiguration
             });
         mapper.CreateMap<BookingMessage, DtoBookingMessage>() 
             .ForMember(dto => dto.SenderName, opt => opt.MapFrom(x => x.SenderName));
+        mapper.CreateMap<Booking,DtoAcceptedBooking>()
+            .ForMember(dto => dto.ClientId, opt => opt.MapFrom(x => x.CustomerId))
+            .ForMember(dto => dto.IsCancellable, opt => opt.MapFrom(x => x.Status == BookingStatus.Pending))
+            .ForMember(dto => dto.Status, opt => opt.MapFrom(x => EnumHelper.TranslateEnum(x.Status)))
+            .ForMember(dto => dto.ProviderName, opt => opt.MapFrom(x => x.ProviderService.Provider.UserName))
+            .ForMember(dto => dto.ServiceName, opt => opt.MapFrom(x => x.ProviderService.Service.ServiceName));
     }
 
     public static void CreateNotificationMaps(IMapperConfigurationExpression mapper)

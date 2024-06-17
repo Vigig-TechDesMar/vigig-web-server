@@ -60,6 +60,23 @@ public class NotificationService : INotificationService
         return _mapper.ProjectTo<DtoNotification>(notifications);
     }
 
+    public async Task CreateNotification(Guid userId, string content, string redirectUrl)
+    {
+        var notificationType =
+            (await _notificationTypeRepository.FindAsync(x => x.Name == NotificationTypeConstants.BookingNotification))
+            .FirstOrDefault() ?? throw new NotificationTypeNotFoundException(NotificationTypeConstants.BookingNotification, nameof(NotificationType.Name));
+        var notification = new Notification()
+        {
+            Content = content,
+            UserId = userId,
+            CreatedAt = DateTime.Now,
+            NotificationTypeId = notificationType.Id,
+            RedirectUrl = redirectUrl
+        };
+        await _notificationRepository.AddAsync(notification);
+        await _unitOfWork.CommitAsync();
+    }
+
     public Task<ServiceActionResult> CreateNotifications(CreateEventNotificationRequest request, string target)
     {
         throw new NotImplementedException();
