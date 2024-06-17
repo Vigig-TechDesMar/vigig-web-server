@@ -7,4 +7,5 @@ public static class UserRoleConstant
     public const string Client = nameof(Client);
     public const string Staff = nameof(Staff);
     public const string InternalUser = Admin + "," + Staff;
+    public const string NonClient = Admin + "," + Staff + "," + Provider;
 }

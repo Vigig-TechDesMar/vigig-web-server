@@ -8,5 +8,7 @@ public class CreateComplaintRequest
 
     [Required]
     public Guid ComplaintTypeId { get; set; }
-    
+
+    [Required] public string Content { get; set; } = string.Empty;
+
 }

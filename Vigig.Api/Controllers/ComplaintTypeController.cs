@@ -20,7 +20,7 @@ public class ComplaintTypeController : BaseApiController
     }
 
     [HttpGet("all")]
-    [Authorize(Roles = UserRoleConstant.InternalUser)]
+    [AllowAnonymous]
     public async Task<IActionResult> GetAllComplaintTypes()
     {
         return await ExecuteServiceLogic(async () =>
@@ -36,7 +36,7 @@ public class ComplaintTypeController : BaseApiController
     }
     
     [HttpGet("{id:guid}")]
-    [AllowAnonymous]
+    [Authorize(Roles = UserRoleConstant.InternalUser)]
     public async Task<IActionResult> GetComplaintTypeById(Guid id)
     {
         return await ExecuteServiceLogic(async () => 

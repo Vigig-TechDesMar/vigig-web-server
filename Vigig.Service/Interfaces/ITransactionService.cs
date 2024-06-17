@@ -12,7 +12,7 @@ public interface ITransactionService
 {
     Task<ServiceActionResult> GetAllAsync();
 
-    Task<ServiceActionResult> GetById(Guid id);
+    Task<ServiceActionResult> GetById(int id);
 
     Task<ServiceActionResult> SearchTransaction(SearchUsingGet request);
     

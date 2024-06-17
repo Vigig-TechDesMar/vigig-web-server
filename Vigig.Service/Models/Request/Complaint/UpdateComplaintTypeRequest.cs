@@ -4,8 +4,8 @@ namespace Vigig.Service.Models.Request.Complaint;
 
 public class UpdateComplaintTypeRequest
 {
-    public Guid Id;
-    
+    public Guid Id { get; set; }
+
     [Required]
     public string Name { get; set; } = null!;
     

@@ -28,7 +28,7 @@ public class ComplaintController : BaseApiController
     }
     
     [HttpGet("{id:guid}")]
-    [AllowAnonymous]
+    [Authorize(Roles = UserRoleConstant.InternalUser)]
     public async Task<IActionResult> GetComplaintById(Guid id)
     {
         return await ExecuteServiceLogic(async () => 

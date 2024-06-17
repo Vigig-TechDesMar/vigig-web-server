@@ -59,7 +59,7 @@ public class DepositController : BaseApiController
     }
     
     [HttpPost]
-    [Authorize(Roles = UserRoleConstant.InternalUser)]
+    [Authorize(Roles = UserRoleConstant.NonClient)]
     public async Task<IActionResult> AddDeposit(CreateDepositRequest  request)
     {
         return await ExecuteServiceLogic(async () 
