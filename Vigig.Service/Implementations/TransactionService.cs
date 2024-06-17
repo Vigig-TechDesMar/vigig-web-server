@@ -208,22 +208,26 @@ public class TransactionService : ITransactionService
 
     public async Task<Response> ProcessPayOSReturnResult(WebhookType request)
     {
+        Console.WriteLine("\n *************************Prepare Return Process********************************** \n");
         PayOS payOS = new PayOS(_payOsSetting.ClientId, _payOsSetting.ApiKey, _payOsSetting.ChecksumKey); 
 
         WebhookData webhookData = payOS.verifyPaymentWebhookData(request);
-        Response returnObject = new Response();
-        if (webhookData.description == "Ma giao dich thu nghiem")
+        
+        if (webhookData.description == "Ma giao dich thu nghiem" || webhookData.description == "VQRIO123")
+        {
             return new Response
             {
                 Error = 0,
                 Data = null,
                 Message = "OK"
             };
+        }
                 
         if (webhookData.code == "00") //Success
         {
+            Console.WriteLine("\n ************************Successful Transaction*********************************** \n");
             Transaction transaction = (await _transactionRepository.FindAsync(sc=> sc.Id == webhookData.orderCode)).FirstOrDefault()??
-                                      throw new TransactionNotFoundException(webhookData.orderCode.ToString(),nameof(Transaction));
+                                      throw new TransactionNotFoundException(webhookData.orderCode.ToString(),nameof(Transaction.Id));
 
             await UpdateUponSuccessfulDeposit(transaction);
         }
@@ -235,12 +239,14 @@ public class TransactionService : ITransactionService
     {
         if (transaction.DepositId is null) return;
         
+        Console.WriteLine("\n ************************Update Wallet and Fee*********************************** \n");
+        
         //Deposit
         var deposit = (await _depositRepository.FindAsync(sc => sc.Id == transaction.DepositId)).FirstOrDefault() ??
-                      throw new DepositNotFoundException(transaction.DepositId, nameof(Deposit));
+                      throw new DepositNotFoundException(transaction.DepositId, nameof(Deposit.Id));
 
         var wallet = (await _walletRepository.FindAsync(sc => sc.Id == transaction.WalletId)).FirstOrDefault() ??
-                     throw new WalletNotFoundException(transaction.WalletId, nameof(Wallet));
+                     throw new WalletNotFoundException(transaction.WalletId, nameof(Wallet.Id));
         
         //Update the Wallet
         wallet.Balance += Math.Round(transaction.Amount/1000);
@@ -248,5 +254,6 @@ public class TransactionService : ITransactionService
         deposit.Status = CashStatus.Success;
 
         await _unitOfWork.CommitAsync();
+        Console.WriteLine("\n ***********************Complete Update Wallet & Fee************************************ \n");
     }
 }
