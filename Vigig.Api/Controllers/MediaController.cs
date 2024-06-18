@@ -13,8 +13,9 @@ public class MediaController : BaseApiController
     }
 
     [HttpPost]
-    public async Task UploadFile(IFormFile file)
+    public async Task<IActionResult> UploadFile(IFormFile file)
     {
-        await _mediaService.UploadFile(file);
+        var url = await _mediaService.UploadFile(file);
+        return Ok(url);
     }
 }

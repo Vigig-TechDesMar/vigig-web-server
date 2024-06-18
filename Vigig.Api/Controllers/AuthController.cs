@@ -9,9 +9,11 @@ namespace Vigig.Api.Controllers;
 public class AuthController : BaseApiController
 {
     private readonly IAuthService _authService;
-    public AuthController(IAuthService authService)
+    private readonly IOauthService _oauthService;
+    public AuthController(IAuthService authService, IOauthService oauthService)
     {
         _authService = authService;
+        _oauthService = oauthService;
     }
     
     [HttpPost("register")]
@@ -36,5 +38,12 @@ public class AuthController : BaseApiController
         return await ExecuteServiceLogic(
             async()=> await _authService.RefreshTokenAsync(request).ConfigureAwait(false)
         ).ConfigureAwait(false);
+    }
+
+    [HttpPost("google-oauth")]
+    public async Task<IActionResult> GoogleLoginAsync(GoogleAuthRequest request)
+    {
+        return await ExecuteServiceLogic(
+            async () => await _oauthService.LoginAsync(request)).ConfigureAwait(false);
     }
 }

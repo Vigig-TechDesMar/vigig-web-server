@@ -3,6 +3,8 @@ using System.Reflection;
 using System.Text;
 using AutoMapper;
 using Hangfire;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -148,6 +150,21 @@ public static class ServiceCollectionExtension
             .UseSqlServerStorage(configuration.GetConnectionString("HangfireConnection")));
         //server
         services.AddHangfireServer();
+        return services;
+    }
+    public static IServiceCollection AddGgAuthentication(this IServiceCollection services, IConfiguration configuration)
+    {
+        var googleSettings = configuration.GetSection(nameof(GoogleSetting)).Get<GoogleSetting>() ?? throw new MissingGoogleConfiguration();
+        services.AddAuthentication(options =>
+            {
+                options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
+            }).AddCookie()
+            .AddGoogle(GoogleDefaults.AuthenticationScheme, options =>
+            {
+                options.ClientId = googleSettings.ClientId;
+                options.ClientSecret = googleSettings.ClientSecret;
+            }); 
         return services;
     }
 }
