@@ -9,8 +9,8 @@ namespace Vigig.Api.Controllers;
 public class AuthController : BaseApiController
 {
     private readonly IAuthService _authService;
-    private readonly IOauthService _oauthService;
-    public AuthController(IAuthService authService, IOauthService oauthService)
+    private readonly IGoogleOauthService _oauthService;
+    public AuthController(IAuthService authService, IGoogleOauthService oauthService)
     {
         _authService = authService;
         _oauthService = oauthService;

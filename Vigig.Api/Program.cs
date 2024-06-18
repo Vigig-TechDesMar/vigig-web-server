@@ -29,6 +29,7 @@ builder.Services.AddCustomSwagger(builder.Configuration);
 builder.Services.AddJwtAuthentication(builder.Configuration);
 builder.Services.AddCorsPolicy(builder.Configuration);
 builder.Services.RegisterService();
+builder.Services.AddGgAuthentication(builder.Configuration);
 builder.Services.AddHangfire(builder.Configuration);
 builder.Services.AddSignalR();
 builder.Services.AddSingleton<BookingConnectionPool>();
