@@ -84,6 +84,9 @@
         <EmbeddedResource Include="Scripts\34.Update_Notification.sql" />
         <None Remove="Scripts\35.Update_Transaction.sql" />
         <EmbeddedResource Include="Scripts\35.Update_Transaction.sql" />
+        <None Remove="Scripts\36.Update_Voucher.sql" />
+        <EmbeddedResource Include="Scripts\36.Update_Voucher.sql" />
+        <None Remove="Scripts\37.Update_Voucher.sql" />
     </ItemGroup>
 
 </Project>

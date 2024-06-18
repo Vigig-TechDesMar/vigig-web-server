@@ -4,17 +4,22 @@ using Vigig.Service.Attributes;
 namespace Vigig.Service.Models.Request.Voucher;
 
 public class CreateVoucherRequest
-{
+{ 
+    [Required]
+    public required string VoucherTitle { get; set; }
+    
+    public string? IconUrl { get; set; }
+    
+    public int? Amount { get; set; }
+    
+    public int? MaxAmount { get; set; }
+    
     [Required]
     public required string Content { get; set; }
     
     public float Percentage { get; set; }
     
     public uint Limit { get; set; }
-    
-    [Required]
-    [MinValue(1)]
-    public uint Quantity { get; set; }
     
     [Required]
     public DateTime StartDate { get; set; }

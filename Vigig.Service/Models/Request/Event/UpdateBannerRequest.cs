@@ -4,7 +4,7 @@ namespace Vigig.Service.Models.Request.Event;
 
 public class UpdateBannerRequest
 {
-    public Guid Id;
+    public Guid Id { get; set; }
 
     [Required]
     public required string AltText { get; set; }

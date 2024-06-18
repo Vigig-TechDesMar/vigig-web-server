@@ -10,9 +10,9 @@ public class CreateSubscriptionPlanRequest
 
     [Required]
     [MinValue(1)]
-    public double? DurationType { get; set; }
+    public double DurationType { get; set; }
 
     [Required]
     [MinValue(0)]
-    public double? Price { get; set; }
+    public double Price { get; set; }
 }

@@ -51,6 +51,14 @@ public class BannerController : BaseApiController
             await _bannerService.SearchBanner(request).ConfigureAwait(false)).ConfigureAwait(false);
     }
     
+    [HttpGet("latest")]
+    [AllowAnonymous]
+    public async Task<IActionResult> FindLatest()
+    {
+        return await ExecuteServiceLogic(async () => 
+            await _bannerService.GetActiveBanner().ConfigureAwait(false)).ConfigureAwait(false);
+    }
+    
     [HttpPost]
     [Authorize(Roles = UserRoleConstant.InternalUser)]
     public async Task<IActionResult> AddBanner(CreateBannerRequest  request)
