@@ -21,7 +21,7 @@ public class UpdateVoucherRequest
     
     public float Percentage { get; set; }
     
-    public uint Limit { get; set; }
+    public int Limit { get; set; }
     
     [Required]
     public DateTime StartDate { get; set; }

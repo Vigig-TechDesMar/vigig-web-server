@@ -6,11 +6,11 @@ public class DtoVoucher
     
     public string Content { get; set; } = null!;
     
-    public float Percentage { get; set; }
+    public double Percentage { get; set; }
     
-    public uint Limit { get; set; }
+    public int Limit { get; set; }
     
-    public uint Quantity { get; set; }
+    public int Quantity { get; set; }
     
     public DateTime StartDate { get; set; }
     
