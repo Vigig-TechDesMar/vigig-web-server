@@ -66,17 +66,14 @@ public class BookingHub : Hub
         var provider = await _vigigUserRepository.GetAsync(x => x.Id == providerService.ProviderId)
                        ?? throw new UserNotFoundException(providerService.ProviderId,nameof(ProviderService.Id));
         var dtoPlacedBooking = await _bookingService.RetrievedPlaceBookingAsync(accessToken, request);
-        _pool.connectionPool.TryGetValue(provider.Id.ToString(), out var providerConnectionIds);
-        
         NotifyProvider(dtoPlacedBooking.Id, request.BookerName, dtoPlacedBooking.ProviderServiceName, redirectUrl);
         
+        _pool.connectionPool.TryGetValue(provider.Id.ToString(), out var providerConnectionIds);
         if (providerConnectionIds is null) return dtoPlacedBooking;
         var providerConnectionId = providerConnectionIds.LastOrDefault();
         if (providerConnectionId is null) return dtoPlacedBooking;
         var notifications = await _notificationService.RetrieveUserNotification(provider.Id);
         Clients.Client(providerConnectionId)?.SendAsync("ReceiveBooking",dtoPlacedBooking);
-        Clients.Client(providerConnectionId)?.SendAsync("ReceiveNotification",notifications);
-
         return dtoPlacedBooking;    
     }
 
@@ -84,16 +81,36 @@ public class BookingHub : Hub
     {
         var accessToken= Context.GetHttpContext()?.Request.Query["access_token"].ToString();
         var dtoAcceptedBooking = await _bookingService.RetrievedAcceptBookingAsync(bookingId, accessToken);
-
+        
+        var message = $"{dtoAcceptedBooking.ProviderName} vừa đồng dịch vụ {dtoAcceptedBooking.ServiceName} của bạn.";
+        NotifyClient(dtoAcceptedBooking.ClientId, dtoAcceptedBooking.ProviderName, dtoAcceptedBooking.ServiceName, redirectUrl, message);
+        
         _pool.connectionPool.TryGetValue(dtoAcceptedBooking.ClientId.ToString(), out var clientConnectionIds);
-        NotifyClient(dtoAcceptedBooking.ClientId, dtoAcceptedBooking.ProviderName, dtoAcceptedBooking.ServiceName, redirectUrl);
         if (clientConnectionIds is null) return dtoAcceptedBooking;
         var clientConnectionId = clientConnectionIds.LastOrDefault();
         if (clientConnectionId is null) return dtoAcceptedBooking;
+
         var notifications =await _notificationService.RetrieveUserNotification(dtoAcceptedBooking.ClientId);
         Clients.Client(clientConnectionId)?.SendAsync("BookingAccepted", dtoAcceptedBooking);
         Clients.Client(clientConnectionId)?.SendAsync("ReceiveNotification",notifications);
+
         return dtoAcceptedBooking;
+    }
+
+    public async Task<DtoAcceptedBooking> DeclinedBooking(Guid bookingId, string redirectUrl)
+    {
+        var accessToken = Context.GetHttpContext()?.Request.Query["access_token"].ToString();
+        var dtoBooking = await _bookingService.RetrievedDeclineBookingAsync(bookingId, redirectUrl);
+        
+        var message = $"{dtoBooking.ProviderName} vừa từ chối dịch vụ {dtoBooking.ServiceName} của bạn.";
+        NotifyClient(dtoBooking.ClientId, dtoBooking.ProviderName, dtoBooking.ServiceName, redirectUrl, message);
+        
+        _pool.connectionPool.TryGetValue(dtoBooking.ClientId.ToString(), out var clientConnectionIds);
+        if (clientConnectionIds is null) return dtoBooking;
+        var clientConnectionId = clientConnectionIds.LastOrDefault();
+        if (clientConnectionId is null) return dtoBooking;
+        Clients.Client(clientConnectionId)?.SendAsync("BookingAccepted", dtoBooking);
+        return dtoBooking;
     }
 
 
@@ -108,9 +125,8 @@ public class BookingHub : Hub
         BackgroundJob.Schedule(() => _notificationService.CreateBookingNotification(notificationRequest),TimeSpan.Zero);
     }
 
-    private void NotifyClient(Guid clientId, string providerName, string serviceName, string redirectUrl)
+    private void NotifyClient(Guid clientId, string providerName, string serviceName, string redirectUrl, string message)
     {
-        var message = $"{providerName} vừa đồng ý dịch vụ {serviceName} của bạn.";
         BackgroundJob.Schedule(() => _notificationService.CreateNotification(clientId, message, redirectUrl), TimeSpan.Zero);
     }
 }

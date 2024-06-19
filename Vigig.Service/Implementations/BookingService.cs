@@ -173,6 +173,25 @@ public class BookingService : IBookingService
         };
     }
 
+    public async Task<DtoAcceptedBooking> RetrievedDeclineBookingAsync(Guid id, string token)
+    {
+        var isValidProvider = EnsureHasBookingAsync(token, id);
+        if (!(await isValidProvider))
+            throw new Exception($"provider do not have booking id:{id}");
+        var booking = (await _bookingRepository.FindAsync(x => x.Id == id 
+                                                               && x.Status ==  BookingStatus.Pending
+                                                               && x.IsActive)) 
+            .Include(x => x.ProviderService)
+            .ThenInclude(x => x.Provider)
+            .Include(x => x.ProviderService)
+            .ThenInclude(x => x.Service)
+            .FirstOrDefault() ?? throw new BookingNotFoundException(id,nameof(Building.Id));
+        booking.Status = BookingStatus.Declined;
+        await _bookingRepository.UpdateAsync(booking);
+        await _unitOfWork.CommitAsync();
+        return _mapper.Map<DtoAcceptedBooking>(booking);
+    }
+
     public async Task<ServiceActionResult> CancelBookingByClientAsync(Guid id, string token)
     {
         var isValidProvider = EnsureHasBookingAsync(token, id);
