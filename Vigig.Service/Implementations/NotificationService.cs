@@ -54,9 +54,10 @@ public class NotificationService : INotificationService
         await _unitOfWork.CommitAsync();
     }
 
-    public async Task<IQueryable<DtoNotification>> RetrieveUserNotification(Guid providerId)
+
+    public async Task<IQueryable<DtoNotification>> RetrieveUserNotification(Guid userId)
     {
-        var notifications = await _notificationRepository.FindAsync(x => x.IsActive && x.UserId == providerId);
+        var notifications = await _notificationRepository.FindAsync(x => x.IsActive && x.UserId == userId);
         return _mapper.ProjectTo<DtoNotification>(notifications);
     }
 
