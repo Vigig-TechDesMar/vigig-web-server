@@ -59,5 +59,10 @@ public class ChatHub : Hub
         await Clients.Group(bookingId)
             .SendAsync("ReceiveSpecificMessage", message);
     }
-    
+
+    public async Task IsChatting(string bookingId)
+    {
+        await Clients.Group(bookingId)
+            .SendAsync("otherChatting");
+    }
 }
