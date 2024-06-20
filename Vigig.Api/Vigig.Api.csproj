@@ -87,6 +87,8 @@
         <None Remove="Scripts\36.Update_Voucher.sql" />
         <EmbeddedResource Include="Scripts\36.Update_Voucher.sql" />
         <None Remove="Scripts\37.Update_Voucher.sql" />
+        <None Remove="Scripts\37. Update_EventImage.sql" />
+        <EmbeddedResource Include="Scripts\37. Update_EventImage.sql" />
     </ItemGroup>
 
 </Project>

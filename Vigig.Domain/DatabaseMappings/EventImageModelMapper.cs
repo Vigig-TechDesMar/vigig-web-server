@@ -16,10 +16,6 @@ public class EventImageModelMapper : IDatabaseModelMapper
                 .ValueGeneratedOnAdd();
             entity.Property(e => e.ImageUrl)
                 .IsRequired();
-            entity.Property(e => e.StartDate)
-                .IsRequired();
-            entity.Property(e => e.EndDate)
-                .IsRequired();
             entity.HasOne(e => e.Banner)
                 .WithMany(e => e.EventImages)
                 .HasForeignKey(e => e.BannerId)
