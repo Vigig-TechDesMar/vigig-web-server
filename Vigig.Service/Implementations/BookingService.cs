@@ -88,8 +88,12 @@ public class BookingService : IBookingService
 
     public async Task<DtoPlacedBooking> RetrievedPlaceBookingAsync(string token, BookingPlaceRequest request)
     {
-        var clientId = _jwtService.GetSubjectClaim(token)!.ToString();
-        var client = (await _vigigUserRepository.FindAsync(x => x.IsActive && x.Id.ToString() == clientId))
+        var authModel = _jwtService.GetAuthModel(token);
+        if (authModel.Role != UserRoleConstant.Client)
+            throw new UnauthorizedAccessException();
+        
+        var clientId = authModel.UserId;
+        var client = (await _vigigUserRepository.FindAsync(x => x.IsActive && x.Id == clientId))
             .FirstOrDefault() ?? throw new UserNotFoundException(clientId,nameof(VigigUser.Id));
         
         var building = (await _buildingRepository.FindAsync(x => x.IsActive && x.Id == request.BuildingId))
@@ -117,7 +121,7 @@ public class BookingService : IBookingService
 
     public async Task<ServiceActionResult> AcceptBookingAsync(Guid id, string token)
     {
-        var isValidProvider = EnsureHasBookingAsync(token, id);
+        var isValidProvider = EnsureHasBookingAsync(token, id, true);
         if (!(await isValidProvider))
             throw new Exception($"provider do not have booking id:{id}");
         var booking = (await _bookingRepository.FindAsync(x => x.Id == id 
@@ -136,7 +140,7 @@ public class BookingService : IBookingService
 
     public async Task<DtoAcceptedBooking> RetrievedAcceptBookingAsync(Guid id, string token)
     {
-        var isValidProvider = EnsureHasBookingAsync(token, id);
+        var isValidProvider = EnsureHasBookingAsync(token, id, true);
         if (!(await isValidProvider))
             throw new Exception($"provider do not have booking id:{id}");
         var booking = (await _bookingRepository.FindAsync(x => x.Id == id 
@@ -156,7 +160,7 @@ public class BookingService : IBookingService
 
     public async Task<ServiceActionResult> DeclineBookingAsync(Guid id, string token)
     {
-        var isValidProvider = EnsureHasBookingAsync(token, id);
+        var isValidProvider = EnsureHasBookingAsync(token, id, true);
         if (!(await isValidProvider))
             throw new Exception($"provider do not have booking id:{id}");
         var booking = (await _bookingRepository.FindAsync(x => x.Id == id 
@@ -175,7 +179,7 @@ public class BookingService : IBookingService
 
     public async Task<DtoAcceptedBooking> RetrievedDeclineBookingAsync(Guid id, string token)
     {
-        var isValidProvider = EnsureHasBookingAsync(token, id);
+        var isValidProvider = EnsureHasBookingAsync(token, id, true);
         if (!(await isValidProvider))
             throw new Exception($"provider do not have booking id:{id}");
         var booking = (await _bookingRepository.FindAsync(x => x.Id == id 
@@ -194,7 +198,7 @@ public class BookingService : IBookingService
 
     public async Task<ServiceActionResult> CancelBookingByClientAsync(Guid id, string token)
     {
-        var isValidProvider = EnsureHasBookingAsync(token, id);
+        var isValidProvider = EnsureHasBookingAsync(token, id, false);
         if (!(await isValidProvider))
             throw new Exception($"client does not have booking id:{id}");
         var booking = (await _bookingRepository.FindAsync(x=> 
@@ -214,7 +218,7 @@ public class BookingService : IBookingService
 
     public async Task<ServiceActionResult> CancelBookingByProviderAsync(Guid id, string token)
     {
-        var isValidProvider = EnsureHasBookingAsync(token, id);
+        var isValidProvider = EnsureHasBookingAsync(token, id, true);
         if (!(await isValidProvider))
             throw new Exception($"provider does not have booking id:{id}");
         var booking = (await _bookingRepository.FindAsync(x => 
@@ -237,7 +241,7 @@ public class BookingService : IBookingService
 
     public async Task<ServiceActionResult> CompleteBookingAsync(Guid id, BookingCompleteRequest request, string token)
     {
-        var isValidProvider = EnsureHasBookingAsync(token, id);
+        var isValidProvider = EnsureHasBookingAsync(token, id, true);
         if (!(await isValidProvider))
             throw new Exception($"provider do not have booking id:{id}");
         var booking = (await _bookingRepository.FindAsync(x => 
@@ -320,7 +324,7 @@ public class BookingService : IBookingService
 
     public async Task<ServiceActionResult> LoadOwnChatBookingDetailAsync(Guid id, string token)
     {
-        var hasBooking = await EnsureHasBookingAsync(token, id);
+        var hasBooking = await EnsureHasBookingAsync(token, id, false);
         if (!hasBooking)
             throw new Exception($"User do not have the booking Id {id}");
         return new ServiceActionResult()
@@ -332,9 +336,11 @@ public class BookingService : IBookingService
 
     }
 
-    private async Task<bool> EnsureHasBookingAsync(string token, Guid bookingId)
+    private async Task<bool> EnsureHasBookingAsync(string token, Guid bookingId, bool isProviderContext)
     {
         var authModel = _jwtService.GetAuthModel(token);
+        if (isProviderContext && authModel.Role != UserRoleConstant.Provider)
+            throw new UnauthorizedAccessException();
         var hasBooking = authModel.Role switch
         {
             UserRoleConstant.Provider => await _bookingRepository.ExistsAsync(x =>

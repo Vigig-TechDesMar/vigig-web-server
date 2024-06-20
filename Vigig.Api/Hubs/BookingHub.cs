@@ -1,10 +1,12 @@
 ﻿using Hangfire;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.SignalR;
 using Vigig.Api.Hubs.Models;
 using Vigig.DAL.Interfaces;
 using Vigig.Domain.Dtos.Booking;
 using Vigig.Domain.Entities;
 using Vigig.Service.BackgroundJobs.Interfaces;
+using Vigig.Service.Constants;
 using Vigig.Service.Exceptions.NotFound;
 using Vigig.Service.Interfaces;
 using Vigig.Service.Models.Request.Booking;
@@ -61,6 +63,7 @@ public class BookingHub : Hub
     public async Task<DtoPlacedBooking> PlaceBooking(BookingPlaceRequest request , string redirectUrl)
     {
         var accessToken = Context.GetHttpContext()?.Request.Query["access_token"].ToString();
+       
         var providerService = await _providerServiceService.RetrieveProviderServiceByIdAsync(request.ProviderServiceId);
 
         var provider = await _vigigUserRepository.GetAsync(x => x.Id == providerService.ProviderId)
@@ -81,6 +84,7 @@ public class BookingHub : Hub
     {
         var accessToken= Context.GetHttpContext()?.Request.Query["access_token"].ToString();
         var dtoAcceptedBooking = await _bookingService.RetrievedAcceptBookingAsync(bookingId, accessToken);
+        
         
         var message = $"{dtoAcceptedBooking.ProviderName} vừa đồng dịch vụ {dtoAcceptedBooking.ServiceName} của bạn.";
         NotifyClient(dtoAcceptedBooking.ClientId, dtoAcceptedBooking.ProviderName, dtoAcceptedBooking.ServiceName, redirectUrl, message);
