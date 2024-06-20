@@ -5,7 +5,7 @@ namespace Vigig.Service.Models.Request.Event;
 
 public class UpdateProviderKPIRequest
 {
-    public Guid Id;
+    public Guid Id { get; set; }
     
     [Required]
     [MinValue(0)]

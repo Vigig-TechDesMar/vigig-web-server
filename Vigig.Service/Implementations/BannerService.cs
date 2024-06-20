@@ -80,7 +80,7 @@ public class BannerService : IBannerService
             .FirstOrDefault();
         return new ServiceActionResult(true)
         {
-            Data = banner
+            Data = _mapper.Map<DtoBanner>(banner)
         };
     }
 

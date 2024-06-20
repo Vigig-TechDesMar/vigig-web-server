@@ -78,7 +78,7 @@ public class PopUpService : IPopUpService
             .FirstOrDefault();
         return new ServiceActionResult(true)
         {
-            Data = popUp
+            Data = _mapper.Map<DtoPopUp>(popUp)
         };
     }
 

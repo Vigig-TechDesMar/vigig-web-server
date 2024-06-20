@@ -20,16 +20,18 @@ public class ClaimedVoucherService : IClaimedVoucherService
     private readonly IClaimedVoucherRepository _claimedVoucherRepository;
     private readonly IVoucherRepository _voucherRepository;
     private readonly IVigigUserRepository _vigigUserRepository;
+    private readonly IBadgeRepository _badgeRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
 
-    public ClaimedVoucherService(IClaimedVoucherRepository claimedVoucherRepository, IVoucherRepository voucherRepository, IVigigUserRepository vigigUserRepository, IUnitOfWork unitOfWork, IMapper mapper)
+    public ClaimedVoucherService(IClaimedVoucherRepository claimedVoucherRepository, IVoucherRepository voucherRepository, IVigigUserRepository vigigUserRepository, IUnitOfWork unitOfWork, IMapper mapper, IBadgeRepository badgeRepository)
     {
         _claimedVoucherRepository = claimedVoucherRepository;
         _voucherRepository = voucherRepository;
         _vigigUserRepository = vigigUserRepository;
         _unitOfWork = unitOfWork;
         _mapper = mapper;
+        _badgeRepository = badgeRepository;
     }
 
     public async Task<ServiceActionResult> GetAllAsync()
@@ -78,19 +80,9 @@ public class ClaimedVoucherService : IClaimedVoucherService
         {
             if (!await _vigigUserRepository.ExistsAsync(sc => sc.Id == request.CustomerId && sc.IsActive))
                 throw new UserNotFoundException(request.CustomerId, nameof(VigigUser.Id));
-            var customerId = request.CustomerId??new Guid();
-            // var claimedVoucher = new ClaimedVoucher
-            // {
-            //     CustomerId = customerId,
-            //     VoucherId = request.VoucherId,
-            //     Voucher = voucher,
-            //     Status = true
-            // };
-            // await _claimedVoucherRepository.AddAsync(claimedVoucher);
-        }
-
-        //Voucher for all Customers
-        if (request.IsForAll)
+            var claimedVoucher = _mapper.Map<ClaimedVoucher>(request);
+            await _claimedVoucherRepository.AddAsync(claimedVoucher);
+        }else if (request.IsForAll) //For All Customers
         {
             var customerList = await _vigigUserRepository.FindAsync(sc =>
                 sc.IsActive && sc.Roles.Any(y=> y.Name == UserRoleConstant.Client));
@@ -110,14 +102,12 @@ public class ClaimedVoucherService : IClaimedVoucherService
                 // claimedVoucherList.Add(claimedVoucher);
                 await _claimedVoucherRepository.AddManyAsync(claimedVoucherList);
             }
-        }
-        
-        //Vouchers for a group of Users
-        if (request.Badges != null && request.Badges.Length > 0)
+        } else if (request.BadgeIds is { Length: > 0 }) //Vouchers for a group of Users
         {
-            foreach (var x in request.Badges)
+            foreach (var x in request.BadgeIds)
             {
-                
+                var badge = (await _badgeRepository.FindAsync(sc => sc.Id == x && sc.IsActive)).FirstOrDefault() ??
+                            throw new BadgeNotFoundException(x, nameof(Badge.Id));
             }
         }
       

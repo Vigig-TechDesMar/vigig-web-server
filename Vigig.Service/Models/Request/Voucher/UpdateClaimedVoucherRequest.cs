@@ -2,7 +2,7 @@ namespace Vigig.Service.Models.Request.Voucher;
 
 public class UpdateClaimedVoucherRequest
 {
-    public Guid Id;
+    public Guid Id { get; set; }
 
     public string EventTitle { get; set; } = null!;
     
