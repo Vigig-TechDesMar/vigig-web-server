@@ -51,6 +51,14 @@ public class PopUpController : BaseApiController
             await _popUpService.SearchPopUp(request).ConfigureAwait(false)).ConfigureAwait(false);
     }
     
+    [HttpGet("latest")]
+    [AllowAnonymous]
+    public async Task<IActionResult> FindLatest()
+    {
+        return await ExecuteServiceLogic(async () => 
+            await _popUpService.GetActivePopUp().ConfigureAwait(false)).ConfigureAwait(false);
+    }
+    
     [HttpPost]
     [Authorize(Roles = UserRoleConstant.InternalUser)]
     public async Task<IActionResult> AddpopUp(CreatePopUpRequest  request)
