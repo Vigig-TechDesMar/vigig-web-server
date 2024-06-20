@@ -161,7 +161,8 @@ public static class AutoMapperConfiguration
         mapper.CreateMap<LeaderBoard,DtoLeaderBoard>();
         mapper.CreateMap<CreateLeaderBoardRequest,LeaderBoard>();
         mapper.CreateMap<UpdateLeaderBoardRequest,LeaderBoard>().
-            ForMember(b=> b.Name, opt => opt.Condition(c=> !string.IsNullOrWhiteSpace(c.Name)));
+            ForMember(b=> b.Name, opt => opt.Condition(c=> !string.IsNullOrWhiteSpace(c.Name))).
+            ForMember(b=> b.Description, opt => opt.Condition(c=> !string.IsNullOrWhiteSpace(c.Description)));;
 
         //ProviderKPI
         mapper.CreateMap<ProviderKPI, DtoProviderKPI>();
