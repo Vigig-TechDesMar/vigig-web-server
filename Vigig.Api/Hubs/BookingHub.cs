@@ -101,10 +101,10 @@ public class BookingHub : Hub
         return dtoAcceptedBooking;
     }
 
-    public async Task<DtoAcceptedBooking> DeclinedBooking(Guid bookingId, string redirectUrl)
+    public async Task<DtoAcceptedBooking> DeclineBooking(Guid bookingId, string redirectUrl)
     {
         var accessToken = Context.GetHttpContext()?.Request.Query["access_token"].ToString();
-        var dtoBooking = await _bookingService.RetrievedDeclineBookingAsync(bookingId, redirectUrl);
+        var dtoBooking = await _bookingService.RetrievedDeclineBookingAsync(bookingId, accessToken);
         
         var message = $"{dtoBooking.ProviderName} vừa từ chối dịch vụ {dtoBooking.ServiceName} của bạn.";
         NotifyClient(dtoBooking.ClientId, dtoBooking.ProviderName, dtoBooking.ServiceName, redirectUrl, message);
@@ -113,7 +113,7 @@ public class BookingHub : Hub
         if (clientConnectionIds is null) return dtoBooking;
         var clientConnectionId = clientConnectionIds.LastOrDefault();
         if (clientConnectionId is null) return dtoBooking;
-        Clients.Client(clientConnectionId)?.SendAsync("BookingAccepted", dtoBooking);
+        Clients.Client(clientConnectionId)?.SendAsync("BookingDeclined", dtoBooking);
         return dtoBooking;
     }
 
