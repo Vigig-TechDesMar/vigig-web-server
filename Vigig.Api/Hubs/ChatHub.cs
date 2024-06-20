@@ -55,7 +55,7 @@ public class ChatHub : Hub
     {
         var token = Context.GetHttpContext()!.Request.Query["access_token"].ToString();
         var message = await _bookingMessageService.SendMessage(token, Guid.Parse(bookingId), msg);
-        // Console.WriteLine(Clients.Groups());
+        // Console.WriteLine(Clients.Groups()); 
         await Clients.Group(bookingId)
             .SendAsync("ReceiveSpecificMessage", message);
     }
@@ -64,5 +64,11 @@ public class ChatHub : Hub
     {
         await Clients.Group(bookingId)
             .SendAsync("otherChatting");
+    }
+
+    public async Task StopChatting(string bookingId)
+    {
+        await Clients.Group(bookingId)
+            .SendAsync("otherStopChatting"); 
     }
 }
