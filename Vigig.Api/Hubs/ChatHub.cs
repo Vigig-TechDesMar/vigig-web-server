@@ -62,13 +62,13 @@ public class ChatHub : Hub
 
     public async Task IsChatting(string bookingId)
     {
-        await Clients.Group(bookingId)
+        await Clients.OthersInGroup(bookingId)
             .SendAsync("otherChatting");
     }
 
     public async Task StopChatting(string bookingId)
     {
-        await Clients.Group(bookingId)
+        await Clients.OthersInGroup(bookingId)
             .SendAsync("otherStopChatting"); 
     }
 }
