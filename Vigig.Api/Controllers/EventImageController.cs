@@ -28,12 +28,20 @@ public class EventImageController : BaseApiController
             await _eventImageService.GetAllAsync().ConfigureAwait(false)).ConfigureAwait(false);
     }
     
-    [HttpGet]
+    [HttpGet("currentBanner")]
     [AllowAnonymous]
-    public async Task<IActionResult> GetEventImages([FromQuery]BasePaginatedRequest request)
+    public async Task<IActionResult> GetCurrentBannerEventImages()
     {
         return await ExecuteServiceLogic(async () 
-            => await _eventImageService.GetPaginatedResultAsync(request).ConfigureAwait(false)).ConfigureAwait(false);
+            => await _eventImageService.GetCurrentBannerAsync().ConfigureAwait(false)).ConfigureAwait(false);
+    }
+    
+    [HttpGet("currentPopUp")]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetCurrentPopUpEventImages()
+    {
+        return await ExecuteServiceLogic(async () 
+            => await _eventImageService.GetCurrentPopUpAsync().ConfigureAwait(false)).ConfigureAwait(false);
     }
     
     [HttpGet("{id:guid}")]
@@ -58,14 +66,6 @@ public class EventImageController : BaseApiController
     {
         return await ExecuteServiceLogic(async () 
             => await _eventImageService.AddAsync(request)).ConfigureAwait(false);
-    }
-
-    [HttpPut]
-    [Authorize(Roles = UserRoleConstant.InternalUser)]
-    public async Task<IActionResult> UpdateServiceCategory([FromBody] UpdateEventImageRequest request)
-    {
-        return await ExecuteServiceLogic(async ()
-            => await _eventImageService.UpdateAsync(request).ConfigureAwait(false)).ConfigureAwait(false);
     }
 
     [HttpDelete]
