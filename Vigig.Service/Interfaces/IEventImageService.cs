@@ -11,13 +11,13 @@ public interface IEventImageService
 
     Task<ServiceActionResult> GetById(Guid id);
     
-    Task<ServiceActionResult> GetPaginatedResultAsync(BasePaginatedRequest request);
+    Task<ServiceActionResult> GetCurrentPopUpAsync();
+    
+    Task<ServiceActionResult> GetCurrentBannerAsync();
     
     Task<ServiceActionResult> SearchEventImage(SearchUsingGet request);
 
     Task<ServiceActionResult> AddAsync(CreateEventImageRequest request);
-
-    Task<ServiceActionResult> UpdateAsync(UpdateEventImageRequest request);
-
+    
     Task<ServiceActionResult> DeleteAsync(Guid id);
 }

@@ -47,16 +47,30 @@ public class EventImageService : IEventImageService
             Data = _mapper.Map<DtoEventImage>(image)
         };
     }
-    
-    public async Task<ServiceActionResult> GetPaginatedResultAsync(BasePaginatedRequest request)
+
+    public async Task<ServiceActionResult> GetCurrentPopUpAsync()
     {
-        var eventImages = _mapper.ProjectTo<DtoEventImage>(
-            await _eventImageRepository.GetAllAsync());
-        var paginatedResult =
-            PaginationHelper.BuildPaginatedResult<DtoEventImage>(eventImages, request.PageSize, request.PageIndex);
+        var popUp = (await _popUpRepository.FindAsync(sc => sc.IsActive)).FirstOrDefault() ??
+                    throw new CurrentPopUpNotFoundException();
+
+        var popUpImages = await _eventImageRepository.FindAsync(sc => sc.PopUpId == popUp.Id);
+        _mapper.Map<IEnumerable<DtoEventImage>>(popUpImages);
         return new ServiceActionResult(true)
         {
-            Data = paginatedResult
+            Data = popUpImages
+        };
+    }
+
+    public async Task<ServiceActionResult> GetCurrentBannerAsync()
+    {
+        var banner = (await _bannerRepository.FindAsync(sc => sc.IsActive)).FirstOrDefault() ??
+                    throw new CurrentBannerNotFoundException();
+
+        var bannerImages = await _eventImageRepository.FindAsync(sc => sc.BannerId == banner.Id);
+        _mapper.Map<IEnumerable<DtoEventImage>>(bannerImages);
+        return new ServiceActionResult(true)
+        {
+            Data = bannerImages
         };
     }
 
@@ -76,23 +90,30 @@ public class EventImageService : IEventImageService
     public async Task<ServiceActionResult> AddAsync(CreateEventImageRequest request)
     {
         //Check Banner
-
+        if (request.BannerId != null)
+            if(!await _bannerRepository.ExistsAsync(sc => sc.Id == request.BannerId))
+                throw new BannerNotFoundException(request.BannerId, nameof(Banner.Id));
+                
         //Check PopUp
-        
-        throw new NotImplementedException();
-    }
+        if(request.PopUpId != null)
+            if (!await _popUpRepository.ExistsAsync(sc => sc.Id == request.PopUpId))
+                throw new PopUpNotFoundException(request.PopUpId, nameof(PopUp.Id));
 
-    public async Task<ServiceActionResult> UpdateAsync(UpdateEventImageRequest request)
-    {
-        //Check Banner
+        var eventImage = _mapper.Map<EventImage>(request);
+        await _eventImageRepository.AddAsync(eventImage);
+        await _unitOfWork.CommitAsync();
 
-        //Check PopUp
-        
-        throw new NotImplementedException();
+        return new ServiceActionResult(true)
+        {
+            Data = _mapper.Map<DtoEventImage>(eventImage)
+        };
     }
 
     public async Task<ServiceActionResult> DeleteAsync(Guid id)
     {
+        if (!await _eventImageRepository.ExistsAsync(sc => sc.Id == id))
+            throw new EventImageNotFoundException(id, nameof(EventImage.Id));
+
         throw new NotImplementedException();
     }
 }
