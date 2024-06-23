@@ -37,7 +37,7 @@ public class ChatHub : Hub
         return Task.FromResult("aaa");
     }
 
-    public async Task<IEnumerable<DtoBookingMessage>>JoinSpecificChatRoom(string bookingId)
+    public async Task<IEnumerable<DtoBookingMessage>>JoinSpecificChatRoom(string bookingId) 
     {
         
         await Groups.AddToGroupAsync(Context.ConnectionId, bookingId);
@@ -45,9 +45,7 @@ public class ChatHub : Hub
         var userId = _jwtService.GetSubjectClaim(token).ToString();
         _chatConnectionPool.connections[userId].Add(bookingId);
         var messages = await _bookingMessageService.LoadAllBookingMessage(token,Guid.Parse(bookingId));
-        // await Clients.Group(bookingId)
-        //     .SendAsync("LoadAllMessage",messages);
-
+     
         return messages.ToList();
     }
 
@@ -70,5 +68,10 @@ public class ChatHub : Hub
     {
         await Clients.OthersInGroup(bookingId)
             .SendAsync("otherStopChatting"); 
+    }
+
+    public override Task OnDisconnectedAsync(Exception? exception)
+    {
+        return base.OnDisconnectedAsync(exception);
     }
 }
