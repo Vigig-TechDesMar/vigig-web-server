@@ -248,10 +248,12 @@ public static class AutoMapperConfiguration
             .ForMember(dto => dto.SenderName, opt => opt.MapFrom(x => x.SenderName));
         mapper.CreateMap<Booking,DtoBookingResponse>()
             .ForMember(dto => dto.ClientId, opt => opt.MapFrom(x => x.CustomerId))
+            .ForMember(dto => dto.ClientName, opt => opt.MapFrom(x => x.VigigUser.UserName))
             .ForMember(dto => dto.IsCancellable, opt => opt.MapFrom(x => x.Status == BookingStatus.Pending))
             .ForMember(dto => dto.Status, opt => opt.MapFrom(x => EnumHelper.TranslateEnum(x.Status)))
             .ForMember(dto => dto.ProviderName, opt => opt.MapFrom(x => x.ProviderService.Provider.UserName))
-            .ForMember(dto => dto.ServiceName, opt => opt.MapFrom(x => x.ProviderService.Service.ServiceName));
+            .ForMember(dto => dto.ServiceName, opt => opt.MapFrom(x => x.ProviderService.Service.ServiceName))
+            .ForMember(dto => dto.ProviderId, opt => opt.MapFrom(x => x.ProviderService.ProviderId));
     }
 
     public static void CreateNotificationMaps(IMapperConfigurationExpression mapper)

@@ -20,11 +20,15 @@ public interface IBookingService
     Task<DtoBookingResponse> RetrievedDeclineBookingAsync(Guid id, string token);
 
     Task<ServiceActionResult> CancelBookingByClientAsync(Guid id, string token);
+    Task<DtoBookingResponse> RetrievedCancelledByClientBookingAsync(Guid id, string token);
 
     Task<ServiceActionResult> CancelBookingByProviderAsync(Guid id, string token);
+    Task<DtoBookingResponse> RetrievedCancelledByProviderBookingAsync(Guid id, string token);
+
 
     Task<ServiceActionResult> CompleteBookingAsync(Guid id, BookingCompleteRequest request, string token);
-    Task<DtoBookingResponse> RetrievedCompleteBookingAsync(Guid id, string token);
+    Task<DtoBookingResponse> RetrievedCompleteBookingAsync(Guid id, BookingCompleteRequest request, string token);
+    
     Task<ServiceActionResult> LoadOwnChatBookingAsync(string token);
 
     Task<ServiceActionResult> RatingBookingAsync(string token, Guid bookingId,BookingRatingRequest request);

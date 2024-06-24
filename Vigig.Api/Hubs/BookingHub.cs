@@ -135,10 +135,10 @@ public class BookingHub : Hub
         await Clients.Client(clientConnectionId).SendAsync("ReceiveNotification", notifications);
         return dtoBooking;
     }
-    public async Task<DtoBookingResponse> CompleteBooking(Guid bookingId, string redirectUrl)
+    public async Task<DtoBookingResponse> CompleteBooking(Guid bookingId, BookingCompleteRequest request ,string redirectUrl)
     {
         var accessToken = Context.GetHttpContext()?.Request.Query["access_token"].ToString() ?? throw new InvalidTokenException();
-        var dtoBooking = await _bookingService.RetrievedCompleteBookingAsync(bookingId, accessToken);
+        var dtoBooking = await _bookingService.RetrievedCompleteBookingAsync(bookingId, request, accessToken);
 
         var message = $"{dtoBooking.ProviderName} vừa hoàn thành dịch vụ {dtoBooking.ServiceName} của bạn.";
         NotifyClient(dtoBooking.ClientId, redirectUrl, message);
@@ -154,6 +154,45 @@ public class BookingHub : Hub
         await Clients.Client(clientConnectionId).SendAsync("ReceiveNotification", notifications);
         return dtoBooking;
     }
+
+    public async Task<DtoBookingResponse> CancelBookingByClient(Guid bookingId, string redirectUrl)
+    {
+        var accessToken = Context.GetHttpContext()?.Request.Query["access_token"].ToString() ?? throw new InvalidTokenException();
+        var dtoBooking = await _bookingService.RetrievedCancelledByClientBookingAsync(bookingId, accessToken);
+        
+        var message = $"{dtoBooking.ClientName} vừa hủy dịch vụ {dtoBooking.ServiceName} của bạn.";
+        NotifyClient(dtoBooking.ProviderId, redirectUrl, message);
+        
+        _pool.connectionPool.TryGetValue(dtoBooking.ClientId.ToString(), out var clientConnectionIds);
+        if (clientConnectionIds is null) return dtoBooking;
+        var clientConnectionId = clientConnectionIds.LastOrDefault();
+        if (clientConnectionId is null) return dtoBooking;
+
+        var notifications = await _notificationService.RetrieveUserNotification(dtoBooking.ClientId);
+        
+        await Clients.Client(clientConnectionId).SendAsync("BookingCompleted", dtoBooking);
+        await Clients.Client(clientConnectionId).SendAsync("ReceiveNotification", notifications);
+        return dtoBooking;  
+    }
+    
+    public async Task<DtoBookingResponse> CancelBookingByProvider(Guid bookingId, string redirectUrl)
+    {
+        var accessToken = Context.GetHttpContext()?.Request.Query["access_token"].ToString() ?? throw new InvalidTokenException();
+        var dtoBooking = await _bookingService.RetrievedCancelledByProviderBookingAsync(bookingId, accessToken);
+        
+        var message = $"{dtoBooking.ProviderName} vừa hủy dịch vụ {dtoBooking.ServiceName} của bạn.";
+        NotifyClient(dtoBooking.ClientId, redirectUrl, message);
+        
+        _pool.connectionPool.TryGetValue(dtoBooking.ProviderId.ToString(), out var providerConnectionIds);
+        if (providerConnectionIds is null) return dtoBooking;
+        var providerConnectionId = providerConnectionIds.LastOrDefault();
+        if (providerConnectionId is null) return dtoBooking;
+        var notifications = await _notificationService.RetrieveUserNotification(dtoBooking.ProviderId);
+        await Clients.Client(providerConnectionId).SendAsync("ReceiveBooking",dtoBooking);
+        await Clients.Client(providerConnectionId).SendAsync("ReceiveNotification", notifications);
+        return dtoBooking;    
+    }
+
 
 
     private void NotifyProvider(Guid bookingId, string bookerName, string serviceName, string redirectUrl)

@@ -7,7 +7,7 @@ public class RecurringJobScheduler
 {
     public static void ScheduleJobs()
     {
-        RecurringJob.AddOrUpdate(() => Console.WriteLine("Start hangfire server"),Cron.Daily);
+        // RecurringJob.AddOrUpdate(() => Console.WriteLine("Start hangfire server"),Cron.Daily);
         
         RecurringJob.AddOrUpdate<IExpirationService>(
             service => service.ValidateEventExpiration(), Cron.Daily);

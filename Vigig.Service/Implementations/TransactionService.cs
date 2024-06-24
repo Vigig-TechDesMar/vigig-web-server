@@ -96,7 +96,7 @@ public class TransactionService : ITransactionService
     }
     
     //BUSINESS
-   public async Task ProcessTransactionAsync(CashEntity fee, Wallet wallet)
+   public async Task<string> ProcessTransactionAsync(CashEntity fee, Wallet wallet)
     {
         var feeType = fee.GetType().Name;
         var transaction = new Transaction
@@ -113,7 +113,8 @@ public class TransactionService : ITransactionService
         await _transactionRepository.AddAsync(transaction);
         await _unitOfWork.CommitAsync();
         
-        await PerformTransactionAsync(transaction, fee);
+        var checkoutUrl= await PerformTransactionAsync(transaction, fee);
+        return checkoutUrl;
     }
 
     private void AssignFeeIdToTransaction(CashEntity fee, Transaction transaction)
@@ -145,7 +146,7 @@ public class TransactionService : ITransactionService
         };
     }
 
-    private async Task PerformTransactionAsync(Transaction transaction, CashEntity fee)
+    private async Task<string> PerformTransactionAsync(Transaction transaction, CashEntity fee)
     {
         var wallet = transaction.Wallet;
         
@@ -155,10 +156,11 @@ public class TransactionService : ITransactionService
             throw new InvalidOperationException("User wallet not found.");
         }
 
+        var checkoutUrl = "";
         if (fee.GetType().Name == CashTypeConstant.Deposit)
         {
             //PayOS Business Logic
-            await PayOSProcess(transaction);
+            checkoutUrl = await PayOSProcess(transaction);
         }
         else
         {
@@ -183,9 +185,10 @@ public class TransactionService : ITransactionService
 
         await _walletRepository.UpdateAsync(wallet);
         await _unitOfWork.CommitAsync();
+        return checkoutUrl;
     }
 
-    private async Task PayOSProcess(Transaction transaction)
+    private async Task<string> PayOSProcess(Transaction transaction)
     {
         //VALIDATION
         if (transaction.Amount < 0)
@@ -203,7 +206,7 @@ public class TransactionService : ITransactionService
         
         CreatePaymentResult createPayment = await payOS.createPaymentLink(paymentData);
         Console.WriteLine("\n *********************************************************** \n");
-        Console.WriteLine(createPayment);
+        return createPayment.checkoutUrl;
     }
 
     public async Task<Response> ProcessPayOSReturnResult(WebhookType request)

@@ -104,11 +104,11 @@ public class DepositService : IDepositService
         await _depositRepository.AddAsync(deposit);
         
         Console.WriteLine(deposit.Id + "deposit: line 106");
-        
+        var checkoutUrl = "";
         // Process the transaction
         try
         {
-            await _transactionService.ProcessTransactionAsync(deposit,wallet);
+           checkoutUrl = await _transactionService.ProcessTransactionAsync(deposit,wallet);
         }
         catch (Exception ex)
         {
@@ -118,9 +118,11 @@ public class DepositService : IDepositService
         }
         
         await _unitOfWork.CommitAsync();
+        var dtoDeposit = _mapper.Map<DtoDeposit>(deposit);
+        dtoDeposit.CheckoutUrl = checkoutUrl;
         return new ServiceActionResult(true)
         {
-            Data = _mapper.Map<DtoDeposit>(deposit),
+            Data = dtoDeposit,
             StatusCode = StatusCodes.Status201Created
         };
     }

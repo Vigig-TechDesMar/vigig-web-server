@@ -216,6 +216,25 @@ public class BookingService : IBookingService
         };
     }
 
+    public async Task<DtoBookingResponse> RetrievedCancelledByClientBookingAsync(Guid id, string token)
+    {
+        var isValidProvider = EnsureHasBookingAsync(token, id, false);
+        if (!(await isValidProvider))
+            throw new Exception($"client does not have booking id:{id}");
+        var booking = (await _bookingRepository.FindAsync(x=> 
+                x.Id == id 
+                && x.IsActive))
+            .Include(x => x.ProviderService)
+            .Include(x => x.VigigUser)
+            .FirstOrDefault() ?? throw new BookingNotFoundException(id,nameof(Building.Id));
+        if (booking.Status is not BookingStatus.Pending)
+            throw new Exception("Booking can not be cancelled due to being accepted");
+        booking.Status = BookingStatus.CancelledByClient;
+        await _bookingRepository.UpdateAsync(booking);
+        await _unitOfWork.CommitAsync();
+        return _mapper.Map<DtoBookingResponse>(booking);
+    }
+
     public async Task<ServiceActionResult> CancelBookingByProviderAsync(Guid id, string token)
     {
         var isValidProvider = EnsureHasBookingAsync(token, id, true);
@@ -239,6 +258,25 @@ public class BookingService : IBookingService
         };
     }
 
+    public async Task<DtoBookingResponse> RetrievedCancelledByProviderBookingAsync(Guid id, string token)
+    {
+        var isValidProvider = EnsureHasBookingAsync(token, id, true);
+        if (!(await isValidProvider))
+            throw new Exception($"provider does not have booking id:{id}");
+        var booking = (await _bookingRepository.FindAsync(x => 
+                x.Id == id
+                && x.IsActive))
+            .FirstOrDefault() ?? throw new BuildingNotFoundException(id,nameof(Building.Id));
+        if (booking.Status is not BookingStatus.Pending)
+            throw new Exception("Booking can not be cancelled due to being accepted");
+        booking.Status = BookingStatus.CancelledByProvider;
+        await _bookingRepository.UpdateAsync(booking);
+        await _unitOfWork.CommitAsync();
+        
+        _backgroundJobService.ScheduleDelayedJob(() => DeleteBookingMessage(id), TimeSpan.FromDays(30));
+        return _mapper.Map<DtoBookingResponse>(booking);
+    }
+
     public async Task<ServiceActionResult> CompleteBookingAsync(Guid id, BookingCompleteRequest request, string token)
     {
         var isValidProvider = EnsureHasBookingAsync(token, id, true);
@@ -252,6 +290,7 @@ public class BookingService : IBookingService
             .FirstOrDefault() ?? throw new BookingNotFoundException(id,nameof(Building.Id));
         booking.Status = BookingStatus.Completed;
         booking.ProviderService.TotalBooking++;
+        booking.FinalPrice = request.FinalPrice;
         await _bookingRepository.UpdateAsync(booking);
         await _unitOfWork.CommitAsync();
         
@@ -264,7 +303,7 @@ public class BookingService : IBookingService
         };
     }
 
-    public async Task<DtoBookingResponse> RetrievedCompleteBookingAsync(Guid id, string token)
+    public async Task<DtoBookingResponse> RetrievedCompleteBookingAsync(Guid id, BookingCompleteRequest request, string token)
     {
         var isValidProvider = EnsureHasBookingAsync(token, id, true);
         if (!(await isValidProvider))

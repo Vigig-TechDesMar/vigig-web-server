@@ -20,7 +20,7 @@ public interface ITransactionService
     
     Task<ServiceActionResult> GetPaginatedResultAsync(BasePaginatedRequest request);
 
-    Task ProcessTransactionAsync(CashEntity fee, Wallet wallet);
+    Task<string> ProcessTransactionAsync(CashEntity fee, Wallet wallet);
 
     Task<Response> ProcessPayOSReturnResult(WebhookType request);
 }

@@ -18,6 +18,9 @@ public class RegisterRequest
     [Required] 
     public UserRole Role { get; set; } 
     
+    public required string UserName { get; set; }
+    public required string Phone { get; set; } 
+    
     
     public Guid BuildingId { get; set; }
 

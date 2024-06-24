@@ -86,7 +86,6 @@ public class BookingsController : BaseApiController
                 await _bookingService.LoadOwnChatBookingDetailAsync(id, GetJwtToken()).ConfigureAwait(false))
             .ConfigureAwait(false);
     }
-
     [HttpGet("own-bookings")]
     // [Authorize(Roles = UserRoleConstant.Provider)]
     public async Task<IActionResult> GetOwnBooking([FromQuery] IReadOnlyCollection<string>? status)

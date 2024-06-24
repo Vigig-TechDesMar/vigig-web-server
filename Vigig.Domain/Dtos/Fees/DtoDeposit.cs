@@ -15,4 +15,6 @@ public class DtoDeposit
     public Guid ProviderId { get; set; }
     
     public CashStatus Status { get; set; }
+    
+    public required string CheckoutUrl { get; set; }
 }
