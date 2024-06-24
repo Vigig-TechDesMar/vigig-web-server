@@ -17,7 +17,7 @@ public partial class ProviderService
 
     public string? Description { get; set; }
 
-    public bool IsVisible { get; set; }
+    public bool IsVisible { get; set; } = true;
 
     public bool IsActive { get; set; }
 

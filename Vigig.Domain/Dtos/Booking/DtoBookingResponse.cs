@@ -1,6 +1,6 @@
 ﻿namespace Vigig.Domain.Dtos.Booking;
 
-public class DtoAcceptedBooking
+public class DtoBookingResponse
 {
     public Guid Id { get; set; }
     public Guid ClientId { get; set; }

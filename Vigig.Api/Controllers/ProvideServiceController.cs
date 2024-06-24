@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Vigig.Api.Controllers.Base;
 using Vigig.Service.Constants;
@@ -6,6 +7,7 @@ using Vigig.Service.Interfaces;
 using Vigig.Service.Models.Common;
 
 namespace Vigig.Api.Controllers;
+[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 public class ProvideServiceController : BaseApiController
 {
     private readonly IProviderServiceService _providerServiceService;

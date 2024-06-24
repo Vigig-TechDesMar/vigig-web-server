@@ -7,6 +7,6 @@ public static class GigServiceConstant
         public const string Cleaning = "Vệ sinh máy lạnh";
         public const string Repair = "Sửa chữa máy lạnh";
         public const string Inspection = "Kiểm tra máy lạnh";
-        public const string GasRefill = "Bơm gas máy";
+        public const string GasRefill = "Bơm gas máy lạnh";
     }
 }

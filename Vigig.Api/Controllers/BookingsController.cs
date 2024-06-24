@@ -2,10 +2,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Vigig.Api.Controllers.Base;
-using Vigig.Common.Helpers;
 using Vigig.Service.Constants;
 using Vigig.Service.Interfaces;
-using Vigig.Service.Models.Common;
 using Vigig.Service.Models.Request.Booking;
 
 namespace Vigig.Api.Controllers;

@@ -52,7 +52,7 @@ public class ProviderServiceService : IProviderServiceService
         };
     }
 
-    public async Task<ProviderService> RetrieveProviderServiceByIdAsync(Guid id)
+    public async Task<ProviderService> RetrieveProviderServiceByIdAsync(Guid id)  
     {
         var providerService =
             (await _providerServiceRepository.FindAsync(x => x.IsActive && x.Id == id && x.IsVisible))

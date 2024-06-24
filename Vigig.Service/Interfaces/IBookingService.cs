@@ -13,18 +13,18 @@ public interface IBookingService
 
     Task<ServiceActionResult> AcceptBookingAsync(Guid id, string token);
 
-    Task<DtoAcceptedBooking> RetrievedAcceptBookingAsync(Guid id, string token);
+    Task<DtoBookingResponse> RetrievedAcceptBookingAsync(Guid id, string token);
 
     Task<ServiceActionResult> DeclineBookingAsync(Guid id, string token);
 
-    Task<DtoAcceptedBooking> RetrievedDeclineBookingAsync(Guid id, string token);
+    Task<DtoBookingResponse> RetrievedDeclineBookingAsync(Guid id, string token);
 
     Task<ServiceActionResult> CancelBookingByClientAsync(Guid id, string token);
 
     Task<ServiceActionResult> CancelBookingByProviderAsync(Guid id, string token);
 
     Task<ServiceActionResult> CompleteBookingAsync(Guid id, BookingCompleteRequest request, string token);
-
+    Task<DtoBookingResponse> RetrievedCompleteBookingAsync(Guid id, string token);
     Task<ServiceActionResult> LoadOwnChatBookingAsync(string token);
 
     Task<ServiceActionResult> RatingBookingAsync(string token, Guid bookingId,BookingRatingRequest request);

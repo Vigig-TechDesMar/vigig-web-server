@@ -138,7 +138,7 @@ public class BookingService : IBookingService
         };
     }
 
-    public async Task<DtoAcceptedBooking> RetrievedAcceptBookingAsync(Guid id, string token)
+    public async Task<DtoBookingResponse> RetrievedAcceptBookingAsync(Guid id, string token)
     {
         var isValidProvider = EnsureHasBookingAsync(token, id, true);
         if (!(await isValidProvider))
@@ -155,7 +155,7 @@ public class BookingService : IBookingService
         await _bookingRepository.UpdateAsync(booking);
         await _unitOfWork.CommitAsync();
 
-        return _mapper.Map<DtoAcceptedBooking>(booking);
+        return _mapper.Map<DtoBookingResponse>(booking);
     }
 
     public async Task<ServiceActionResult> DeclineBookingAsync(Guid id, string token)
@@ -177,7 +177,7 @@ public class BookingService : IBookingService
         };
     }
 
-    public async Task<DtoAcceptedBooking> RetrievedDeclineBookingAsync(Guid id, string token)
+    public async Task<DtoBookingResponse> RetrievedDeclineBookingAsync(Guid id, string token)
     {
         var isValidProvider = EnsureHasBookingAsync(token, id, true);
         if (!(await isValidProvider))
@@ -193,7 +193,7 @@ public class BookingService : IBookingService
         booking.Status = BookingStatus.Declined;
         await _bookingRepository.UpdateAsync(booking);
         await _unitOfWork.CommitAsync();
-        return _mapper.Map<DtoAcceptedBooking>(booking);
+        return _mapper.Map<DtoBookingResponse>(booking);
     }
 
     public async Task<ServiceActionResult> CancelBookingByClientAsync(Guid id, string token)
@@ -262,6 +262,26 @@ public class BookingService : IBookingService
         {
             StatusCode = StatusCodes.Status204NoContent
         };
+    }
+
+    public async Task<DtoBookingResponse> RetrievedCompleteBookingAsync(Guid id, string token)
+    {
+        var isValidProvider = EnsureHasBookingAsync(token, id, true);
+        if (!(await isValidProvider))
+            throw new Exception($"provider do not have booking id:{id}");
+        var booking = (await _bookingRepository.FindAsync(x => 
+                x.Id == id 
+                && x.Status == BookingStatus.Accepted
+                && x.IsActive))
+            .Include( x => x.ProviderService)
+            .FirstOrDefault() ?? throw new BookingNotFoundException(id,nameof(Building.Id));
+        booking.Status = BookingStatus.Completed;
+        booking.ProviderService.TotalBooking++;
+        await _bookingRepository.UpdateAsync(booking);
+        await _unitOfWork.CommitAsync();
+        //Generate BookingFee
+        await _bookingFeeService.AddAsyncFromBooking(booking, token);
+        return _mapper.Map<DtoBookingResponse>(booking);
     }
 
     public async Task<ServiceActionResult> LoadOwnChatBookingAsync(string token)
