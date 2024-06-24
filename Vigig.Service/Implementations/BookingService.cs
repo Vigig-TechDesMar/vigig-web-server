@@ -365,7 +365,7 @@ public class BookingService : IBookingService
         };
     }
 
-    public async Task<ServiceActionResult> LoadAllBookingsAsync(string token, IReadOnlyCollection<string> status)
+    public async Task<ServiceActionResult> LoadAllBookingsAsync(string token, IReadOnlyCollection<string> status, BasePaginatedRequest request)
     {
         var user = _jwtService.GetAuthModel(token);
         var bookings = user.Role switch
@@ -374,10 +374,11 @@ public class BookingService : IBookingService
             UserRoleConstant.Provider => await GetBookingsByProviderAsync(user.UserId, status),
             _ => new List<Booking>().AsQueryable()
         };
-
+        var dtoBooking = _mapper.ProjectTo<DtoBooking>(bookings);
+        var paginatedResult = PaginationHelper.BuildPaginatedResult(dtoBooking, request.PageSize, request.PageIndex);
         return new ServiceActionResult(true)
         {
-            Data = _mapper.ProjectTo<DtoBooking>(bookings)
+            Data = paginatedResult
         };
     }
 

@@ -80,8 +80,9 @@ public class BookingHub : Hub
     // /booking-hub?bookingid=...
     public async Task<DtoPlacedBooking> PlaceBooking(BookingPlaceRequest request , string redirectUrl)
     {
+        Console.WriteLine("********* PLACE *********");
         var accessToken = Context.GetHttpContext()?.Request.Query["access_token"].ToString() ?? throw new InvalidTokenException();
-       
+        Console.WriteLine("ACCESS_TOKEN:", (string.IsNullOrEmpty(accessToken))? "null" : accessToken);
         var providerService = await _providerServiceService.RetrieveProviderServiceByIdAsync(request.ProviderServiceId);
 
         var provider = await _vigigUserRepository.GetAsync(x => x.Id == providerService.ProviderId)
@@ -100,7 +101,9 @@ public class BookingHub : Hub
     }
     public async Task<DtoBookingResponse> AcceptBooking(Guid bookingId, string redirectUrl)
     {
-        var accessToken= Context.GetHttpContext()?.Request.Query["access_token"].ToString() ?? throw new InvalidTokenException();
+        Console.WriteLine("********* ACCEPT *********");
+        var accessToken = Context.GetHttpContext()?.Request.Query["access_token"].ToString() ?? throw new InvalidTokenException();
+        Console.WriteLine("ACCESS_TOKEN:", (string.IsNullOrEmpty(accessToken))? "null" : accessToken);
         var dtoAcceptedBooking = await _bookingService.RetrievedAcceptBookingAsync(bookingId, accessToken);
         
         
@@ -120,7 +123,9 @@ public class BookingHub : Hub
     }
     public async Task<DtoBookingResponse> DeclineBooking(Guid bookingId, string redirectUrl)
     {
+        Console.WriteLine("********* DECLINE *********");
         var accessToken = Context.GetHttpContext()?.Request.Query["access_token"].ToString() ?? throw new InvalidTokenException();
+        Console.WriteLine("ACCESS_TOKEN:", (string.IsNullOrEmpty(accessToken))? "null" : accessToken);
         var dtoBooking = await _bookingService.RetrievedDeclineBookingAsync(bookingId, accessToken);
         
         var message = $"{dtoBooking.ProviderName} vừa từ chối dịch vụ {dtoBooking.ServiceName} của bạn.";
@@ -137,7 +142,9 @@ public class BookingHub : Hub
     }
     public async Task<DtoBookingResponse> CompleteBooking(Guid bookingId, BookingCompleteRequest request ,string redirectUrl)
     {
+        Console.WriteLine("********* COMPLETE *********");
         var accessToken = Context.GetHttpContext()?.Request.Query["access_token"].ToString() ?? throw new InvalidTokenException();
+        Console.WriteLine("ACCESS_TOKEN:", (string.IsNullOrEmpty(accessToken))? "null" : accessToken);
         var dtoBooking = await _bookingService.RetrievedCompleteBookingAsync(bookingId, request, accessToken);
 
         var message = $"{dtoBooking.ProviderName} vừa hoàn thành dịch vụ {dtoBooking.ServiceName} của bạn.";
@@ -157,7 +164,9 @@ public class BookingHub : Hub
 
     public async Task<DtoBookingResponse> CancelBookingByClient(Guid bookingId, string redirectUrl)
     {
+        Console.WriteLine("********* CANCEL *********");
         var accessToken = Context.GetHttpContext()?.Request.Query["access_token"].ToString() ?? throw new InvalidTokenException();
+        Console.WriteLine("ACCESS_TOKEN:", (string.IsNullOrEmpty(accessToken))? "null" : accessToken);
         var dtoBooking = await _bookingService.RetrievedCancelledByClientBookingAsync(bookingId, accessToken);
         
         var message = $"{dtoBooking.ClientName} vừa hủy dịch vụ {dtoBooking.ServiceName} của bạn.";

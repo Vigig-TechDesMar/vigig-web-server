@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Vigig.Api.Controllers.Base;
 using Vigig.Service.Constants;
 using Vigig.Service.Interfaces;
+using Vigig.Service.Models.Common;
 using Vigig.Service.Models.Request.Booking;
 
 namespace Vigig.Api.Controllers;
@@ -88,10 +89,10 @@ public class BookingsController : BaseApiController
     }
     [HttpGet("own-bookings")]
     // [Authorize(Roles = UserRoleConstant.Provider)]
-    public async Task<IActionResult> GetOwnBooking([FromQuery] IReadOnlyCollection<string>? status)
+    public async Task<IActionResult> GetOwnBooking([FromQuery] IReadOnlyCollection<string>? status,[FromQuery] BasePaginatedRequest request)
     {
         return await ExecuteServiceLogic(async () =>
-            await _bookingService.LoadAllBookingsAsync(GetJwtToken(), status).ConfigureAwait(false)).ConfigureAwait(false);
+            await _bookingService.LoadAllBookingsAsync(GetJwtToken(), status, request).ConfigureAwait(false)).ConfigureAwait(false);
     }
 
     [HttpPut("{id:guid}/rating")]
