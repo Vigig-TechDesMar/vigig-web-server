@@ -24,6 +24,8 @@
 
     <ItemGroup>
       <Compile Remove="Exceptions\UserNotAllowedException.cs" />
+      <Compile Remove="Models\Request\DashBoard\AdminDashBoardRequest.cs" />
+      <Compile Remove="Models\Request\DashBoard\TokenInfo.cs" />
     </ItemGroup>
 
 </Project>

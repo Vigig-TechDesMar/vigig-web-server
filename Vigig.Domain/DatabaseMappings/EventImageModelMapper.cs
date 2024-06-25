@@ -19,11 +19,13 @@ public class EventImageModelMapper : IDatabaseModelMapper
             entity.HasOne(e => e.Banner)
                 .WithMany(e => e.EventImages)
                 .HasForeignKey(e => e.BannerId)
-                .OnDelete(DeleteBehavior.ClientSetNull);
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .IsRequired(false);
             entity.HasOne(e => e.PopUp)
                 .WithMany(e => e.EventImages)
                 .HasForeignKey(e => e.PopUpId)
-                .OnDelete(DeleteBehavior.ClientSetNull);
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .IsRequired(false);
         }); 
     }
 }
