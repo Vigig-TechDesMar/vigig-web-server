@@ -91,6 +91,8 @@
         <EmbeddedResource Include="Scripts\37. Update_EventImage.sql" />
         <None Remove="Scripts\38.Update_Banner.sql" />
         <EmbeddedResource Include="Scripts\38.Update_Banner.sql" />
+        <None Remove="Scripts\39.Update_EventImage_SetNullFK.sql" />
+        <EmbeddedResource Include="Scripts\39.Update_EventImage_SetNullFK.sql" />
     </ItemGroup>
 
 </Project>
