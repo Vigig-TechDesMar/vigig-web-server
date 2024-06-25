@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Vigig.Api.Controllers.Base;
 using Vigig.Service.Constants;
 using Vigig.Service.Interfaces;
+using Vigig.Service.Models.Request.Authentication;
 using Vigig.Service.Models.Request.Service;
 
 namespace Vigig.Api.Controllers;
@@ -37,5 +38,13 @@ public class UsersController : BaseApiController
     {
         return await ExecuteServiceLogic(async () =>
             await _userService.UploadService(GetJwtToken(),request).ConfigureAwait(false)).ConfigureAwait(false);
+    }
+
+    [HttpPut("/update-profile")]
+    [Authorize]
+    public async Task<IActionResult> UpdateProfile([FromForm] UpdateProfileRequest request)
+    {
+        return await ExecuteServiceLogic(async () =>
+            await _userService.UpdateProfile(GetJwtToken(), request).ConfigureAwait(false)).ConfigureAwait(false);
     }
 }

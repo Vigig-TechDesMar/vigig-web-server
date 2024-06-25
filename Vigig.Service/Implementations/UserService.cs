@@ -10,6 +10,7 @@ using Vigig.Service.Exceptions;
 using Vigig.Service.Exceptions.NotFound;
 using Vigig.Service.Interfaces;
 using Vigig.Service.Models.Common;
+using Vigig.Service.Models.Request.Authentication;
 using Vigig.Service.Models.Request.Service;
 
 namespace Vigig.Service.Implementations;
@@ -20,11 +21,12 @@ public class UserService : IUserService
     private readonly IProviderServiceRepository _providerServiceRepository;
     private readonly IMediaService _mediaService;
     private readonly IGigServiceRepository _gigServiceRepository;
+    private readonly IBuildingRepository _buildingRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
     private readonly IJwtService _jwtService;
 
-    public UserService(IVigigUserRepository vigigUserRepository, IProviderServiceRepository providerServiceRepository, IUnitOfWork unitOfWork, IMapper mapper, IJwtService jwtService, IGigServiceRepository gigServiceRepository, IMediaService mediaService)
+    public UserService(IVigigUserRepository vigigUserRepository, IProviderServiceRepository providerServiceRepository, IUnitOfWork unitOfWork, IMapper mapper, IJwtService jwtService, IGigServiceRepository gigServiceRepository, IMediaService mediaService, IBuildingRepository buildingRepository)
     {
         _vigigUserRepository = vigigUserRepository;
         _providerServiceRepository = providerServiceRepository;
@@ -33,6 +35,7 @@ public class UserService : IUserService
         _jwtService = jwtService;
         _gigServiceRepository = gigServiceRepository;
         _mediaService = mediaService;
+        _buildingRepository = buildingRepository;
     }
 
     public async Task<ServiceActionResult> GetProfileInformation(string token)
@@ -86,6 +89,32 @@ public class UserService : IUserService
         {
             Data = _mapper.Map<DtoProviderService>(providerService),
             StatusCode = StatusCodes.Status201Created
+        };
+    }
+
+    public async Task<ServiceActionResult> UpdateProfile(string token, UpdateProfileRequest request)
+    {
+        var userId = _jwtService.GetAuthModel(token).UserId;
+        if (!_buildingRepository.Exists(x => x.Id == request.BuildingId && x.IsActive))
+            throw new BuildingNotFoundException(request.BuildingId, nameof(Building.Id));
+
+        var user = await _vigigUserRepository.GetAsync(x => x.Id == userId && x.IsActive) ?? throw new UserNotFoundException(userId,nameof(VigigUser.Id));
+        user.Phone = (!string.IsNullOrEmpty(request.Phone)) ? request.Phone : user.Phone;
+        user.Gender = (!string.IsNullOrEmpty(request.Gender)) ? request.Gender : user.Gender;
+        user.FullName = (!string.IsNullOrEmpty(request.FullName)) ? request.FullName : user.FullName;
+        user.Address = (!string.IsNullOrEmpty(request.Address)) ? request.Address : user.Address;
+        user.BuildingId = request.BuildingId;
+        if (request.ProfileImage is not null)
+        {
+            var imageUrl = await _mediaService.UploadFile(request.ProfileImage);
+            user.ProfileImage = imageUrl;
+        }
+        await _vigigUserRepository.UpdateAsync(user);
+        await _unitOfWork.CommitAsync();
+        return new ServiceActionResult(true)
+        {
+            Data = _mapper.Map<DtoUserProfile>(user),
+            StatusCode = StatusCodes.Status204NoContent
         };
     }
 

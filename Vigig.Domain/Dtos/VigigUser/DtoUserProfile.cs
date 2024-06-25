@@ -12,5 +12,9 @@ public class DtoUserProfile
     
     public string? ProfileImage { get; set; }
     
+    public string? Gender { get; set; }
+    
+    public string? FullName { get; set; }
+    
     public Guid BuildingId { get; set; }
 }
