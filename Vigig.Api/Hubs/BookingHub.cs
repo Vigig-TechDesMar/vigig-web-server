@@ -1,5 +1,6 @@
 ﻿using Hangfire;
 using Microsoft.AspNetCore.SignalR;
+using Newtonsoft.Json;
 using Vigig.Api.Hubs.Models;
 using Vigig.DAL.Interfaces;
 using Vigig.Domain.Dtos.Booking;
@@ -80,9 +81,7 @@ public class BookingHub : Hub
     // /booking-hub?bookingid=...
     public async Task<DtoPlacedBooking> PlaceBooking(BookingPlaceRequest request , string redirectUrl)
     {
-        Console.WriteLine("********* PLACE *********");
         var accessToken = Context.GetHttpContext()?.Request.Query["access_token"].ToString() ?? throw new InvalidTokenException();
-        Console.WriteLine("ACCESS_TOKEN:", (string.IsNullOrEmpty(accessToken))? "null" : accessToken);
         var providerService = await _providerServiceService.RetrieveProviderServiceByIdAsync(request.ProviderServiceId);
 
         var provider = await _vigigUserRepository.GetAsync(x => x.Id == providerService.ProviderId)
@@ -94,16 +93,19 @@ public class BookingHub : Hub
         if (providerConnectionIds is null) return dtoPlacedBooking;
         var providerConnectionId = providerConnectionIds.LastOrDefault();
         if (providerConnectionId is null) return dtoPlacedBooking;
-        var notifications = await _notificationService.RetrieveUserNotification(provider.Id);
-        await Clients.Client(providerConnectionId).SendAsync("ReceiveBooking",dtoPlacedBooking);
-        await Clients.Client(providerConnectionId).SendAsync("ReceiveNotification", notifications);
+        
+        var notifications =  _notificationService.RetrieveUserNotification(provider.Id);
+        var dtoBookingJson = JsonConvert.SerializeObject(dtoPlacedBooking);
+        var notificationsJson = JsonConvert.SerializeObject(notifications);
+        
+        await Clients.Client(providerConnectionId).SendAsync("ReceiveBooking",dtoBookingJson);
+        await Clients.Client(providerConnectionId).SendAsync("ReceiveNotification", notificationsJson);
+        
         return dtoPlacedBooking;    
     }
     public async Task<DtoBookingResponse> AcceptBooking(Guid bookingId, string redirectUrl)
     {
-        Console.WriteLine("********* ACCEPT *********");
         var accessToken = Context.GetHttpContext()?.Request.Query["access_token"].ToString() ?? throw new InvalidTokenException();
-        Console.WriteLine("ACCESS_TOKEN:", (string.IsNullOrEmpty(accessToken))? "null" : accessToken);
         var dtoAcceptedBooking = await _bookingService.RetrievedAcceptBookingAsync(bookingId, accessToken);
         
         
@@ -115,17 +117,18 @@ public class BookingHub : Hub
         var clientConnectionId = clientConnectionIds.LastOrDefault();
         if (clientConnectionId is null) return dtoAcceptedBooking;
 
-        var notifications =await _notificationService.RetrieveUserNotification(dtoAcceptedBooking.ClientId);
-        await Clients.Client(clientConnectionId).SendAsync("BookingAccepted", dtoAcceptedBooking);
-        await Clients.Client(clientConnectionId).SendAsync("ReceiveNotification",notifications);
+        var notifications = _notificationService.RetrieveUserNotification(dtoAcceptedBooking.ClientId);
+        var dtoBookingJson = JsonConvert.SerializeObject(dtoAcceptedBooking);
+        var notificationsJson = JsonConvert.SerializeObject(notifications);
+        
+        await Clients.Client(clientConnectionId).SendAsync("BookingAccepted", dtoBookingJson);
+        await Clients.Client(clientConnectionId).SendAsync("ReceiveNotification",notificationsJson);
 
         return dtoAcceptedBooking;
     }
     public async Task<DtoBookingResponse> DeclineBooking(Guid bookingId, string redirectUrl)
     {
-        Console.WriteLine("********* DECLINE *********");
         var accessToken = Context.GetHttpContext()?.Request.Query["access_token"].ToString() ?? throw new InvalidTokenException();
-        Console.WriteLine("ACCESS_TOKEN:", (string.IsNullOrEmpty(accessToken))? "null" : accessToken);
         var dtoBooking = await _bookingService.RetrievedDeclineBookingAsync(bookingId, accessToken);
         
         var message = $"{dtoBooking.ProviderName} vừa từ chối dịch vụ {dtoBooking.ServiceName} của bạn.";
@@ -135,16 +138,16 @@ public class BookingHub : Hub
         if (clientConnectionIds is null) return dtoBooking;
         var clientConnectionId = clientConnectionIds.LastOrDefault();
         if (clientConnectionId is null) return dtoBooking;
-        var notifications = await _notificationService.RetrieveUserNotification(dtoBooking.ClientId);
-        await Clients.Client(clientConnectionId).SendAsync("BookingDeclined", dtoBooking);
-        await Clients.Client(clientConnectionId).SendAsync("ReceiveNotification", notifications);
+        var notifications =  _notificationService.RetrieveUserNotification(dtoBooking.ClientId);
+        var dtoBookingJson = JsonConvert.SerializeObject(dtoBooking);
+        var notificationsJson = JsonConvert.SerializeObject(notifications);
+        await Clients.Client(clientConnectionId).SendAsync("BookingDeclined", dtoBookingJson);
+        await Clients.Client(clientConnectionId).SendAsync("ReceiveNotification", notificationsJson);
         return dtoBooking;
     }
     public async Task<DtoBookingResponse> CompleteBooking(Guid bookingId, BookingCompleteRequest request ,string redirectUrl)
     {
-        Console.WriteLine("********* COMPLETE *********");
         var accessToken = Context.GetHttpContext()?.Request.Query["access_token"].ToString() ?? throw new InvalidTokenException();
-        Console.WriteLine("ACCESS_TOKEN:", (string.IsNullOrEmpty(accessToken))? "null" : accessToken);
         var dtoBooking = await _bookingService.RetrievedCompleteBookingAsync(bookingId, request, accessToken);
 
         var message = $"{dtoBooking.ProviderName} vừa hoàn thành dịch vụ {dtoBooking.ServiceName} của bạn.";
@@ -155,20 +158,21 @@ public class BookingHub : Hub
         var clientConnectionId = clientConnectionIds.LastOrDefault();
         if (clientConnectionId is null) return dtoBooking;
 
-        var notifications = await _notificationService.RetrieveUserNotification(dtoBooking.ClientId);
+        var notifications =  _notificationService.RetrieveUserNotification(dtoBooking.ClientId);
+        var dtoBookingJson = JsonConvert.SerializeObject(dtoBooking);
+        var notificationsJson = JsonConvert.SerializeObject(notifications);
         
-        await Clients.Client(clientConnectionId).SendAsync("BookingCompleted", dtoBooking);
-        await Clients.Client(clientConnectionId).SendAsync("ReceiveNotification", notifications);
+        await Clients.Client(clientConnectionId).SendAsync("BookingCompleted", dtoBookingJson);
+        await Clients.Client(clientConnectionId).SendAsync("ReceiveNotification", notificationsJson);
         return dtoBooking;
     }
 
     public async Task<DtoBookingResponse> CancelBookingByClient(Guid bookingId, string redirectUrl)
     {
-        Console.WriteLine("********* CANCEL *********");
         var accessToken = Context.GetHttpContext()?.Request.Query["access_token"].ToString() ?? throw new InvalidTokenException();
-        Console.WriteLine("ACCESS_TOKEN:", (string.IsNullOrEmpty(accessToken))? "null" : accessToken);
-        var dtoBooking = await _bookingService.RetrievedCancelledByClientBookingAsync(bookingId, accessToken);
-        
+         var dtoBooking =  _bookingService.RetrievedCancelledByClientBooking(bookingId, accessToken);
+       
+
         var message = $"{dtoBooking.ClientName} vừa hủy dịch vụ {dtoBooking.ServiceName} của bạn.";
         NotifyClient(dtoBooking.ProviderId, redirectUrl, message);
         
@@ -177,10 +181,14 @@ public class BookingHub : Hub
         var clientConnectionId = clientConnectionIds.LastOrDefault();
         if (clientConnectionId is null) return dtoBooking;
 
-        var notifications = await _notificationService.RetrieveUserNotification(dtoBooking.ClientId);
+        var notifications =  _notificationService.RetrieveUserNotification(dtoBooking.ClientId);
         
-        await Clients.Client(clientConnectionId).SendAsync("BookingCompleted", dtoBooking);
-        await Clients.Client(clientConnectionId).SendAsync("ReceiveNotification", notifications);
+        var dtoBookingJson = JsonConvert.SerializeObject(dtoBooking);
+        var notificationsJson = JsonConvert.SerializeObject(notifications);
+        
+        await Clients.Client(clientConnectionId).SendAsync("BookingCompleted", dtoBookingJson);
+        await Clients.Client(clientConnectionId).SendAsync("ReceiveNotification", notificationsJson);
+        
         return dtoBooking;  
     }
     
@@ -196,9 +204,13 @@ public class BookingHub : Hub
         if (providerConnectionIds is null) return dtoBooking;
         var providerConnectionId = providerConnectionIds.LastOrDefault();
         if (providerConnectionId is null) return dtoBooking;
-        var notifications = await _notificationService.RetrieveUserNotification(dtoBooking.ProviderId);
-        await Clients.Client(providerConnectionId).SendAsync("ReceiveBooking",dtoBooking);
-        await Clients.Client(providerConnectionId).SendAsync("ReceiveNotification", notifications);
+        var notifications =  _notificationService.RetrieveUserNotification(dtoBooking.ProviderId);
+        
+        var dtoBookingJson = JsonConvert.SerializeObject(dtoBooking);
+        var notificationsJson = JsonConvert.SerializeObject(notifications);
+        
+        await Clients.Client(providerConnectionId).SendAsync("ReceiveBooking",dtoBookingJson);
+        await Clients.Client(providerConnectionId).SendAsync("ReceiveNotification", notificationsJson);
         return dtoBooking;    
     }
 

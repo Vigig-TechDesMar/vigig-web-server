@@ -189,7 +189,7 @@ public class BookingService : IBookingService
             .ThenInclude(x => x.Provider)
             .Include(x => x.ProviderService)
             .ThenInclude(x => x.Service)
-            .FirstOrDefault() ?? throw new BookingNotFoundException(id,nameof(Building.Id));
+            .FirstOrDefault() ?? throw new BookingNotFoundException(id,nameof(Booking.Id));
         booking.Status = BookingStatus.Declined;
         await _bookingRepository.UpdateAsync(booking);
         await _unitOfWork.CommitAsync();
@@ -216,12 +216,12 @@ public class BookingService : IBookingService
         };
     }
 
-    public async Task<DtoBookingResponse> RetrievedCancelledByClientBookingAsync(Guid id, string token)
+    public DtoBookingResponse RetrievedCancelledByClientBooking(Guid id, string token)
     {
-        var isValidProvider = EnsureHasBookingAsync(token, id, false);
-        if (!(await isValidProvider))
+        var isValidProvider = EnsureHasBooking(token, id, false);
+        if (!( isValidProvider))
             throw new Exception($"client does not have booking id:{id}");
-        var booking = (await _bookingRepository.FindAsync(x=> 
+        var booking = ( _bookingRepository.Find(x=> 
                 x.Id == id 
                 && x.IsActive))
             .Include(x => x.ProviderService)
@@ -230,9 +230,9 @@ public class BookingService : IBookingService
         if (booking.Status is not BookingStatus.Pending)
             throw new Exception("Booking can not be cancelled due to being accepted");
         booking.Status = BookingStatus.CancelledByClient;
-        await _bookingRepository.UpdateAsync(booking);
-        await _unitOfWork.CommitAsync();
-        return _mapper.Map<DtoBookingResponse>(booking);
+         _bookingRepository.Update(booking);
+         _unitOfWork.Commit(); 
+         return _mapper.Map<DtoBookingResponse>(booking);
     }
 
     public async Task<ServiceActionResult> CancelBookingByProviderAsync(Guid id, string token)
@@ -411,6 +411,23 @@ public class BookingService : IBookingService
         };
         return hasBooking;
     }
+    
+    private bool EnsureHasBooking(string token, Guid bookingId, bool isProviderContext)
+    {
+        var authModel = _jwtService.GetAuthModel(token);
+        if (isProviderContext && authModel.Role != UserRoleConstant.Provider)
+            throw new UnauthorizedAccessException();
+        var hasBooking = authModel.Role switch
+        {
+            UserRoleConstant.Provider =>  _bookingRepository.Exists(x =>
+                x.Id == bookingId && x.ProviderService.ProviderId == Guid.Parse(authModel.UserId.ToString())),
+            UserRoleConstant.Client =>  _bookingRepository.Exists(x =>
+                x.Id == bookingId && x.CustomerId == Guid.Parse(authModel.UserId.ToString())),
+            _ => false
+        };
+        return hasBooking;
+    }
+
     
     private async Task<Booking> GetBookingForClientAsync(Guid userId, Guid bookingId, string userName)
     {

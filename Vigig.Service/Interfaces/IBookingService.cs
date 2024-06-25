@@ -20,7 +20,7 @@ public interface IBookingService
     Task<DtoBookingResponse> RetrievedDeclineBookingAsync(Guid id, string token);
 
     Task<ServiceActionResult> CancelBookingByClientAsync(Guid id, string token);
-    Task<DtoBookingResponse> RetrievedCancelledByClientBookingAsync(Guid id, string token);
+    DtoBookingResponse RetrievedCancelledByClientBooking(Guid id, string token);
 
     Task<ServiceActionResult> CancelBookingByProviderAsync(Guid id, string token);
     Task<DtoBookingResponse> RetrievedCancelledByProviderBookingAsync(Guid id, string token);
