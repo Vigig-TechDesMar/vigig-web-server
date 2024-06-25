@@ -34,7 +34,7 @@ public class EventImageService : IEventImageService
         var images = _mapper.ProjectTo<DtoEventImage>(await _eventImageRepository.GetAllAsync());
         return new ServiceActionResult(true)
         {
-            Data = images
+             Data = images
         };
     }
 
@@ -66,7 +66,7 @@ public class EventImageService : IEventImageService
         var banner = (await _bannerRepository.FindAsync(sc => sc.IsActive)).FirstOrDefault() ??
                     throw new CurrentBannerNotFoundException();
 
-        var bannerImages = await _eventImageRepository.FindAsync(sc => sc.BannerId == banner.Id);
+        var bannerImages = (await _eventImageRepository.FindAsync(sc => sc.BannerId == banner.Id)).AsEnumerable();
         _mapper.Map<IEnumerable<DtoEventImage>>(bannerImages);
         return new ServiceActionResult(true)
         {
@@ -99,7 +99,13 @@ public class EventImageService : IEventImageService
             if (!await _popUpRepository.ExistsAsync(sc => sc.Id == request.PopUpId))
                 throw new PopUpNotFoundException(request.PopUpId, nameof(PopUp.Id));
 
-        var eventImage = _mapper.Map<EventImage>(request);
+        var eventImage = new EventImage
+        {
+            ImageUrl = request.ImageUrl,
+            BannerId = request.BannerId,
+            PopUpId = request.PopUpId
+        };
+        
         await _eventImageRepository.AddAsync(eventImage);
         await _unitOfWork.CommitAsync();
 

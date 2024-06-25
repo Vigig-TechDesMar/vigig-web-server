@@ -2,7 +2,7 @@ namespace Vigig.Domain.Dtos.Wallet;
 
 public class DtoTransaction
 {
-    public Guid Id { get; set; }
+    public int Id { get; set; }
 
     public double? Amount { get; set; }
 
