@@ -205,7 +205,7 @@ public class BookingService : IBookingService
                 x.Id == id 
                 && x.IsActive))
             .FirstOrDefault() ?? throw new BookingNotFoundException(id,nameof(Building.Id));
-        if (booking.Status is not BookingStatus.Pending)
+        if (booking.Status is not BookingStatus.Accepted)
             throw new Exception("Booking can not be cancelled due to being accepted");
         booking.Status = BookingStatus.CancelledByClient;
         await _bookingRepository.UpdateAsync(booking);
@@ -227,7 +227,7 @@ public class BookingService : IBookingService
             .Include(x => x.ProviderService)
             .Include(x => x.VigigUser)
             .FirstOrDefault() ?? throw new BookingNotFoundException(id,nameof(Building.Id));
-        if (booking.Status is not BookingStatus.Pending)
+        if (booking.Status is not BookingStatus.Accepted)
             throw new Exception("Booking can not be cancelled due to being accepted");
         booking.Status = BookingStatus.CancelledByClient;
          _bookingRepository.Update(booking);
@@ -244,8 +244,6 @@ public class BookingService : IBookingService
                 x.Id == id
                 && x.IsActive))
             .FirstOrDefault() ?? throw new BuildingNotFoundException(id,nameof(Building.Id));
-        if (booking.Status is not BookingStatus.Pending)
-            throw new Exception("Booking can not be cancelled due to being accepted");
         booking.Status = BookingStatus.CancelledByProvider;
         await _bookingRepository.UpdateAsync(booking);
         await _unitOfWork.CommitAsync();
@@ -267,8 +265,6 @@ public class BookingService : IBookingService
                 x.Id == id
                 && x.IsActive))
             .FirstOrDefault() ?? throw new BuildingNotFoundException(id,nameof(Building.Id));
-        if (booking.Status is not BookingStatus.Pending)
-            throw new Exception("Booking can not be cancelled due to being accepted");
         booking.Status = BookingStatus.CancelledByProvider;
         await _bookingRepository.UpdateAsync(booking);
         await _unitOfWork.CommitAsync();

@@ -1,4 +1,6 @@
 ﻿using Hangfire;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
 using Vigig.Api.Hubs.Models;
@@ -13,7 +15,7 @@ using Vigig.Service.Models.Request.Notification;
 using Hub = Microsoft.AspNetCore.SignalR.Hub;
 
 namespace Vigig.Api.Hubs;
-
+[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 public class BookingHub : Hub
 {
     private readonly BookingConnectionPool _pool;
