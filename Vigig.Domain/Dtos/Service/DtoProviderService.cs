@@ -6,6 +6,7 @@ public class DtoProviderService
 {
     public Guid Id { get; set; }
     public required string ProviderName { get; set; }
+    public required string ProviderImage { get; set; } = string.Empty;
     public required string ServiceName { get; set; }    
     public string? Description { get; set; }
     public double StickerPrice { get; set; }

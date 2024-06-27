@@ -77,6 +77,7 @@ public static class AutoMapperConfiguration
             .ForMember(s => s.ServiceName ,opt => opt.Condition(r => !string.IsNullOrWhiteSpace(r.ServiceName)));
         mapper.CreateMap<ProviderService, DtoProviderService>()
             .ForMember(dto => dto.ServiceName, opt => opt.MapFrom(x => x.Service.ServiceName))
+            .ForMember(dto => dto.ProviderImage, opt => opt.MapFrom(x => x.Provider.ProfileImage))
             .ForMember(dto => dto.ProviderName, opt => opt.MapFrom(x => x.Provider.UserName));
         mapper.CreateMap<ServiceImage, DtoServiceImage>();
     }

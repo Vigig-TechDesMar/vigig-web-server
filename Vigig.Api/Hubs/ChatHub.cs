@@ -1,11 +1,12 @@
-﻿using Microsoft.AspNetCore.SignalR;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.SignalR;
 using Vigig.Api.Hubs.Models;
 using Vigig.Domain.Dtos.Booking;
-using Vigig.Domain.Entities;
 using Vigig.Service.Interfaces;
 
 namespace Vigig.Api.Hubs;
-
+[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 public class ChatHub : Hub
 {
     private readonly ChatConnectionPool _chatConnectionPool;

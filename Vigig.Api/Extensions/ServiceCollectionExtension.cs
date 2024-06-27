@@ -111,7 +111,7 @@ public static class ServiceCollectionExtension
                 {
                     var accessToken = context.Request.Query["access_token"];
                     var path = context.HttpContext.Request.Path;
-                    if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/booking-hub"))
+                    if (!string.IsNullOrEmpty(accessToken) && (path.StartsWithSegments("/booking-hub") || path.StartsWithSegments("/chat-hub") ))
                     {
                         context.Token = accessToken;
                     }
