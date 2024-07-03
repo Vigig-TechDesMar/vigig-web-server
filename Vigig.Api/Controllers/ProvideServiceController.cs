@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Hangfire;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Vigig.Api.Controllers.Base;
 using Vigig.Service.Constants;
 using Vigig.Service.Interfaces;
 using Vigig.Service.Models.Common;
+using Vigig.Service.Models.Request.Service;
 
 namespace Vigig.Api.Controllers;
 [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
@@ -83,5 +85,23 @@ public class ProvideServiceController : BaseApiController
         var authorizationHeader = HttpContext.Request.Headers["Authorization"].ToString();
         var token = authorizationHeader.Replace("bearer", "", StringComparison.OrdinalIgnoreCase).Trim();
         return token;
+    }
+
+    [HttpGet("search")]
+    [AllowAnonymous]
+    public async Task<IActionResult> SearchProviderService([FromQuery] SearchUsingGet request)
+    {
+        return await ExecuteServiceLogic(async () =>
+                await _providerServiceService.SearchProviderServiceAsync(request).ConfigureAwait(false))
+            .ConfigureAwait(false);
+    }
+    
+    [HttpPut("{id:guid}")]
+    [Authorize(Roles = UserRoleConstant.Provider)]
+    public async Task<IActionResult> UpdateProviderService([FromRoute] Guid id,[FromForm] CreateProviderServiceRequest request)
+    {
+        return await ExecuteServiceLogic(async () =>
+                await _providerServiceService.UpdateProviderService(GetJwtToken(), id, request).ConfigureAwait(false))
+            .ConfigureAwait(false);
     }
 }
