@@ -340,7 +340,7 @@ public class BookingService : IBookingService
 
         return new ServiceActionResult(true)
         {
-            Data = _mapper.ProjectTo<DtoBookChat>(bookings)
+            Data = _mapper.ProjectTo<DtoBookChat>(bookings.OrderByDescending(x => x.CreatedDate))
         };
     }
 
@@ -370,7 +370,7 @@ public class BookingService : IBookingService
             UserRoleConstant.Provider => await GetBookingsByProviderAsync(user.UserId, status),
             _ => new List<Booking>().AsQueryable()
         };
-        var dtoBooking = _mapper.ProjectTo<DtoBooking>(bookings);
+        var dtoBooking = _mapper.ProjectTo<DtoBooking>(bookings.OrderByDescending(x => x.CreatedDate));
         var paginatedResult = PaginationHelper.BuildPaginatedResult(dtoBooking, request.PageSize, request.PageIndex);
         return new ServiceActionResult(true)
         {
