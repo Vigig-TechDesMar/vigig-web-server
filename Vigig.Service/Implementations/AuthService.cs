@@ -1,5 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 using AutoMapper;
+using MailKit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Vigig.Common.Constants.Validations;
@@ -25,12 +26,13 @@ public class AuthService : IAuthService
     private readonly IVigigRoleRepository _vigigRoleRepository;
     private readonly IBuildingRepository _buildingRepository;
     private readonly IBadgeRepository _badgeRepository;
+    private readonly IWalletRepository _walletRepository;
     private readonly IJwtService _jwtService;
     private readonly JwtSetting _jwtSetting;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
 
-    public AuthService(IVigigUserRepository vigigUserRepository, IMapper mapper, IUnitOfWork unitOfWork, IBuildingRepository buildingRepository, IJwtService jwtService, IConfiguration configuration, IUserTokenRepository userTokenRepository, IVigigRoleRepository vigigRoleRepository, IBadgeRepository badgeRepository)
+    public AuthService(IVigigUserRepository vigigUserRepository, IMapper mapper, IUnitOfWork unitOfWork, IBuildingRepository buildingRepository, IJwtService jwtService, IConfiguration configuration, IUserTokenRepository userTokenRepository, IVigigRoleRepository vigigRoleRepository, IBadgeRepository badgeRepository, IWalletRepository walletRepository)
     {
         _vigigUserRepository = vigigUserRepository;
         _mapper = mapper;
@@ -41,6 +43,7 @@ public class AuthService : IAuthService
         _vigigRoleRepository = vigigRoleRepository;
         _jwtSetting = configuration.GetSection(nameof(JwtSetting)).Get<JwtSetting>() ?? throw new MissingJwtSettingsException();
         _badgeRepository = badgeRepository;
+        _walletRepository = walletRepository;
     }
     public async Task<ServiceActionResult> RegisterAsync(RegisterRequest request)
     {
@@ -82,6 +85,19 @@ public class AuthService : IAuthService
             }
 
             await _vigigUserRepository.AddAsync(retrivedUser);
+            
+            //Provider's privileges
+            if (role.Name.Equals(UserRoleConstant.Provider))
+            {
+                var wallet = new Wallet
+                {
+                    Balance = 0,
+                    CreatedDate = DateTime.Now,
+                    ProviderId = retrivedUser.Id,
+                    IsActive = true
+                };
+                await _walletRepository.AddAsync(wallet);
+            }
         }
         
         await _unitOfWork.CommitAsync();
