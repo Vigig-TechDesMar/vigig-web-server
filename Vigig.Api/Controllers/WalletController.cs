@@ -14,6 +14,12 @@ public class WalletController : BaseApiController
 {
     
     private readonly IWalletService _walletService;
+    private string GetJwtToken()
+    {
+        var authorizationHeader = HttpContext.Request.Headers["Authorization"].ToString();
+        var token = authorizationHeader.Replace("bearer", "", StringComparison.OrdinalIgnoreCase).Trim();
+        return token;
+    }
 
     public WalletController(IWalletService walletService)
     {
@@ -42,6 +48,14 @@ public class WalletController : BaseApiController
     {
         return await ExecuteServiceLogic(async () => 
             await _walletService.GetById(id).ConfigureAwait(false)).ConfigureAwait(false);
+    }
+    
+    [HttpGet("owned")]
+    [Authorize(Roles = UserRoleConstant.Provider)]
+    public async Task<IActionResult> GetWalletOwnedWallet()
+    {
+        return await ExecuteServiceLogic(async () => 
+            await _walletService.GetOwnedWallet(GetJwtToken()).ConfigureAwait(false)).ConfigureAwait(false);
     }
     
     [HttpGet("search")]
