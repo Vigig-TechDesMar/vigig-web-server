@@ -11,6 +11,8 @@ public interface IWalletService
 
     Task<ServiceActionResult> GetById(Guid id);
     
+    Task<ServiceActionResult> GetOwnedWallet(string token);
+    
     Task<ServiceActionResult> GetPaginatedResultAsync(BasePaginatedRequest request);
     
     Task<ServiceActionResult> SearchWallet(SearchUsingGet request);

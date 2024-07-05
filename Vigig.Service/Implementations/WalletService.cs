@@ -1,9 +1,11 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Vigig.Common.Helpers;
 using Vigig.DAL.Interfaces;
 using Vigig.Domain.Dtos.Wallet;
 using Vigig.Domain.Entities;
+using Vigig.Service.Constants;
 using Vigig.Service.Exceptions.NotFound;
 using Vigig.Service.Interfaces;
 using Vigig.Service.Models.Common;
@@ -15,15 +17,17 @@ public class WalletService : IWalletService
 {
     private readonly IWalletRepository _walletRepository;
     private readonly IVigigUserRepository _vigigUserRepository;
+    private readonly IJwtService _jwtService;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
 
-    public WalletService(IWalletRepository walletRepository, IVigigUserRepository vigigUserRepository, IUnitOfWork unitOfWork, IMapper mapper)
+    public WalletService(IWalletRepository walletRepository, IVigigUserRepository vigigUserRepository, IUnitOfWork unitOfWork, IMapper mapper, IJwtService jwtService)
     {
         _walletRepository = walletRepository;
         _vigigUserRepository = vigigUserRepository;
         _unitOfWork = unitOfWork;
         _mapper = mapper;
+        _jwtService = jwtService;
     }
 
     public async Task<ServiceActionResult> GetAllAsync()
@@ -45,7 +49,22 @@ public class WalletService : IWalletService
             Data = _mapper.Map<DtoWallet>(wallet)
         };
     }
-    
+
+    public async Task<ServiceActionResult> GetOwnedWallet(string token)
+    {
+        var userId = _jwtService.GetSubjectClaim(token).ToString();
+        var provider = (await _vigigUserRepository.FindAsync(x => x.IsActive && x.Id.ToString() == userId))
+            .Include(x => x.Wallets)
+            .FirstOrDefault() ?? throw new UserNotFoundException(userId,nameof(VigigUser.Id));
+
+        //Get the wallet
+        var wallet = provider.Wallets.FirstOrDefault() ?? throw new WalletNotFoundException(userId, nameof(userId));
+        return new ServiceActionResult(true)
+        {
+            Data = _mapper.Map<DtoWallet>(wallet)
+        };
+    }
+
     public async Task<ServiceActionResult> GetPaginatedResultAsync(BasePaginatedRequest request)
     {
         var wallets = _mapper.ProjectTo<DtoWallet>(
