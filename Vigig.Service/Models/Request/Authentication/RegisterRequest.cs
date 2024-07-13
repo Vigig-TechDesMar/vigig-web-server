@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Security;
 using Vigig.Common.Constants.Validations;
 using Vigig.Service.Attributes;
 using Vigig.Service.Enums;
@@ -17,11 +18,7 @@ public class RegisterRequest
 
     [Required] 
     public UserRole Role { get; set; } 
-    
-    public required string UserName { get; set; }
-    public required string Phone { get; set; } 
-    
-    
-    public Guid BuildingId { get; set; }
+    public required string Phone { get; set; }
+    public string? BuildingId { get; set; }
 
 }

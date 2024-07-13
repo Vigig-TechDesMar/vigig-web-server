@@ -69,12 +69,12 @@ public class AuthService : IAuthService
             retrivedUser.Password = hashedPassword;
             retrivedUser.CreatedDate = DateTime.Now;
             retrivedUser.NormalizedEmail = request.Email.ToUpper();
-            retrivedUser.UserName = (string.IsNullOrEmpty(request.UserName)) ? request.Email.Split("@")[0] : request.UserName;
+            retrivedUser.UserName = request.Email.Split("@")[0];
             retrivedUser.NormalizedUserName = retrivedUser.UserName.Split("@")[0].ToUpper();
             retrivedUser.Phone = request.Phone;
-            if (request.BuildingId != default)
+            if (!string.IsNullOrEmpty(request.BuildingId))
             {
-                retrivedUser.Building =  (await _buildingRepository.FindAsync(b => b.Id == request.BuildingId)).FirstOrDefault() 
+                retrivedUser.Building =  (await _buildingRepository.FindAsync(b => b.Id == Guid.Parse(request.BuildingId))).FirstOrDefault() 
                                          ?? throw new BuildingNotFoundException(request.BuildingId,nameof(Building.Id));
             }
             retrivedUser.Roles.Add(role);
