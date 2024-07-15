@@ -37,7 +37,7 @@ public class ProviderServiceService : IProviderServiceService
     {
         var gigService = (await _gigServiceRepository.FindAsync(s => s.ServiceName.Equals(type) && s.IsActive))
             .FirstOrDefault() ?? throw new GigServiceNotFoundException(type,nameof(GigService.ServiceName));
-        var typedServices = _mapper.ProjectTo<DtoProviderService>(await _providerServiceRepository.FindAsync(x => x.ServiceId == gigService.Id));
+        var typedServices = _mapper.ProjectTo<DtoProviderService>(await _providerServiceRepository.FindAsync(x => x.ServiceId == gigService.Id && x.IsActive));
         var paginatedResult = PaginationHelper.BuildPaginatedResult(typedServices, request.PageSize, request.PageIndex);
         return new ServiceActionResult(true)
         {
