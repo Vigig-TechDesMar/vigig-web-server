@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ValueGeneration;
 using Vigig.Domain.Entities;
 using Vigig.Domain.Interfaces;
 
@@ -16,6 +17,7 @@ public class WalletModelMapper : IDatabaseModelMapper
             entity.Property(e => e.Balance).HasDefaultValueSql("((0))").IsRequired();
             entity.Property(e => e.IsActive).HasDefaultValueSql("((1))");
             entity.Property(e => e.CreatedDate);
+            entity.Property(e => e.ConcurrencyStamp).IsConcurrencyToken().HasValueGenerator<StringValueGenerator>();;
 
             entity.HasOne(d => d.Provider).WithMany(p => p.Wallets)
                 .HasForeignKey(d => d.ProviderId)

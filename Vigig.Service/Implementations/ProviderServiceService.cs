@@ -77,6 +77,7 @@ public class ProviderServiceService : IProviderServiceService
             Data = _mapper.ProjectTo<DtoProviderService>(providerServices)
         };
     }
+//provider.UserId = {Guid} d126ffae-7d5a-4aed-02eb-08dc789bd93f 
 
     public async Task<ServiceActionResult> SearchProviderServiceAsync(SearchUsingGet request)
     {

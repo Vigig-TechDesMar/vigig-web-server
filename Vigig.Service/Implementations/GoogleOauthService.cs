@@ -2,6 +2,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Vigig.Common.Constants;
@@ -75,7 +76,7 @@ public class GoogleOauthService : IGoogleOauthService
         securityToken.Claims.TryGetValue(GoogleTokenClaimConstants.GIVEN_NAME, out var name);
         securityToken.Claims.TryGetValue(GoogleTokenClaimConstants.PICTURE, out var picture);
 
-        var user = (await _vigigUserRepository.FindAsync(x => x.Email == email)).FirstOrDefault() ??
+        var user = (await _vigigUserRepository.FindAsync(x => x.Email == email)).Include(x => x.Roles).FirstOrDefault() ??
                    await CreateNewUserAsync(email, emailVerified, name, picture);
         var roles = user.Roles.Select(x => x.Name).ToList();
         var authResponse = new AuthResponse

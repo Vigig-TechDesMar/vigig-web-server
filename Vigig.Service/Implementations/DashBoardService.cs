@@ -147,7 +147,7 @@ public class DashBoardService : IDashBoardService
         
         var response = new ProviderCashFlowDashBoardResponse
         {
-            Revevue = totalRevenue,
+            Revenue = totalRevenue,
             BookingFee = bookingFee,
             Deposit = deposit,
             SubscriptionFee = subscriptionFee

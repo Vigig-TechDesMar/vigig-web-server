@@ -58,10 +58,25 @@ public class WalletService : IWalletService
             .FirstOrDefault() ?? throw new UserNotFoundException(userId,nameof(VigigUser.Id));
 
         //Get the wallet
-        var wallet = provider.Wallets.FirstOrDefault() ?? throw new WalletNotFoundException(userId, nameof(userId));
+        var wallet = provider.Wallets.FirstOrDefault();
+        if (wallet is not null)
+            return new ServiceActionResult(true)
+            {
+                Data = _mapper.Map<DtoWallet>(wallet)
+            };
+        var newWallet = new Wallet
+        {
+            Balance = 0,
+            ProviderId = Guid.Parse(userId),
+            CreatedDate = DateTime.Now,
+        };
+                
+        await _walletRepository.AddAsync(newWallet);
+        await _unitOfWork.CommitAsync();
+
         return new ServiceActionResult(true)
         {
-            Data = _mapper.Map<DtoWallet>(wallet)
+            Data = _mapper.Map<DtoWallet>(newWallet)
         };
     }
 

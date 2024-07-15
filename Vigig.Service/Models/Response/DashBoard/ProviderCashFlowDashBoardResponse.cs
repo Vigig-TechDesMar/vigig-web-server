@@ -2,7 +2,7 @@ namespace Vigig.Service.Models.Response.DashBoard;
 
 public class ProviderCashFlowDashBoardResponse
 {
-    public double Revevue { get; set; }
+    public double Revenue { get; set; }
     public double BookingFee { get; set; }
     
     public double SubscriptionFee { get; set; }
