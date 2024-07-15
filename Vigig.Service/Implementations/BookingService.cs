@@ -227,7 +227,7 @@ public class BookingService : IBookingService
             .Include(x => x.ProviderService)
             .Include(x => x.VigigUser)
             .FirstOrDefault() ?? throw new BookingNotFoundException(id,nameof(Building.Id));
-        if (booking.Status is not BookingStatus.Accepted)
+        if (booking.Status is not BookingStatus.Pending)
             throw new Exception("Booking can not be cancelled due to being accepted");
         booking.Status = BookingStatus.CancelledByClient;
          _bookingRepository.Update(booking);
