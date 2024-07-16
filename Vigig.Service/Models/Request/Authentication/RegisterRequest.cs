@@ -20,5 +20,4 @@ public class RegisterRequest
     public UserRole Role { get; set; } 
     public required string Phone { get; set; }
     public string? BuildingId { get; set; }
-
 }

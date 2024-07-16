@@ -95,9 +95,10 @@ public class UserService : IUserService
     public async Task<ServiceActionResult> UpdateProfile(string token, UpdateProfileRequest request)
     {
         var userId = _jwtService.GetAuthModel(token).UserId;
-        if (!_buildingRepository.Exists(x => x.Id == request.BuildingId && x.IsActive))
+        if (request.BuildingId != default && !(await _buildingRepository.ExistsAsync(x => x.Id == request.BuildingId && x.IsActive)))
+        {
             throw new BuildingNotFoundException(request.BuildingId, nameof(Building.Id));
-
+        }
         var user = await _vigigUserRepository.GetAsync(x => x.Id == userId && x.IsActive) ?? throw new UserNotFoundException(userId,nameof(VigigUser.Id));
         user.Phone = (!string.IsNullOrEmpty(request.Phone)) ? request.Phone : user.Phone;
         user.Gender = (!string.IsNullOrEmpty(request.Gender)) ? request.Gender : user.Gender;

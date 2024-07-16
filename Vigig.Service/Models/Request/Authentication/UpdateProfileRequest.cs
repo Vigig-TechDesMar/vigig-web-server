@@ -9,5 +9,5 @@ public class UpdateProfileRequest
     public string? Address { get; set; }
     public IFormFile? ProfileImage { get; set; }
     public string? Gender { get; set; }
-    public Guid BuildingId { get; set; }
+    public Guid? BuildingId { get; set; }
 }
