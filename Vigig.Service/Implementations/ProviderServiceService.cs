@@ -17,13 +17,14 @@ namespace Vigig.Service.Implementations;
 public class ProviderServiceService : IProviderServiceService
 {
     private readonly IProviderServiceRepository _providerServiceRepository;
+    private readonly IServiceImageRepository _serviceImageRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMediaService _mediaService;
     private readonly IGigServiceRepository _gigServiceRepository;
     private readonly IJwtService _jwtService;
     private readonly IMapper _mapper;
 
-    public ProviderServiceService(IProviderServiceRepository providerServiceRepository, IGigServiceRepository gigServiceRepository, IMapper mapper, IJwtService jwtService, IMediaService mediaService, IUnitOfWork unitOfWork)
+    public ProviderServiceService(IProviderServiceRepository providerServiceRepository, IGigServiceRepository gigServiceRepository, IMapper mapper, IJwtService jwtService, IMediaService mediaService, IUnitOfWork unitOfWork, IServiceImageRepository serviceImageRepository)
     {
         _providerServiceRepository = providerServiceRepository;
         _gigServiceRepository = gigServiceRepository;
@@ -31,6 +32,7 @@ public class ProviderServiceService : IProviderServiceService
         _jwtService = jwtService;
         _mediaService = mediaService;
         _unitOfWork = unitOfWork;
+        _serviceImageRepository = serviceImageRepository;
     }
 
     public async Task<ServiceActionResult> GetAirConditionerServicesByTypeAsync(string type, BasePaginatedRequest request)
@@ -98,10 +100,13 @@ public class ProviderServiceService : IProviderServiceService
     {
         var gigService = await _gigServiceRepository.GetAsync(x => x.Id == request.ServiceId) 
                          ?? throw new GigServiceNotFoundException(request.ServiceId, nameof(GigService.Id));
+        
+        
         var service = await GetProviderServiceAsync(token, id);
         service.ServiceId = gigService.Id;
         service.StickerPrice = request.StickerPrice ;
         service.Description = request.Description ?? service.Description;
+        await DeleteServiceImage(service.Id);
         var newImageUrls = (await _mediaService.GetUrlAfterUploadingFile(request.Images));
         var serviceImages = newImageUrls.Select(x => new ServiceImage
         {
@@ -115,7 +120,14 @@ public class ProviderServiceService : IProviderServiceService
             StatusCode = StatusCodes.Status204NoContent
         };
     }
-    
+
+    private async Task DeleteServiceImage(Guid providerServiceId)
+    {
+        var images = await _serviceImageRepository.FindAsync(x => x.ProviderServiceId == providerServiceId);
+        _serviceImageRepository.DeleteMany(images);
+        await _unitOfWork.CommitAsync();
+    }
+
 
     private async Task<ProviderService> GetProviderServiceAsync(string token, Guid id)
     {
