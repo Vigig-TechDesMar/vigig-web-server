@@ -1,4 +1,6 @@
-﻿using AutoMapper;
+﻿using System.Linq.Expressions;
+using AutoMapper;
+using Hangfire;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Vigig.Common.Helpers;
@@ -205,7 +207,7 @@ public class BookingService : IBookingService
                 x.Id == id 
                 && x.IsActive))
             .FirstOrDefault() ?? throw new BookingNotFoundException(id,nameof(Building.Id));
-        if (booking.Status is not BookingStatus.Accepted)
+        if (booking.Status is not BookingStatus.Pending)
             throw new Exception("Booking can not be cancelled due to being accepted");
         booking.Status = BookingStatus.CancelledByClient;
         await _bookingRepository.UpdateAsync(booking);
@@ -270,6 +272,7 @@ public class BookingService : IBookingService
         await _unitOfWork.CommitAsync();
         
         _backgroundJobService.ScheduleDelayedJob(() => DeleteBookingMessage(id), TimeSpan.FromDays(30));
+
         return _mapper.Map<DtoBookingResponse>(booking);
     }
 
@@ -460,10 +463,14 @@ public class BookingService : IBookingService
         return await _bookingRepository.FindAsync(x => x.IsActive && x.ProviderService.ProviderId == userId && bookingStatus.Contains(x.Status));
     }
     
-    private void DeleteBookingMessage(Guid bookingId)
+    public void DeleteBookingMessage(Guid bookingId)
     {
         var messages =   _bookingMessageRepository.Find(x => x.BookingId == bookingId);
         _bookingMessageRepository.DeleteMany(messages);
         _unitOfWork.Commit();
+    }
+    public void ScheduleDelayedJob(Expression<Action> methodCall, TimeSpan delay)
+    {
+        BackgroundJob.Schedule(methodCall, delay);
     }
 }
